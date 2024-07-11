@@ -1,0 +1,33 @@
+services:
+    bot:
+        build:
+            target: PRODUCTION
+        environment:
+            - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mariadb:3306/${MYSQL_DATABASE}
+            - LOG_LEVEL=${LOG_LEVEL}
+            - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+        volumes:
+            - "bot_data:/usr/src/app/storage"
+        depends_on:
+            - mariadb
+        networks:
+            - backend
+
+    mariadb:
+        image: mariadb
+        environment:
+            MYSQL_RANDOM_ROOT_PASSWORD: yes
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+        volumes:
+            - "mariadb_data:/var/lib/mysql"
+        networks:
+            - backend
+
+volumes:
+    bot_data:
+    mariadb_data:
+
+networks:
+    backend:
