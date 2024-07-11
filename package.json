@@ -1,7 +1,7 @@
 {
-    "name": "bot-layout-ts",
+    "name": "aircobot",
     "version": "0.0.0",
-    "description": "The typescript discord bot layout",
+    "description": "The airco discord bot",
     "main": "dist/index.js",
     "engines": {
         "node": ">=16.9.0"
