@@ -3,7 +3,7 @@
     "compilerOptions": {
         "allowJs": false,
         "esModuleInterop": true,
-        "target": "ES2021",
+        "target": "ES2022",
         "rootDir": "./src",
         "outDir": "dist",
         "baseUrl": ".",

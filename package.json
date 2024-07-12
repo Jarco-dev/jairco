@@ -4,7 +4,7 @@
     "description": "The airco discord bot",
     "main": "dist/index.js",
     "engines": {
-        "node": ">=16.9.0"
+        "node": ">=20.15.1"
     },
     "scripts": {
         "lint": "gts lint",
