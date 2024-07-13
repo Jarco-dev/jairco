@@ -268,10 +268,10 @@ export class InteractionLoader {
                                 "name" in handler.data
                                     ? handler.data.name
                                     : "custom_id" in handler.data
-                                    ? handler.data.custom_id
-                                    : "commandName" in handler.data
-                                    ? handler.data.commandName
-                                    : undefined;
+                                      ? handler.data.custom_id
+                                      : "commandName" in handler.data
+                                        ? handler.data.commandName
+                                        : undefined;
 
                             if (!name) {
                                 this.client.logger.warn(
@@ -322,8 +322,8 @@ export class InteractionLoader {
                 i.isCommand() || i.isAutocomplete()
                     ? i.commandName
                     : i.isMessageComponent() || i.isModalSubmit()
-                    ? i.customId
-                    : undefined;
+                      ? i.customId
+                      : undefined;
             if (!name) {
                 this.client.logger.warn(
                     "Interaction handler was unable to obtain the name from a interaction"

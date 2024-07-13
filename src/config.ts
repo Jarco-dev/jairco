@@ -17,8 +17,7 @@ const config: Config = {
 
     // Discord client options
     CLIENT_OPTIONS: {
-        intents: [
-        ]
+        intents: []
     },
 
     // Bot version (acquired from package.json)
