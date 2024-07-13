@@ -35,6 +35,7 @@ USER node
 
 COPY package.json .
 COPY ./prisma ./prisma
+COPY ./lang ./lang
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 

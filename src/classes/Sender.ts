@@ -14,7 +14,8 @@ import {
     ChannelSelectMenuInteraction,
     UserSelectMenuInteraction,
     RoleSelectMenuInteraction,
-    MentionableSelectMenuInteraction
+    MentionableSelectMenuInteraction,
+    HexColorString
 } from "discord.js";
 import { Client } from "./";
 import { SenderMessageOptions, SenderReplyOptions } from "@/types";
@@ -121,6 +122,44 @@ export class Sender {
         // No options shortcut
         if (!options) return i.reply(payload as InteractionReplyOptions);
 
+        // Lang options
+        if (options.langLocation) {
+            if (
+                options.langType === "STRING" ||
+                options.langType === undefined
+            ) {
+                // Cancel lang string if there is content
+                if (payload.content) {
+                    throw new Error(
+                        "The provided content would be overwritten by the lang content"
+                    );
+                }
+
+                // Set content
+                payload.content = this.client.lang.getString(
+                    i.locale,
+                    options.langLocation,
+                    options.langVariables
+                );
+            } else if (options.langType === "EMBED") {
+                // Cancel lang embed if there is an embed
+                if (payload.embeds) {
+                    throw new Error(
+                        "The provided embed would be overwritten by the lang embed"
+                    );
+                }
+
+                // Set embed
+                payload.embeds = [
+                    this.client.lang.getEmbed(
+                        i.locale,
+                        options.langLocation,
+                        options.langVariables
+                    )
+                ];
+            }
+        }
+
         // Handle the bot message type
         if (options.msgType) {
             // Cancel message type reply if there is an embed
@@ -131,11 +170,15 @@ export class Sender {
 
             // Create and send the embed
             const embed = new EmbedBuilder()
-                .setColor(this.client.config.MSG_TYPES[options.msgType].COLOR)
+                .setColor(
+                    this.client.lang.getCommon(
+                        `colors.${options.msgType.toLowerCase()}`
+                    ) as HexColorString
+                )
                 .setDescription(
-                    `${this.client.config.MSG_TYPES[options.msgType].EMOJI} **${
-                        payload.content
-                    }**`
+                    `${this.client.lang.getCommon(
+                        `emojis.${options.msgType.toLowerCase()}`
+                    )} **${payload.content}**`
                 );
 
             delete payload.content;
@@ -241,11 +284,15 @@ export class Sender {
 
             // Create and send the embed
             const embed = new EmbedBuilder()
-                .setColor(this.client.config.MSG_TYPES[options.msgType].COLOR)
+                .setColor(
+                    this.client.lang.getCommon(
+                        `colors.${options.msgType.toLowerCase()}`
+                    ) as HexColorString
+                )
                 .setDescription(
-                    `${this.client.config.MSG_TYPES[options.msgType].EMOJI} **${
-                        payload.content
-                    }**`
+                    `${this.client.lang.getCommon(
+                        `emojis.${options.msgType.toLowerCase()}`
+                    )} **${payload.content}**`
                 );
 
             delete payload.content;

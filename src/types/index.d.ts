@@ -2,6 +2,7 @@ export { CommandLoadLevel } from "./CommandLoadLevel";
 export { CommandStatus } from "./CommandStatus";
 export { Config } from "./Config";
 export { HandlerResult } from "./HandlerResult";
+export { LangContentType } from "./LangContentType";
 export { LogLevel } from "./LogLevel";
 export { SenderMessageOptions } from "./SenderMessageOptions";
 export { SenderMessageType } from "./SenderMessageType";

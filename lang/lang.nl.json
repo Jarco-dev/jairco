@@ -1,0 +1,25 @@
+{
+    "data": {
+        "ping": {
+            "pingingEmbed": {
+                "title": "Pingen..."
+            },
+            "resultEmbed": {
+                "title": "Ping resultaat",
+                "description": [
+                    "🔁 **RTT**: {{timeDiff}}ms",
+                    "💟 **Hartslag**: {{wsPing}}ms"
+                ]
+            },
+            "explainEmbed": {
+                "title": "Ping uitleg",
+                "description": [
+                    "🔁 **RTT**: De tijd tussen jij die een berichtje stuurd en de bot die reageerd",
+                    "💟 **Heartbeat**: De tijd tussen de bot en de discord  api servers"
+                ]
+            }
+        }
+    },
+    "refs": {
+    }
+}

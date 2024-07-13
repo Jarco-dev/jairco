@@ -1,0 +1,18 @@
+{
+    "bot": {
+        "name": "Airco"
+    },
+    "colors": {
+        "default": "#F88038",
+        "success": "#00FF00",
+        "invalid": "#F88038",
+        "error": "#FF0000",
+        "time": "#F88038"
+    },
+    "emojis": {
+        "success": "✅",
+        "invalid": "❌",
+        "error": "⚠",
+        "time": "⏱"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "data": {
+        "ping": {
+            "pingingEmbed": {
+                "title": "Pinging..."
+            },
+            "resultEmbed": {
+                "title": "Ping result",
+                "description": [
+                    ":repeat: **RTT**: {{timeDiff}}ms",
+                    ":heart_decoration: **Heartbeat**: {{wsPing}}ms"
+                ]
+            },
+            "explainEmbed": {
+                "title": "Ping explanation",
+                "description": [
+                    ":repeat: **RTT**: The delay between you sending the message and the bot replying",
+                    ":heart_decoration: **Heartbeat**: The delay between the bot and the discord api servers"
+                ]
+            }
+        }
+    },
+    "refs": {
+    }
+}

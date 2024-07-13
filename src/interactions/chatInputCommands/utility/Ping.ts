@@ -7,8 +7,25 @@ export default class PingChatInputCommand extends ChatInputCommand {
         super({
             builder: new SlashCommandBuilder()
                 .setName("ping")
+                .setNameLocalization("nl", "ping")
                 .setDescription("Check the bots response time")
-                .setDMPermission(true),
+                .setDescriptionLocalization("nl", "Bekijk de bots reactie tijd")
+                .setDMPermission(true)
+                .addStringOption(option =>
+                    option
+                        .setName("action")
+                        .setNameLocalization("nl", "actie")
+                        .setDescription("Extra actions for the ping command")
+                        .setDescriptionLocalization(
+                            "nl",
+                            "Extra acties voor het ping command"
+                        )
+                        .addChoices({
+                            name: "Explain",
+                            name_localizations: { nl: "Uitleg" },
+                            value: "explain"
+                        })
+                ),
             enabled: true
         });
     }
@@ -18,55 +35,45 @@ export default class PingChatInputCommand extends ChatInputCommand {
         switch (i?.options?.getString("action", false)) {
             // Explain
             case "explain": {
-                const explainEmbed = this.client.utils
-                    .defaultEmbed()
-                    .setTitle("Ping explanation")
-                    .setDescription(
-                        [
-                            "🔁 **RTT**: The delay between you sending the message and the bot replying",
-                            "💟 **Heartbeat**: The delay between the bot and the discord api servers"
-                        ].join("\n")
-                    );
-                this.client.sender.reply(i, {
-                    embeds: [explainEmbed],
-                    ephemeral: true
-                });
+                this.client.sender.reply(
+                    i,
+                    { ephemeral: true },
+                    { langType: "EMBED", langLocation: "ping.explainEmbed" }
+                );
                 break;
             }
 
             // Ping (default)
             default: {
                 // Send a pinging message
-                const pingingEmbed = this.client.utils
-                    .defaultEmbed()
-                    .setTitle("Pinging...");
-                const reply = await this.client.sender.reply(i, {
-                    embeds: [pingingEmbed],
-                    ephemeral: true,
-                    fetchReply: true
-                });
+                const reply = await this.client.sender.reply(
+                    i,
+                    { ephemeral: true, fetchReply: true },
+                    { langType: "EMBED", langLocation: "ping.pingingEmbed" }
+                );
                 if (!reply) {
                     return {
-                        result: "OTHER",
-                        note: "Initial message unavailable to check ping"
+                        result: "ERRORED",
+                        note: "Initial message unavailable to check ping",
+                        error: new Error("Pinging message unavailable")
                     };
                 }
 
                 // Calculate the delay and edit the reply
-                const timeDiff = reply.createdTimestamp - i.createdTimestamp;
-                const resultEmbed = this.client.utils
-                    .defaultEmbed()
-                    .setTitle("Ping result")
-                    .setDescription(
-                        this.client.utils.addNewLines([
-                            `🔁 **RTT**: ${timeDiff}ms`,
-                            `💟 **Heartbeat**: ${this.client.ws.ping}ms`
-                        ])
-                    );
                 this.client.sender.reply(
                     i,
-                    { embeds: [resultEmbed] },
-                    { method: "EDIT_REPLY" }
+                    {},
+                    {
+                        method: "EDIT_REPLY",
+                        langType: "EMBED",
+                        langLocation: "ping.resultEmbed",
+                        langVariables: {
+                            timeDiff: (
+                                reply.createdTimestamp - i.createdTimestamp
+                            ).toString(),
+                            wsPing: this.client.ws.ping.toString()
+                        }
+                    }
                 );
             }
         }

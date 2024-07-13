@@ -1,6 +1,5 @@
 import { Client } from "@/classes";
 import {
-    EmbedBuilder,
     GuildChannelResolvable,
     GuildMember,
     PermissionResolvable
@@ -11,17 +10,6 @@ export class Utilities {
 
     constructor(client: Client) {
         this.client = client;
-    }
-
-    public defaultEmbed(): EmbedBuilder {
-        return new EmbedBuilder()
-            .setColor(this.client.config.COLORS.DEFAULT)
-            .setTimestamp()
-            .setFooter({
-                text: `${this.client.user!.username} v${
-                    this.client.config.VERSION
-                }`
-            });
     }
 
     public parseTime(duration: number | bigint): string {

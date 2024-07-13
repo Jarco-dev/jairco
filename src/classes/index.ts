@@ -1,6 +1,7 @@
 export { Client } from "./Client";
 export { EventLoader } from "./EventLoader";
 export { InteractionLoader } from "./InteractionLoader";
+export { LanguageManager } from "./LanguageManager";
 export { Logger } from "./Logger";
 export { SecretConfig } from "./SecretConfig";
 export { Sender } from "./Sender";
