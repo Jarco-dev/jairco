@@ -1,5 +1,111 @@
 {
     "data": {
+        "misc": {
+            "missingPermissions": "You don't have the permissions required to do this",
+            "somethingWentWrong": "Er ging iets mis, probeer het alstublieft nog een keer",
+            "actionExpired": "Door inactiviteit is dit niet meer beschikbaar, begin alstublieft opnieuw"
+        },
+        "permissions": {
+            "Administrator": "Beheerder",
+            "ManageGroups": "Beheer groepen"
+        },
+        "groups": {
+            "noGroup": "De gegeven groep bestaat niet",
+            "groupDeleted": "De {{group}} groep is verwijdert",
+            "noGroupsExist": "Er zijn nog geen groepen",
+            "noUsersOnGroup": "Deze groep heeft geen users",
+            "noRolesOnGroup": "Deze groep heeft geen rollen",
+            "noPermissionsOnGroup": "Deze groep heeft geen rechten",
+            "roleAdded": "{{role}} toegevoegd aan {{group}}",
+            "roleAlreadyAdded": "{{role}} zit al in {{group}}",
+            "roleRemoved": "{{role}} is verwijdert van {{group}}",
+            "roleNotAdded": "{{role}} zit niet in {{group}}",
+            "rolesReset": "Rollen gereset voor {{group}}",
+            "userAdded": "{{user}} toegevoegd aan {{group}}",
+            "userAlreadyAdded": "{{user}} zit al in {{group}}",
+            "userRemoved": "{{user}} is verwijdert van {{group}}",
+            "userNotAdded": "{{user}} zit niet in {{group}}",
+            "usersReset": "Gebruikers gereset voor {{group}}",
+            "hasAllPermissions": "De {{group}} groep heeft al alle beschikbare rechten",
+            "hasNoPermissions": "De {{group}} groep heeft geen rechten",
+            "permissionsReset": "Rechten gereset voor {{group}}",
+            "userHasNoGroups": "Deze gebruiker heeft geen groepen",
+            "userHasNoPermissions": "Deze gebruiker heeft geen rechten",
+            "userIsAdminWarning": "Deze gebruiker is een server administrator en heeft toegang to alles in de bot, ook als dat hier niet is aangegeven!",
+            "groupCreatedEmbed": {
+                "title": "{{group}} groep gecreëerd",
+                "description": [
+                    "Je kunt deze groep aanpassen met behulp van het `/groepen` command",
+                    "Hier mee kan je de groep geven aan gebruikers, de groep linken aan rollen en bot rechten toevoegen aan de groep"
+                ]
+            },
+            "groupListEmbed": {
+                "title": "Groepen",
+                "description": "{{groups}}"
+            },
+            "groupViewEmbed": {
+                "title": "{{group}} informatie",
+                "fields": [
+                    {
+                        "name": "Rollen",
+                        "value": "{{roles}}"
+                    },
+                    {
+                        "name": "Gebruikers",
+                        "value": "{{users}}"
+                    },
+                    {
+                        "name": "Rechten",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            },
+            "addPermissionsEmbed": {
+                "title": "Selecteer de rechten die je wil toevoegen aan {{group}}",
+                "footer": {
+                    "text": ""
+                }
+            },
+            "permissionsAddedEmbed": {
+                "title": "Rechten toegevoegd aan {{group}}",
+                "description": "Om meer rechten toe te voegen gebruik het command nogmaals",
+                "fields": [
+                    {
+                        "name": "Rechten toegevoegd",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            },
+            "removePermissionsEmbed": {
+                "title": "Selecteer de rechten die je wil verwijderen van {{group}}",
+                "footer": {
+                    "text": ""
+                }
+            },
+            "permissionsRemovedEmbed": {
+                "title": "Rechten om te verwijderen van {{group}}",
+                "description": "Om meer rechten te verwijderen gebruik het command nogmaals",
+                "fields": [
+                    {
+                        "name": "Rechten verwijdert",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            },
+            "viewUserEmbed": {
+                "title": "Rechten en groepen voor {{user}}",
+                "fields": [
+                    {
+                        "name": "Groepen",
+                        "value": "{{groups}}"
+                    },
+                    {
+                        "name": "Rechten",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            }
+        },
         "ping": {
             "pingingEmbed": {
                 "title": "Pingen..."

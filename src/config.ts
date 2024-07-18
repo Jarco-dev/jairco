@@ -1,10 +1,10 @@
 import { Config } from "@/types";
-import { IntentsBitField } from "discord.js";
+import { GatewayIntentBits } from "discord.js";
 
 const config: Config = {
     // Discord client options
     CLIENT_OPTIONS: {
-        intents: []
+        intents: [GatewayIntentBits.Guilds]
     },
 
     // Bot version (acquired from package.json)

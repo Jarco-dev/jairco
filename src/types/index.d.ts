@@ -1,3 +1,4 @@
+export { BotPermissionsString } from "./BotPermissionsString";
 export { CommandLoadLevel } from "./CommandLoadLevel";
 export { CommandStatus } from "./CommandStatus";
 export { Config } from "./Config";

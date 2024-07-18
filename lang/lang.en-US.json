@@ -1,5 +1,111 @@
 {
     "data": {
+        "misc": {
+            "missingPermissions": "You don't have the permissions required to do this",
+            "somethingWentWrong": "Something went wrong, please try again",
+            "actionExpired": "Due to being idle this is no longer available, please start over"
+        },
+        "permissions": {
+            "Administrator": "Administrator",
+            "ManageGroups": "Manage groups"
+        },
+        "groups": {
+            "noGroup": "The given group does not exist",
+            "groupDeleted": "The {{group}} group has been deleted",
+            "noGroupsExist": "There are no groups yet",
+            "noUsersOnGroup": "This group has no users",
+            "noRolesOnGroup": "This group has no roles",
+            "noPermissionsOnGroup": "This group has no permissions",
+            "roleAdded": "{{role}} has been added to {{group}}",
+            "roleAlreadyAdded": "{{role}} is already in {{group}}",
+            "roleRemoved": "{{role}} has been removed from {{group}}",
+            "roleNotAdded": "{{role}} is not in {{group}}",
+            "rolesReset": "Roles reset for {{group}}",
+            "userAdded": "{{user}} has been added to {{group}}",
+            "userAlreadyAdded": "{{user}} is already in {{group}}",
+            "userRemoved": "{{user}} has been removed from {{group}}",
+            "userNotAdded": "{{user}} is not in {{group}}",
+            "usersReset": "Users reset for {{group}}",
+            "hasAllPermissions": "The {{group}} group already has all available permissions",
+            "hasNoPermissions": "The {{group}} group has no permissions",
+            "permissionsReset": "Permissions reset for {{group}}",
+            "userHasNoGroups": "This user has no groups",
+            "userHasNoPermissions": "This user has no permissions",
+            "userIsAdminWarning": "This user is a server administrator and has access to everything with in the bot, even if it's not shown here!",
+            "groupCreatedEmbed": {
+                "title": "{{group}} group created",
+                "description": [
+                    "You can modify this group using the `/groups` command",
+                    "Using this you're able to give the group to users, link the group to roles and add permissions to the group"
+                ]
+            },
+            "groupListEmbed": {
+                "title": "Groups",
+                "description": "{{groups}}"
+            },
+            "groupViewEmbed": {
+                "title": "{{group}} information",
+                "fields": [
+                    {
+                        "name": "Roles",
+                        "value": "{{roles}}"
+                    },
+                    {
+                        "name": "Users",
+                        "value": "{{users}}"
+                    },
+                    {
+                        "name": "Permissions",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            },
+            "addPermissionsEmbed": {
+                "title": "Select the permissions you want to add to {{group}}",
+                "footer": {
+                    "text": ""
+                }
+            },
+            "permissionsAddedEmbed": {
+                "title": "Permissions added to {{group}}",
+                "description": "To add more permissions rerun the command",
+                "fields": [
+                    {
+                        "name": "Permissions added",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            },
+            "removePermissionsEmbed": {
+                "title": "Select the permissions you want to remove from {{group}}",
+                "footer": {
+                    "text": ""
+                }
+            },
+            "permissionsRemovedEmbed": {
+                "title": "Permissions removed from {{group}}",
+                "description": "To remove more permissions rerun the command",
+                "fields": [
+                    {
+                        "name": "Permissions removed",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            },
+            "viewUserEmbed": {
+                "title": "Permissions and groups for {{user}}",
+                "fields": [
+                    {
+                        "name": "Groups",
+                        "value": "{{groups}}"
+                    },
+                    {
+                        "name": "Permissions",
+                        "value": "{{permissions}}"
+                    }
+                ]
+            }
+        },
         "ping": {
             "pingingEmbed": {
                 "title": "Pinging..."

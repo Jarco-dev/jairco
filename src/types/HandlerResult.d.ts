@@ -4,6 +4,7 @@ export type HandlerResult =
               | "SUCCESS"
               | "INVALID_ARGUMENTS"
               | "USER_MISSING_PERMISSIONS"
+              | "ACTION_EXPIRED"
               | "OTHER";
           note?: string;
       }

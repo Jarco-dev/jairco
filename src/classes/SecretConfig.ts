@@ -8,6 +8,11 @@ export class SecretConfig {
     public SHADOW_DATABASE_URL = process.env.SHADOW_DATABASE_URL as
         | string
         | undefined;
+    public REDIS_HOST = process.env.REDIS_HOST as string;
+    public REDIS_PORT = parseInt(process.env.REDIS_PORT as string);
+    public REDIS_USER = process.env.REDIS_USER as string;
+    public REDIS_PASSWORD = process.env.REDIS_PASSWORD as string;
+    public REDIS_DATABASE = parseInt(process.env.REDIS_DATABASE as string);
     public LOG_LEVEL = process.env.LOG_LEVEL as LogLevel;
 
     constructor() {}
@@ -21,6 +26,30 @@ export class SecretConfig {
 
         if (!this.DATABASE_URL) {
             errors.push("DATABASE_URL is required but not given");
+        }
+
+        if (!this.REDIS_HOST) {
+            errors.push("REDIS_HOST is required but not given");
+        }
+
+        if (!this.REDIS_PORT) {
+            errors.push("REDIS_PORT is required but not given");
+        } else if (isNaN(this.REDIS_PORT)) {
+            errors.push("REDIS_PORT is a invalid number");
+        }
+
+        if (!this.REDIS_USER) {
+            errors.push("REDIS_USER is required but not given");
+        }
+
+        if (!this.REDIS_PASSWORD) {
+            errors.push("REDIS_PASSWORD is required but not given");
+        }
+
+        if (!this.REDIS_DATABASE && this.REDIS_DATABASE !== 0) {
+            errors.push("REDIS_DATABASE is required but not given");
+        } else if (isNaN(this.REDIS_DATABASE)) {
+            errors.push("REDIS_DATABASE is a invalid number");
         }
 
         if (!this.LOG_LEVEL) {

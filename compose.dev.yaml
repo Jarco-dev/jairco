@@ -4,10 +4,15 @@ services:
             target: DEVELOPMENT
         restart: unless-stopped
         environment:
-            - DATABASE_URL=mysql://prisma:password@mariadb:3306/discord-bot
-            - SHADOW_DATABASE_URL=mysql://prisma:password@mariadb-shadow:3306/shadow
-            - LOG_LEVEL=DEBUG
-            - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_USER: default
+            REDIS_PASSWORD: password
+            REDIS_DATABASE: 0
+            DATABASE_URL: mysql://prisma:password@mariadb:3306/discord-bot
+            SHADOW_DATABASE_URL: mysql://prisma:password@mariadb-shadow:3306/shadow
+            LOG_LEVEL: DEBUG
+            DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
         volumes:
             - "./lang:/usr/src/app/lang"
             - "./prisma:/usr/src/app/prisma"
@@ -18,6 +23,19 @@ services:
         depends_on:
             - mariadb
             - mariadb-shadow
+        networks:
+            - backend
+
+    redis:
+        image: redis
+        restart: unless-stopped
+        environment:
+            REDIS_PASSWORD: password
+            REDIS_DATABASES: 1
+        volumes:
+            - "dev_redis_data:/data"
+        ports:
+            - "6379:6379"
         networks:
             - backend
 
@@ -48,6 +66,7 @@ services:
             - backend
 
 volumes:
+    dev_redis_data:
     dev_mariadb_data:
     dev_mariadb_shadow_data:
 
