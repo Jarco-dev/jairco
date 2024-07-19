@@ -1155,7 +1155,10 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             };
         }
 
-        this.client.redis.setGroupModifyMessage(reply.id, group.id);
+        this.client.redis.setMessageContext("groupPermissions", reply.id, {
+            groupId: group.id,
+            menuOwnerId: i.user.id
+        });
 
         return { result: "SUCCESS" };
     }
@@ -1246,7 +1249,10 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             };
         }
 
-        this.client.redis.setGroupModifyMessage(reply.id, group.id);
+        this.client.redis.setMessageContext("groupPermissions", reply.id, {
+            groupId: group.id,
+            menuOwnerId: i.user.id
+        });
 
         return { result: "SUCCESS" };
     }

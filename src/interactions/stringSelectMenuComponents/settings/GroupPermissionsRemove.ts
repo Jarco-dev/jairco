@@ -20,24 +20,11 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
     }
 
     public async run(i: StringSelectMenuInteraction): Promise<HandlerResult> {
-        const permissions = await this.client.utils.getMemberBotPermissions(i);
-        if (!permissions.has(BotPermissionsBitField.Flags.ManageGroups)) {
-            this.client.sender.reply(
-                i,
-                { ephemeral: true },
-                {
-                    langLocation: "misc.missingPermissions",
-                    msgType: "INVALID",
-                    method: "UPDATE"
-                }
-            );
-            return { result: "USER_MISSING_PERMISSIONS" };
-        }
-
-        const groupId = await this.client.redis.getGroupModifyMessage(
+        const context = await this.client.redis.getMessageContext(
+            "groupPermissions",
             i.message.id
         );
-        if (!groupId) {
+        if (!context) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true, components: [] },
@@ -50,12 +37,32 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
             return { result: "ACTION_EXPIRED" };
         }
 
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (
+            !permissions.has(BotPermissionsBitField.Flags.ManageGroups) ||
+            i.user.id !== context.menuOwnerId
+        ) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "misc.missingPermissions",
+                    msgType: "INVALID",
+                    method: "UPDATE"
+                }
+            );
+            return { result: "USER_MISSING_PERMISSIONS" };
+        }
+
         const group = await this.client.prisma.groups.findUnique({
-            where: { id: groupId },
+            where: { id: context.groupId },
             select: { id: true, name: true, permissions: true }
         });
         if (!group) {
-            this.client.redis.delGroupModifyMessage(i.message.id);
+            this.client.redis.delMessageContext(
+                "groupPermissions",
+                i.message.id
+            );
             this.client.sender.reply(
                 i,
                 { ephemeral: true, components: [] },
@@ -77,13 +84,13 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
             i.values as BotPermissionsString[]
         );
         await this.client.prisma.groups.update({
-            where: { id: groupId },
+            where: { id: context.groupId },
             data: {
                 permissions:
                     groupPermissions.remove(removedPermissions).bitfield
             }
         });
-        this.client.redis.delGroupModifyMessage(i.message.id);
+        this.client.redis.delMessageContext("groupPermissions", i.message.id);
 
         this.client.sender.reply(
             i,
