@@ -25,7 +25,11 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
-                { langLocation: "misc.missingPermissions", msgType: "INVALID" }
+                {
+                    langLocation: "misc.missingPermissions",
+                    msgType: "INVALID",
+                    method: "UPDATE"
+                }
             );
             return { result: "USER_MISSING_PERMISSIONS" };
         }
@@ -37,7 +41,11 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
             this.client.sender.reply(
                 i,
                 { ephemeral: true, components: [] },
-                { langLocation: "misc.actionExpired", msgType: "INVALID" }
+                {
+                    langLocation: "misc.actionExpired",
+                    msgType: "INVALID",
+                    method: "UPDATE"
+                }
             );
             return { result: "ACTION_EXPIRED" };
         }
