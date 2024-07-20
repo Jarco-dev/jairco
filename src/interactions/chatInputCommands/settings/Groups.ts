@@ -809,14 +809,14 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             },
             select: {
                 id: true,
-                Groups: {
+                _count: {
                     select: {
-                        id: true
+                        Groups: true
                     }
                 }
             }
         });
-        if (dbRole.Groups.length === 0) {
+        if (dbRole._count.Groups === 0) {
             await this.client.prisma.roles.delete({ where: { id: dbRole.id } });
         }
 
@@ -847,9 +847,9 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
                       Roles: {
                           select: {
                               discordId: true,
-                              Groups: {
+                              _count: {
                                   select: {
-                                      id: true
+                                      Groups: true
                                   }
                               }
                           }
@@ -866,7 +866,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         const rolesToDelete = group.Roles.filter(
-            r => r.Groups.length === 1
+            r => r._count.Groups === 1
         ).map(r => r.discordId);
         await this.client.prisma.$transaction([
             this.client.prisma.groups.update({
