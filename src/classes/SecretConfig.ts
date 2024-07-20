@@ -9,11 +9,12 @@ export class SecretConfig {
         | string
         | undefined;
     public REDIS_HOST = process.env.REDIS_HOST as string;
-    public REDIS_PORT = parseInt(process.env.REDIS_PORT as string);
+    public REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "NaN");
     public REDIS_USER = process.env.REDIS_USER as string;
     public REDIS_PASSWORD = process.env.REDIS_PASSWORD as string;
-    public REDIS_DATABASE = parseInt(process.env.REDIS_DATABASE as string);
+    public REDIS_DATABASE = parseInt(process.env.REDIS_DATABASE ?? "NaN");
     public LOG_LEVEL = process.env.LOG_LEVEL as LogLevel;
+    public METRICS_PORT = parseInt(process.env.METRICS_PORT ?? "NaN");
 
     constructor() {}
 
@@ -60,6 +61,12 @@ export class SecretConfig {
             )
         ) {
             errors.push("LOG_LEVEL is a invalid value");
+        }
+
+        if (!this.METRICS_PORT) {
+            errors.push("METRICS_PORT is required but not given");
+        } else if (isNaN(this.METRICS_PORT)) {
+            errors.push("METRICS_PORT is a invalid value");
         }
 
         if (errors.length > 0) {

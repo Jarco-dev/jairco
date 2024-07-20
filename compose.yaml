@@ -10,6 +10,7 @@ services:
             REDIS_DATABASE: 0
             DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mariadb:3306/${MYSQL_DATABASE}
             LOG_LEVEL: ${LOG_LEVEL}
+            METRICS_PORT: ${METRICS_PORT}
             DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
         volumes:
             - "bot_data:/usr/src/app/storage"

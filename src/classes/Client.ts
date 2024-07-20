@@ -12,6 +12,7 @@ import {
 } from "@/classes";
 import { PrismaClient } from "@prisma/client";
 import { Client as DiscordClient } from "discord.js";
+import MetricsManager from "./MectricsManager";
 
 export class Client extends DiscordClient {
     public sConfig = new SecretConfig();
@@ -22,6 +23,7 @@ export class Client extends DiscordClient {
     public lang = new LanguageManager(this);
     public sender = new Sender(this);
     public utils = new Utilities(this);
+    public metrics = new MetricsManager(this);
     public interactionLoader = new InteractionLoader(this);
     public eventLoader = new EventLoader(this);
     public taskLoader = new TaskLoader(this);

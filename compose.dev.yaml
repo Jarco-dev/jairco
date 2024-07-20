@@ -12,6 +12,7 @@ services:
             DATABASE_URL: mysql://prisma:password@mariadb:3306/discord-bot
             SHADOW_DATABASE_URL: mysql://prisma:password@mariadb-shadow:3306/shadow
             LOG_LEVEL: DEBUG
+            METRICS_PORT: 9000
             DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
         volumes:
             - "./lang:/usr/src/app/lang"

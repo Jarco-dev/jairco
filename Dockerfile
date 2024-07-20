@@ -7,6 +7,7 @@ FROM base as deps
 COPY package*.json ./
 COPY ./prisma ./prisma
 
+RUN apk add --no-cache python3 make g++
 RUN npm ci
 RUN npx prisma generate
 
