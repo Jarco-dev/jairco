@@ -3,11 +3,92 @@
         "misc": {
             "missingPermissions": "You don't have the permissions required to do this",
             "somethingWentWrong": "Er ging iets mis, probeer het alstublieft nog een keer",
-            "actionExpired": "Door inactiviteit is dit niet meer beschikbaar, begin alstublieft opnieuw"
+            "actionExpired": "Door inactiviteit is dit niet meer beschikbaar, begin alstublieft opnieuw",
+            "confirm": "Bevestig",
+            "cancel": "Annuleer",
+            "selectAPage": "Selecteer een pagina om naar toe te gaan",
+            "pageNumber": "Pagina nummer",
+            "invalidPage": "Het pagina nummer moet een geldig nummer zijn tussen 1 en {{maxPage}}",
+            "pageMenuUnavailable": "Dit menu is niet meer beschikbaar, voer het command opnieuw uit"
         },
         "permissions": {
             "Administrator": "Beheerder",
-            "ManageGroups": "Beheer groepen"
+            "ManageGroups": "Beheer groepen",
+            "AddCringe": "Cringe toevoegen",
+            "ManageCringe": "Beheer cringe"
+        },
+        "cringe": {
+            "goToMessage": "Ga naar bericht",
+            "cantAddToSelf": "Je kan geen cringe toevoegen aan je zelf",
+            "userHasNoCringe": "Deze gebruiker heeft nog geen cringe",
+            "userGaveNoCringe": "Deze gebruiker heeft niemand cringe gegeven",
+            "noCringeExists": "Nog niemand heeft cringe ontvangen",
+            "addedBy": "door {{user}}",
+            "givenTo": "aan {{user}}",
+            "invalidCringeId": "Het gegeven cringe id bestaat niet",
+            "cringeDeleted": "Cringe is verwijdert",
+            "cringeDeleteCanceled": "Cringe verwijderen is geannuleerd",
+            "alreadyAdded": "Cringe is al gegeven voor dit bericht door {{user}}",
+            "wasCringeTimes": "was {{count}} keer cringe",
+            "givenCringeTimes": "gaf {{count}} keer cringe",
+            "cringeGivenWasReset": "Cringe gegeven is gereset voor {{user}}",
+            "cringeReceivedWasReset": "Cringe ontvangen is gereset voor {{user}}",
+            "cringeResetCanceled": "Cringe reset is geannuleerd",
+            "addedEmbed": {
+                "title": "Cringe toegevoegd aan {{user}} ze hebben nu {{cringeCount}} cringe(s)",
+                "description": "{{messageContent}}"
+            },
+            "userCringeReceivedEmbed": {
+                "title": "**{{user}} was {{cringeCount}} keer cringe**",
+                "description": "{{cringes}}"
+            },
+            "userCringeGivenEmbed": {
+                "title": "**{{user}} gaf {{cringeCount}} keer cringe**",
+                "description": "{{cringes}}"
+            },
+            "deleteEmbed": {
+                "title": "Weet je zeker dat je deze wil verwijderen?",
+                "description": [
+                    "ID: {{id}}",
+                    "Wanneer: {{timeAgo}}",
+                    "Gegeven door: {{givenByUser}}",
+                    "Ontvangen door: {{receivedByUser}}",
+                    "Bericht: {{messageContent}}",
+                    "Bericht link: {{messageLink}}"
+                ]
+            },
+            "resetReceivedEmbed": {
+                "title": "Weet je zeker dat je dit wil doen?",
+                "description": [
+                    "{{user}} heeft **{{cringeCount}}** keer cringe gekregen",
+                    "Wanneer bevestigd zullen ze allemaal permanent verwijdert worden!"
+                ]
+            },
+            "resetGivenEmbed": {
+                "title": "Weet je zeker dat je dit wil doen?",
+                "description": [
+                    "{{user}} heeft **{{cringeCount}}** keer cringe gegeven",
+                    "Wanneer bevestigd zullen ze allemaal permanent verwijdert worden!"
+                ]
+            },
+            "receivedLeaderboard": {
+                "title": "Gebruikers met de meeste cringe",
+                "description": "{{topUsers}}"
+            },
+            "givenLeaderboard": {
+                "title": "Gebruikers die de meeste cringe hebben gegeven",
+                "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server cringe statistieken",
+                "description": [
+                    "**Cringe gegeven:** {{cringeGiven}}",
+                    "**Cringe met bericht:** {{cringeWithMessage}}",
+                    "**Cringe zonder bericht**: {{cringeWithoutMessage}}",
+                    "**Gebruikers die hebben gegeven:** {{usersGiven}}",
+                    "**Gebruikers die hebben ontvangen** {{usersReceived}}"
+                ]
+            }
         },
         "groups": {
             "noGroup": "De gegeven groep bestaat niet",

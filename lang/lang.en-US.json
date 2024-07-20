@@ -3,11 +3,92 @@
         "misc": {
             "missingPermissions": "You don't have the permissions required to do this",
             "somethingWentWrong": "Something went wrong, please try again",
-            "actionExpired": "Due to being idle this is no longer available, please start over"
+            "actionExpired": "Due to being idle this is no longer available, please start over",
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "selectAPage": "Select a page to go to",
+            "pageNumber": "Page number",
+            "invalidPage": "The page number must be a valid number between 1 and {{maxPage}}",
+            "pageMenuUnavailable": "This menu is no longer available, please rerun the command"
         },
         "permissions": {
             "Administrator": "Administrator",
-            "ManageGroups": "Manage groups"
+            "ManageGroups": "Manage groups",
+            "AddCringe": "Add cringe",
+            "ManageCringe": "Manage cringe"
+        },
+        "cringe": {
+            "goToMessage": "Go to message",
+            "cantAddToSelf": "You can't add cringe to your self",
+            "userHasNoCringe": "This user has no cringe",
+            "userGaveNoCringe": "This user didn't give anyone cringe",
+            "noCringeExists": "No cringe has been given to anyone yet",
+            "addedBy": "by {{user}}",
+            "givenTo": "to {{user}}",
+            "invalidCringeId": "The given cringe id does not exist",
+            "cringeDeleted": "Cringe has been deleted",
+            "cringeDeleteCanceled": "Cringe delete has been canceled",
+            "alreadyAdded": "Cringe has already been added for this message by {{user}}",
+            "wasCringeTimes": "was cringe {{count}} time(s)",
+            "givenCringeTimes": "gave cringe {{count}} times(s)",
+            "cringeGivenWasReset": "Cringe given has been reset for {{user}}",
+            "cringeReceivedWasReset": "Cringe received has been reset for {{user}}",
+            "cringeResetCanceled": "Cringe reset has been canceled",
+            "addedEmbed": {
+                "title": "Cringe added to {{user}} they now have {{cringeCount}} cringe(s)",
+                "description": "{{messageContent}}"
+            },
+            "userCringeReceivedEmbed": {
+                "title": "**{{user}} was cringe {{cringeCount}} times**",
+                "description": "{{cringes}}"
+            },
+            "userCringeGivenEmbed": {
+                "title": "**{{user}} gave cringe {{cringeCount}} times**",
+                "description": "{{cringes}}"
+            },
+            "deleteEmbed": {
+                "title": "Are you sure you want to delete this one?",
+                "description": [
+                    "**ID:** {{id}}",
+                    "**When:** {{createdAt}}",
+                    "**Given by:** {{givenByUser}}",
+                    "**Received by:** {{receivedByUser}}",
+                    "**Message:** {{messageContent}}",
+                    "**Message link:** {{messageLink}}"
+                ]
+            },
+            "resetReceivedEmbed": {
+                "title": "Are you sure you cant to do this?",
+                "description": [
+                    "{{user}} has received cringe **{{cringeCount}}** times",
+                    "If confirmed all of them will be permanently deleted!"
+                ]
+            },
+            "resetGivenEmbed": {
+                "title": "Are you sure you cant to do this?",
+                "description": [
+                    "{{user}} has given cringe **{{cringeCount}}** times",
+                    "if confirmed all of them will be permanently deleted!"
+                ]
+            },
+            "receivedLeaderboard": {
+                "title": "Users with the most cringe",
+                "description": "{{topUsers}}"
+            },
+            "givenLeaderboard": {
+                "title": "Users with the most cringe given",
+                "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server cringe statistics",
+                "description": [
+                    "**Cringe given:** {{cringeGiven}}",
+                    "**Cringe with message:** {{cringeWithMessage}}",
+                    "**Cringe without message**: {{cringeWithoutMessage}}",
+                    "**Users that gave cringe:** {{usersGiven}}",
+                    "**Users that received cringe:** {{usersReceived}}"
+                ]
+            }
         },
         "groups": {
             "noGroup": "The given group does not exist",

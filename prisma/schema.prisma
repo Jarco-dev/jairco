@@ -11,11 +11,13 @@ datasource db {
 }
 
 model Users {
-  id        Int      @id @default(autoincrement())
-  discordId String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Groups    Groups[]
+  id              Int       @id @default(autoincrement())
+  discordId       String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  Groups          Groups[]
+  ReceivedCringes Cringes[] @relation(name: "Cringes_userToUser")
+  GivenCringes    Cringes[] @relation(name: "Cringes_byUserToUser")
 }
 
 model Roles {
@@ -34,4 +36,17 @@ model Groups {
   updatedAt   DateTime @updatedAt
   Users       Users[]
   Roles       Roles[]
+}
+
+model Cringes {
+  id               Int      @id @default(autoincrement())
+  channelId        String?
+  messageId        String?  @unique
+  messageContent   String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  receivedByUserId Int
+  ReceivedByUser   Users    @relation(name: "Cringes_userToUser", fields: [receivedByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  givenByUserId    Int
+  GivenByUser      Users    @relation(name: "Cringes_byUserToUser", fields: [givenByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

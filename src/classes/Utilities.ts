@@ -1,9 +1,11 @@
 import { BotPermissionsBitField, Client } from "@/classes";
 import {
     BaseInteraction,
+    EmbedBuilder,
     GuildChannelResolvable,
     GuildMember,
-    PermissionResolvable
+    PermissionResolvable,
+    User
 } from "discord.js";
 
 export class Utilities {
@@ -113,5 +115,179 @@ export class Utilities {
         }
 
         return permissions;
+    }
+
+    public async getViewUserCringesPage(
+        i: BaseInteraction,
+        user: User,
+        type: "given" | "received",
+        cringeCount: number,
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const cringes = await this.client.prisma.cringes.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where:
+                type === "received"
+                    ? {
+                          ReceivedByUser: {
+                              discordId: user.id
+                          }
+                      }
+                    : { GivenByUser: { discordId: user.id } },
+            select: {
+                id: true,
+                createdAt: true,
+                channelId: true,
+                messageId: true,
+                messageContent: true,
+                ReceivedByUser: {
+                    select: {
+                        discordId: true
+                    }
+                },
+                GivenByUser: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        if (type === "received") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "cringe.userCringeReceivedEmbed",
+                {
+                    user: user.username,
+                    cringeCount: cringeCount.toString(),
+                    cringes: cringes
+                        .map(c => {
+                            let string = `(${c.id}) <t:${Math.round(
+                                c.createdAt.getTime() / 1000
+                            )}:R> - ${this.client.lang.getString(
+                                i.locale,
+                                "cringe.addedBy",
+                                {
+                                    user: `<@${c.GivenByUser.discordId}>`
+                                }
+                            )} `;
+                            if (c.messageContent) {
+                                string += ` [message](https://discord.com/channels/${
+                                    i.guildId
+                                }/${c.channelId}/${
+                                    c.messageId
+                                })\n*${c.messageContent.substring(0, 50)}${
+                                    c.messageContent.length > 50 ? "..." : ""
+                                }*`;
+                            }
+
+                            return string;
+                        })
+                        .join("\n\n")
+                }
+            );
+        } else {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "cringe.userCringeGivenEmbed",
+                {
+                    user: user.username,
+                    cringeCount: cringeCount.toString(),
+                    cringes: cringes
+                        .map(c => {
+                            let string = `(${c.id}) <t:${Math.round(
+                                c.createdAt.getTime() / 1000
+                            )}:R> - ${this.client.lang.getString(
+                                i.locale,
+                                "cringe.givenTo",
+                                {
+                                    user: `<@${c.ReceivedByUser.discordId}>`
+                                }
+                            )} `;
+                            if (c.messageContent) {
+                                string += ` [message](https://discord.com/channels/${
+                                    i.guildId
+                                }/${c.channelId}/${
+                                    c.messageId
+                                })\n*${c.messageContent.substring(0, 50)}${
+                                    c.messageContent.length > 50 ? "..." : ""
+                                }*`;
+                            }
+
+                            return string;
+                        })
+                        .join("\n\n")
+                }
+            );
+        }
+    }
+
+    public async getCringeLeaderboardPage(
+        i: BaseInteraction,
+        type: "given" | "received",
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const cringes = await this.client.prisma.users.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            orderBy:
+                type === "received"
+                    ? { ReceivedCringes: { _count: "desc" } }
+                    : { GivenCringes: { _count: "desc" } },
+            select: {
+                discordId: true,
+                _count: {
+                    select: {
+                        ReceivedCringes: true,
+                        GivenCringes: true
+                    }
+                }
+            }
+        });
+
+        if (type === "received") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "cringe.receivedLeaderboard",
+                {
+                    topUsers: cringes
+                        .filter(c => c._count.ReceivedCringes > 0)
+                        .reduce(
+                            (a, c, index) =>
+                                (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                    c.discordId
+                                }> ${this.client.lang.getString(
+                                    i.locale,
+                                    "cringe.wasCringeTimes",
+                                    {
+                                        count: c._count.ReceivedCringes.toString()
+                                    }
+                                )}\n`),
+                            ""
+                        )
+                }
+            );
+        } else {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "cringe.givenLeaderboard",
+                {
+                    topUsers: cringes
+                        .filter(c => c._count.GivenCringes > 0)
+                        .reduce(
+                            (a, c, index) =>
+                                (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                    c.discordId
+                                }> ${this.client.lang.getString(
+                                    i.locale,
+                                    "cringe.givenCringeTimes",
+                                    { count: c._count.GivenCringes.toString() }
+                                )}\n`),
+                            ""
+                        )
+                }
+            );
+        }
     }
 }

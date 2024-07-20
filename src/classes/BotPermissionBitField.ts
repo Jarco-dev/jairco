@@ -9,7 +9,9 @@ export class BotPermissionsBitField extends BitField<
     private client = Client;
     public static Flags = {
         Administrator: 1n << 0n,
-        ManageGroups: 1n << 1n
+        ManageGroups: 1n << 1n,
+        AddCringe: 1n << 2n,
+        ManageCringe: 1n << 3n
     } as const;
     static All = Object.values(this.Flags).reduce((all, p) => all | p, 0n);
     static DefaultBit = BigInt(0);
