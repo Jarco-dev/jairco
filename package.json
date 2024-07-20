@@ -1,5 +1,5 @@
 {
-    "name": "aircobot",
+    "name": "airco-bot",
     "version": "1.0.0-beta",
     "description": "The airco discord bot",
     "main": "dist/index.js",
