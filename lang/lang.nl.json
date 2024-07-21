@@ -205,7 +205,7 @@
             "explainEmbed": {
                 "title": "Ping uitleg",
                 "description": [
-                    "🔁 **RTT**: De tijd tussen jij die een berichtje stuurd en de bot die reageerd",
+                    "🔁 **RTT**: De tijd tussen jij die een berichtje stuurt en de bot die reageerd",
                     "💟 **Heartbeat**: De tijd tussen de bot en de discord  api servers"
                 ]
             }
