@@ -976,9 +976,13 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
                 },
                 Users: {
                     connectOrCreate: {
-                        where: { discordId: user.id },
+                        where: {
+                            Guilds: { discordId: i.guild!.id },
+                            guildIdAndDiscordId: i.guild!.id + user.id
+                        },
                         create: {
                             discordId: user.id,
+                            guildIdAndDiscordId: i.guild!.id + user.id,
                             Guilds: {
                                 connectOrCreate: {
                                     where: { discordId: i.guild!.id },
@@ -1048,7 +1052,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             where: { Guilds: { discordId: i.guild!.id }, id: group.id },
             data: {
                 Users: {
-                    disconnect: { discordId: user.id }
+                    disconnect: { guildIdAndDiscordId: i.guild!.id + user.id }
                 }
             }
         });
