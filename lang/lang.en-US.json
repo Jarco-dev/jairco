@@ -11,6 +11,10 @@
             "invalidPage": "The page number must be a valid number between 1 and {{maxPage}}",
             "pageMenuUnavailable": "This menu is no longer available, please rerun the command"
         },
+        "invite": {
+            "invite": "Invite",
+            "pressToInvite": "Press the button below to invite the bot to a server"
+        },
         "permissions": {
             "Administrator": "Administrator",
             "ManageGroups": "Manage groups",

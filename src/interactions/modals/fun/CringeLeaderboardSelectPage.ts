@@ -75,7 +75,9 @@ export default class CringeLeaderboardSelectPageModal extends Modal {
 
         const dbRes: [{ received: bigint; given: bigint }] = await this.client
             .prisma
-            .$queryRaw`SELECT COUNT(DISTINCT receivedByUserId) as received, COUNT(DISTINCT givenByUserId) as given FROM Cringes`;
+            .$queryRaw`SELECT COUNT(DISTINCT Cringes.receivedByUserId) as received, COUNT(DISTINCT Cringes.givenByUserId) as given FROM Cringes JOIN Guilds ON Cringes.guildId=Guilds.id WHERE Guilds.discordId=${
+            i.guild!.id
+        }`;
         const userCount =
             context.type === "received"
                 ? Number(dbRes[0].received)

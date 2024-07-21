@@ -465,7 +465,17 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
     ): Promise<HandlerResult> {
         const name = i.options.getString("name", true);
 
-        await this.client.prisma.groups.create({ data: { name } });
+        await this.client.prisma.groups.create({
+            data: {
+                name,
+                Guilds: {
+                    connectOrCreate: {
+                        where: { discordId: i.guild!.id },
+                        create: { discordId: i.guild!.id }
+                    }
+                }
+            }
+        });
         this.client.sender.reply(
             i,
             {},
@@ -486,7 +496,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -516,10 +526,13 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         ).map(r => r.id);
         await this.client.prisma.$transaction([
             this.client.prisma.groups.delete({
-                where: { id: group.id }
+                where: { Guilds: { discordId: i.guild!.id }, id: group.id }
             }),
             this.client.prisma.roles.deleteMany({
-                where: { id: { in: rolesToDelete } }
+                where: {
+                    Guilds: { discordId: i.guild!.id },
+                    id: { in: rolesToDelete }
+                }
             })
         ]);
 
@@ -540,13 +553,14 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
         const groups = await this.client.prisma.groups.findMany({
+            where: { Guilds: { discordId: i.guild!.id } },
             select: { name: true }
         });
         if (groups.length === 0) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
-                { langLocation: "groups.noGroup", msgType: "INVALID" }
+                { langLocation: "groups.noGroupsExist", msgType: "INVALID" }
             );
             return { result: "SUCCESS" };
         }
@@ -571,7 +585,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       name: true,
                       permissions: true,
@@ -635,6 +649,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const member = await i.guild!.members.fetch(user.id);
         const groups = await this.client.prisma.groups.findMany({
             where: {
+                Guilds: { discordId: i.guild!.id },
                 OR: [
                     { Users: { some: { discordId: member.id } } },
                     {
@@ -703,7 +718,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -736,12 +751,26 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         await this.client.prisma.groups.update({
-            where: { id: group.id },
+            where: { Guilds: { discordId: i.guild!.id }, id: group.id },
             data: {
+                Guilds: {
+                    connectOrCreate: {
+                        where: { discordId: i.guild!.id },
+                        create: { discordId: i.guild!.id }
+                    }
+                },
                 Roles: {
                     connectOrCreate: {
                         where: { discordId: role.id },
-                        create: { discordId: role.id }
+                        create: {
+                            discordId: role.id,
+                            Guilds: {
+                                connectOrCreate: {
+                                    where: { discordId: i.guild!.id },
+                                    create: { discordId: i.guild!.id }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -768,7 +797,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -801,7 +830,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         const dbRole = await this.client.prisma.roles.update({
-            where: { discordId: role.id },
+            where: { Guilds: { discordId: i.guild!.id }, discordId: role.id },
             data: {
                 Groups: {
                     disconnect: { id: group.id }
@@ -817,7 +846,9 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             }
         });
         if (dbRole._count.Groups === 0) {
-            await this.client.prisma.roles.delete({ where: { id: dbRole.id } });
+            await this.client.prisma.roles.delete({
+                where: { Guilds: { discordId: i.guild!.id }, id: dbRole.id }
+            });
         }
 
         this.client.sender.reply(
@@ -840,7 +871,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -870,11 +901,14 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         ).map(r => r.discordId);
         await this.client.prisma.$transaction([
             this.client.prisma.groups.update({
-                where: { id: groupId },
+                where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                 data: { Roles: { set: [] } }
             }),
             this.client.prisma.roles.deleteMany({
-                where: { discordId: { in: rolesToDelete } }
+                where: {
+                    Guilds: { discordId: i.guild!.id },
+                    discordId: { in: rolesToDelete }
+                }
             })
         ]);
 
@@ -899,7 +933,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -932,12 +966,26 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         await this.client.prisma.groups.update({
-            where: { id: group.id },
+            where: { Guilds: { discordId: i.guild!.id }, id: group.id },
             data: {
+                Guilds: {
+                    connectOrCreate: {
+                        where: { discordId: i.guild!.id },
+                        create: { discordId: i.guild!.id }
+                    }
+                },
                 Users: {
                     connectOrCreate: {
                         where: { discordId: user.id },
-                        create: { discordId: user.id }
+                        create: {
+                            discordId: user.id,
+                            Guilds: {
+                                connectOrCreate: {
+                                    where: { discordId: i.guild!.id },
+                                    create: { discordId: i.guild!.id }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -964,7 +1012,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -997,7 +1045,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         await this.client.prisma.groups.update({
-            where: { id: group.id },
+            where: { Guilds: { discordId: i.guild!.id }, id: group.id },
             data: {
                 Users: {
                     disconnect: { discordId: user.id }
@@ -1025,7 +1073,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -1051,7 +1099,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         await this.client.prisma.groups.update({
-            where: { id: groupId },
+            where: { Guilds: { discordId: i.guild!.id }, id: groupId },
             data: { Users: { set: [] } }
         });
 
@@ -1075,7 +1123,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -1170,7 +1218,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: {
                       id: true,
                       name: true,
@@ -1264,7 +1312,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         const group = isNaN(groupId)
             ? undefined
             : await this.client.prisma.groups.findUnique({
-                  where: { id: groupId },
+                  where: { Guilds: { discordId: i.guild!.id }, id: groupId },
                   select: { id: true, name: true }
               });
         if (!group) {
@@ -1277,7 +1325,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         }
 
         await this.client.prisma.groups.update({
-            where: { id: group.id },
+            where: { Guilds: { discordId: i.guild!.id }, id: group.id },
             data: { permissions: 0n }
         });
 

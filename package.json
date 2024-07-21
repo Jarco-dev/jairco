@@ -1,6 +1,6 @@
 {
     "name": "airco-bot",
-    "version": "1.0.0-beta",
+    "version": "1.1.0-beta",
     "description": "The airco discord bot",
     "main": "dist/index.js",
     "engines": {
@@ -18,9 +18,9 @@
     },
     "author": "Jarco-dev",
     "dependencies": {
-        "@prisma/client": "^5.7.0",
+        "@prisma/client": "^5.17.0",
         "@sematext/gc-stats": "^1.5.9",
-        "discord.js": "^14.14.1",
+        "discord.js": "^14.15.3",
         "dotenv": "^16.3.1",
         "express": "^4.19.2",
         "ioredis": "^5.4.1",
@@ -40,7 +40,7 @@
         "inquirer": "^8.2.5",
         "node-cron": "^3.0.3",
         "nodemon": "^3.0.2",
-        "prisma": "^5.7.0",
+        "prisma": "^5.17.0",
         "ts-node": "^10.9.2",
         "tsc-alias": "^1.8.8",
         "tsconfig-paths": "^4.2.0",

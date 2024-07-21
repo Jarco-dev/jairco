@@ -180,9 +180,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                     builder
                         .setName("leaderboard")
                         .setNameLocalization("nl", "scoreboard")
-                        .setDescription(
-                            "View a list of the highest scores"
-                        )
+                        .setDescription("View a list of the highest scores")
                         .setDescriptionLocalization(
                             "nl",
                             "Bekijk een lijst van de hoogste scores"
@@ -268,20 +266,45 @@ export default class CringeChatInputCommand extends ChatInputCommand {
 
         const [cringeCount] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
-                where: { ReceivedByUser: { discordId: user.id } }
+                where: {
+                    Guilds: { discordId: i.guild!.id },
+                    ReceivedByUser: { discordId: user.id }
+                }
             }),
             this.client.prisma.cringes.create({
                 data: {
+                    Guilds: {
+                        connectOrCreate: {
+                            where: { discordId: i.guild!.id },
+                            create: { discordId: i.guild!.id }
+                        }
+                    },
                     ReceivedByUser: {
                         connectOrCreate: {
                             where: { discordId: user.id },
-                            create: { discordId: user.id }
+                            create: {
+                                discordId: user.id,
+                                Guilds: {
+                                    connectOrCreate: {
+                                        where: { discordId: i.guild!.id },
+                                        create: { discordId: i.guild!.id }
+                                    }
+                                }
+                            }
                         }
                     },
                     GivenByUser: {
                         connectOrCreate: {
                             where: { discordId: i.user.id },
-                            create: { discordId: i.user.id }
+                            create: {
+                                discordId: i.user.id,
+                                Guilds: {
+                                    connectOrCreate: {
+                                        where: { discordId: i.guild!.id },
+                                        create: { discordId: i.guild!.id }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -320,7 +343,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
 
         const cringeId = i.options.getNumber("cringe-id", true);
         const cringe = await this.client.prisma.cringes.findUnique({
-            where: { id: cringeId },
+            where: { Guilds: { discordId: i.guild!.id }, id: cringeId },
             select: {
                 id: true,
                 createdAt: true,
@@ -425,11 +448,17 @@ export default class CringeChatInputCommand extends ChatInputCommand {
         let cringeCount: number;
         if (type === "received") {
             cringeCount = await this.client.prisma.cringes.count({
-                where: { ReceivedByUser: { discordId: user.id } }
+                where: {
+                    Guilds: { discordId: i.guild!.id },
+                    ReceivedByUser: { discordId: user.id }
+                }
             });
         } else {
             cringeCount = await this.client.prisma.cringes.count({
-                where: { GivenByUser: { discordId: user.id } }
+                where: {
+                    Guilds: { discordId: i.guild!.id },
+                    GivenByUser: { discordId: user.id }
+                }
             });
         }
         if (cringeCount === 0) {
@@ -497,16 +526,23 @@ export default class CringeChatInputCommand extends ChatInputCommand {
     private async runStatistics(
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
-        const cringeGiven = await this.client.prisma.cringes.count();
+        const cringeGiven = await this.client.prisma.cringes.count({
+            where: { Guilds: { discordId: i.guild!.id } }
+        });
         const cringeWithMessage = await this.client.prisma.cringes.count({
-            where: { messageContent: { not: null } }
+            where: {
+                Guilds: { discordId: i.guild!.id },
+                messageContent: { not: null }
+            }
         });
         const cringeWithoutMessage = await this.client.prisma.cringes.count({
-            where: { messageContent: null }
+            where: { Guilds: { discordId: i.guild!.id }, messageContent: null }
         });
-        const userCounts: [{ given: bigint; received: bigint }] = await this
+        const userCounts: [{ received: bigint; given: bigint }] = await this
             .client.prisma
-            .$queryRaw`SELECT COUNT(DISTINCT givenByUserId) as given, COUNT(DISTINCT receivedByUserId) as received FROM Cringes`;
+            .$queryRaw`SELECT COUNT(DISTINCT Cringes.receivedByUserId) as received, COUNT(DISTINCT Cringes.givenByUserId) as given FROM Cringes JOIN Guilds ON Cringes.guildId=Guilds.id WHERE Guilds.discordId=${
+            i.guild!.id
+        }`;
 
         this.client.sender.reply(
             i,
@@ -535,10 +571,16 @@ export default class CringeChatInputCommand extends ChatInputCommand {
         const cringeCount =
             type === "received"
                 ? await this.client.prisma.cringes.count({
-                      where: { ReceivedByUser: { discordId: user.id } }
+                      where: {
+                          Guilds: { discordId: i.guild!.id },
+                          ReceivedByUser: { discordId: user.id }
+                      }
                   })
                 : await this.client.prisma.cringes.count({
-                      where: { GivenByUser: { discordId: user.id } }
+                      where: {
+                          Guilds: { discordId: i.guild!.id },
+                          GivenByUser: { discordId: user.id }
+                      }
                   });
         if (cringeCount === 0) {
             this.client.sender.reply(
@@ -603,7 +645,9 @@ export default class CringeChatInputCommand extends ChatInputCommand {
         const type = i.options.getString("type", true) as "received" | "given";
         const dbRes: [{ received: bigint; given: bigint }] = await this.client
             .prisma
-            .$queryRaw`SELECT COUNT(DISTINCT receivedByUserId) as received, COUNT(DISTINCT givenByUserId) as given FROM Cringes`;
+            .$queryRaw`SELECT COUNT(DISTINCT Cringes.receivedByUserId) as received, COUNT(DISTINCT Cringes.givenByUserId) as given FROM Cringes JOIN Guilds ON Cringes.guildId=Guilds.id WHERE Guilds.discordId=${
+            i.guild!.id
+        }`;
         const userCount =
             type === "received"
                 ? Number(dbRes[0].received)

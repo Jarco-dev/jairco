@@ -11,6 +11,10 @@
             "invalidPage": "Het pagina nummer moet een geldig nummer zijn tussen 1 en {{maxPage}}",
             "pageMenuUnavailable": "Dit menu is niet meer beschikbaar, voer het command opnieuw uit"
         },
+        "invite": {
+            "invite": "Uitnodigen",
+            "pressToInvite": "Druk op de knop hier onder om de bot uit te nodigen voor een server"
+        },
         "permissions": {
             "Administrator": "Beheerder",
             "ManageGroups": "Beheer groepen",
