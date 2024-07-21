@@ -85,9 +85,15 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     },
                     ReceivedByUser: {
                         connectOrCreate: {
-                            where: { discordId: i.targetMessage.author.id },
+                            where: {
+                                Guilds: { discordId: i.guild!.id },
+                                guildIdAndDiscordId:
+                                    i.guild!.id + i.targetMessage.author.id
+                            },
                             create: {
                                 discordId: i.targetMessage.author.id,
+                                guildIdAndDiscordId:
+                                    i.guild!.id + i.targetMessage.author.id,
                                 Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
@@ -99,9 +105,13 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     },
                     GivenByUser: {
                         connectOrCreate: {
-                            where: { discordId: i.user.id },
+                            where: {
+                                Guilds: { discordId: i.guild!.id },
+                                guildIdAndDiscordId: i.guild!.id + i.user.id
+                            },
                             create: {
                                 discordId: i.user.id,
+                                guildIdAndDiscordId: i.guild!.id + i.user.id,
                                 Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },

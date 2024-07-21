@@ -18,15 +18,16 @@ model Guilds {
 }
 
 model Users {
-  id              Int       @id @default(autoincrement())
-  discordId       String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  guildId         Int
-  Guilds          Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Groups          Groups[]
-  ReceivedCringes Cringes[] @relation(name: "Cringes_userToUser")
-  GivenCringes    Cringes[] @relation(name: "Cringes_byUserToUser")
+  id                  Int       @id @default(autoincrement())
+  guildIdAndDiscordId String    @unique // This is used to allow for easier connectOrCreate queries
+  discordId           String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  guildId             Int
+  Guilds              Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Groups              Groups[]
+  ReceivedCringes     Cringes[] @relation(name: "Cringes_userToUser")
+  GivenCringes        Cringes[] @relation(name: "Cringes_byUserToUser")
 }
 
 model Roles {
