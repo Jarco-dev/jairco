@@ -87,6 +87,7 @@ export class Utilities {
                 : await source.guild!.members.fetch(source.user.id);
         const groups = await this.client.prisma.groups.findMany({
             where: {
+                Guilds: { discordId: source.guild!.id },
                 OR: [
                     { Users: { some: { discordId: member.id } } },
                     {
@@ -127,14 +128,16 @@ export class Utilities {
         const cringes = await this.client.prisma.cringes.findMany({
             skip: (page - 1) * 10,
             take: 10,
-            where:
-                type === "received"
+            where: {
+                ...(type === "received"
                     ? {
                           ReceivedByUser: {
                               discordId: user.id
                           }
                       }
-                    : { GivenByUser: { discordId: user.id } },
+                    : { GivenByUser: { discordId: user.id } }),
+                Guilds: { discordId: i.guild!.id }
+            },
             select: {
                 id: true,
                 createdAt: true,
@@ -231,10 +234,14 @@ export class Utilities {
         const cringes = await this.client.prisma.users.findMany({
             skip: (page - 1) * 10,
             take: 10,
-            orderBy:
-                type === "received"
+            where: {
+                Guilds: { discordId: i.guild!.id }
+            },
+            orderBy: {
+                ...(type === "received"
                     ? { ReceivedCringes: { _count: "desc" } }
-                    : { GivenCringes: { _count: "desc" } },
+                    : { GivenCringes: { _count: "desc" } })
+            },
             select: {
                 discordId: true,
                 _count: {

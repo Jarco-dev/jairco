@@ -38,7 +38,10 @@ export default class GroupsAutocomplete extends Autocomplete {
             case "permissions.remove.group":
             case "permissions.reset.group": {
                 const groups = await this.client.prisma.groups.findMany({
-                    where: { name: { contains: option.value } },
+                    where: {
+                        Guilds: { discordId: i.guild!.id },
+                        name: { contains: option.value }
+                    },
                     select: { id: true, name: true }
                 });
 

@@ -44,7 +44,10 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
         }
 
         const existingCringe = await this.client.prisma.cringes.findUnique({
-            where: { messageId: i.targetMessage.id },
+            where: {
+                Guilds: { discordId: i.guild!.id },
+                messageId: i.targetMessage.id
+            },
             select: { GivenByUser: { select: { discordId: true } } }
         });
         if (existingCringe) {
@@ -65,6 +68,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
         const [cringeCount] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
+                    Guilds: { discordId: i.guild!.id },
                     ReceivedByUser: { discordId: i.targetMessage.author.id }
                 }
             }),
@@ -73,16 +77,38 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     channelId: i.targetMessage.channelId,
                     messageId: i.targetMessage.id,
                     messageContent: i.targetMessage.content,
+                    Guilds: {
+                        connectOrCreate: {
+                            where: { discordId: i.guild!.id },
+                            create: { discordId: i.guild!.id }
+                        }
+                    },
                     ReceivedByUser: {
                         connectOrCreate: {
                             where: { discordId: i.targetMessage.author.id },
-                            create: { discordId: i.targetMessage.author.id }
+                            create: {
+                                discordId: i.targetMessage.author.id,
+                                Guilds: {
+                                    connectOrCreate: {
+                                        where: { discordId: i.guild!.id },
+                                        create: { discordId: i.guild!.id }
+                                    }
+                                }
+                            }
                         }
                     },
                     GivenByUser: {
                         connectOrCreate: {
                             where: { discordId: i.user.id },
-                            create: { discordId: i.user.id }
+                            create: {
+                                discordId: i.user.id,
+                                Guilds: {
+                                    connectOrCreate: {
+                                        where: { discordId: i.guild!.id },
+                                        create: { discordId: i.guild!.id }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -8,11 +8,22 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+model Guilds {
+  id        Int       @id @default(autoincrement())
+  discordId String    @unique
+  Users     Users[]
+  Roles     Roles[]
+  Groups    Groups[]
+  Cringes   Cringes[]
+}
+
 model Users {
   id              Int       @id @default(autoincrement())
-  discordId       String    @unique
+  discordId       String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  guildId         Int
+  Guilds          Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Groups          Groups[]
   ReceivedCringes Cringes[] @relation(name: "Cringes_userToUser")
   GivenCringes    Cringes[] @relation(name: "Cringes_byUserToUser")
@@ -23,15 +34,19 @@ model Roles {
   discordId String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  guildId   Int
+  Guilds    Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Groups    Groups[]
 }
 
 model Groups {
   id          Int      @id @default(autoincrement())
-  name        String   @unique
+  name        String
   permissions BigInt   @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  guildId     Int
+  Guilds      Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Users       Users[]
   Roles       Roles[]
 }
@@ -43,6 +58,8 @@ model Cringes {
   messageContent   String?  @db.Text
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  guildId          Int
+  Guilds           Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   receivedByUserId Int
   ReceivedByUser   Users    @relation(name: "Cringes_userToUser", fields: [receivedByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   givenByUserId    Int
