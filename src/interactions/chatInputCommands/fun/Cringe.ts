@@ -180,9 +180,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                     builder
                         .setName("leaderboard")
                         .setNameLocalization("nl", "scoreboard")
-                        .setDescription(
-                            "View a list of the highest scores"
-                        )
+                        .setDescription("View a list of the highest scores")
                         .setDescriptionLocalization(
                             "nl",
                             "Bekijk een lijst van de hoogste scores"
