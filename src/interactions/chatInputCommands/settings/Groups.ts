@@ -546,7 +546,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
-                { langLocation: "groups.noGroup", msgType: "INVALID" }
+                { langLocation: "groups.noGroupsExist", msgType: "INVALID" }
             );
             return { result: "SUCCESS" };
         }
