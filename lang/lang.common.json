@@ -1,6 +1,7 @@
 {
     "bot": {
-        "name": "Airco"
+        "name": "Airco",
+        "invite": "https://discord.com/api/oauth2/authorize?client_id={{botUserId}}&permissions={{permissions}}&scope=bot%20applications.commands"
     },
     "colors": {
         "default": "#F88038",
