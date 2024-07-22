@@ -301,11 +301,11 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                         connectOrCreate: {
                             where: {
                                 Guilds: { discordId: i.guild!.id },
-                                guildIdAndDiscordId: i.guild!.id + user.id
+                                guildIdAndDiscordId: i.guild!.id + i.user.id
                             },
                             create: {
                                 discordId: i.user.id,
-                                guildIdAndDiscordId: i.guild!.id + user.id,
+                                guildIdAndDiscordId: i.guild!.id + i.user.id,
                                 Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },

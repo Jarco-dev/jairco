@@ -54,7 +54,7 @@
                 "title": "Weet je zeker dat je deze wil verwijderen?",
                 "description": [
                     "ID: {{id}}",
-                    "Wanneer: {{timeAgo}}",
+                    "Wanneer: {{createdAt}}",
                     "Gegeven door: {{givenByUser}}",
                     "Ontvangen door: {{receivedByUser}}",
                     "Bericht: {{messageContent}}",
