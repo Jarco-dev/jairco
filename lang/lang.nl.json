@@ -1,7 +1,7 @@
 {
     "data": {
         "misc": {
-            "missingPermissions": "You don't have the permissions required to do this",
+            "missingPermissions": "Je hebt niet de rechten die nodig zijn om dit te kunnen doen",
             "somethingWentWrong": "Er ging iets mis, probeer het alstublieft nog een keer",
             "actionExpired": "Door inactiviteit is dit niet meer beschikbaar, begin alstublieft opnieuw",
             "confirm": "Bevestig",
