@@ -1,7 +1,7 @@
 import { Client } from "@/classes";
 import Redis from "ioredis";
 import { Snowflake } from "discord.js";
-import { RedisMessageContext } from "@/types";
+import { RedisMessageContextData } from "@/types";
 
 export class RedisClient {
     private client: Client;
@@ -10,7 +10,7 @@ export class RedisClient {
         messageContext: "messageContext"
     };
 
-    private messageContextExpiry: { [K in keyof RedisMessageContext]: number } =
+    private messageContextExpiry: { [K in keyof RedisMessageContextData]: number } =
         {
             groupPermissions: 60 * 15,
             cringeDelete: 60 * 5,
@@ -32,11 +32,11 @@ export class RedisClient {
         );
     }
 
-    public async setMessageContext<T extends keyof RedisMessageContext>(
+    public async setMessageContext<T extends keyof RedisMessageContextData>(
         type: T,
         messageId: Snowflake,
-        context: RedisMessageContext[T]
-    ): Promise<RedisMessageContext[T] | undefined> {
+        context: RedisMessageContextData[T]
+    ): Promise<RedisMessageContextData[T] | undefined> {
         const res = await this.redis.setex(
             `${this.prefixes.messageContext}:${type}:${messageId}`,
             this.messageContextExpiry[type],
@@ -45,10 +45,10 @@ export class RedisClient {
         return res === "OK" ? context : undefined;
     }
 
-    public async getMessageContext<T extends keyof RedisMessageContext>(
+    public async getMessageContext<T extends keyof RedisMessageContextData>(
         type: T,
         messageId: Snowflake
-    ): Promise<RedisMessageContext[T] | undefined> {
+    ): Promise<RedisMessageContextData[T] | undefined> {
         const res = await this.redis.get(
             `${this.prefixes.messageContext}:${type}:${messageId}`
         );
@@ -56,12 +56,12 @@ export class RedisClient {
         return res ? JSON.parse(res) : undefined;
     }
 
-    public async delMessageContext<T extends keyof RedisMessageContext>(
+    public async delMessageContext<T extends keyof RedisMessageContextData>(
         type: T,
         messageId: Snowflake
     ): Promise<number> {
         return this.redis.del(
-            `${this.prefixes.messageContext}:${type}:${messageId}}`
+            `${this.prefixes.messageContext}:${type}:${messageId}`
         );
     }
 }

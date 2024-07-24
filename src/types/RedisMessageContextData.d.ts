@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
 import { Cringes, Groups } from "@prisma/client";
 
-export interface RedisMessageContext {
+export interface RedisMessageContextData {
     groupPermissions: {
         groupId: Groups["id"];
         menuOwnerId: Snowflake;

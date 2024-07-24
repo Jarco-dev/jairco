@@ -5,7 +5,7 @@ export { Config } from "./Config";
 export { HandlerResult } from "./HandlerResult";
 export { LangContentType } from "./LangContentType";
 export { LogLevel } from "./LogLevel";
-export { RedisMessageContext } from "./RedisMessageContext";
+export { RedisMessageContextData } from "./RedisMessageContextData";
 export { SenderMessageOptions } from "./SenderMessageOptions";
 export { SenderMessageType } from "./SenderMessageType";
 export { SenderReplyMethod } from "./SenderReplyMethod";
