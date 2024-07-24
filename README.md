@@ -1,6 +1,6 @@
-# Airco bot
+# Jairco
 
-The airco discord bot
+The Jairco discord bot
 
 # Setup
 

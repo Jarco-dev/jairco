@@ -1,7 +1,7 @@
 {
-    "name": "airco-bot",
+    "name": "jairco",
     "version": "1.0.0",
-    "description": "The airco discord bot",
+    "description": "The jairco discord bot",
     "main": "dist/index.js",
     "engines": {
         "node": ">=20.15.1"
