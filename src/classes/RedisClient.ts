@@ -53,7 +53,6 @@ export class RedisClient {
         const res = await this.redis.get(
             `${this.prefixes.messageContext}:${type}:${messageId}`
         );
-        if (!res) return undefined;
         return res ? JSON.parse(res) : undefined;
     }
 
