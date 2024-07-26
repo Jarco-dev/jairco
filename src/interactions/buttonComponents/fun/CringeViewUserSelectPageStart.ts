@@ -1,6 +1,11 @@
 import { HandlerResult } from "@/types";
 import { ButtonComponent } from "@/structures";
-import {ButtonInteraction, ButtonBuilder, ButtonStyle, ActionRowBuilder} from "discord.js";
+import {
+    ButtonInteraction,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder
+} from "discord.js";
 import CringeViewUserSelectPageModal from "@/modal/fun/CringeViewUserSelectPage";
 
 export default class CringeViewUserSelectPageStartButtonComponent extends ButtonComponent {
@@ -21,9 +26,15 @@ export default class CringeViewUserSelectPageStartButtonComponent extends Button
             i.message.id
         );
         if (!context) {
-            const buttons = new ActionRowBuilder<ButtonBuilder>(i.message.components[0].toJSON())
+            const buttons = new ActionRowBuilder<ButtonBuilder>(
+                i.message.components[0].toJSON()
+            );
             buttons.components.forEach(b => b.setDisabled(true));
-            await this.client.sender.reply(i, { embeds: i.message.embeds, components: [buttons] }, { method: "UPDATE"});
+            await this.client.sender.reply(
+                i,
+                { embeds: i.message.embeds, components: [buttons] },
+                { method: "UPDATE" }
+            );
 
             this.client.sender.reply(
                 i,

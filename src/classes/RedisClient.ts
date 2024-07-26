@@ -10,14 +10,15 @@ export class RedisClient {
         messageContext: "messageContext"
     };
 
-    private messageContextExpiry: { [K in keyof RedisMessageContextData]: number } =
-        {
-            groupPermissions: 60 * 15,
-            cringeDelete: 60 * 5,
-            cringeReset: 60 * 5,
-            cringeViewUser: 60 * 15,
-            cringeLeaderboard: 60 * 15
-        };
+    private messageContextExpiry: {
+        [K in keyof RedisMessageContextData]: number;
+    } = {
+        groupPermissions: 60 * 15,
+        cringeDelete: 60 * 5,
+        cringeReset: 60 * 5,
+        cringeViewUser: 60 * 15,
+        cringeLeaderboard: 60 * 15
+    };
 
     constructor(client: Client) {
         this.client = client;

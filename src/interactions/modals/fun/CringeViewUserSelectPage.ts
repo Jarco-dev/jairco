@@ -53,9 +53,14 @@ export default class CringeViewUserSelectPageModal extends Modal {
             i.message!.id
         );
         if (!context) {
-            const buttons = new ActionRowBuilder<ButtonBuilder>(i.message!.components[0].toJSON())
+            const buttons = new ActionRowBuilder<ButtonBuilder>(
+                i.message!.components[0].toJSON()
+            );
             buttons.components.forEach(b => b.setDisabled(true));
-            i.message!.edit({ embeds: i.message!.embeds, components: [buttons] }).catch(() => {});
+            i.message!.edit({
+                embeds: i.message!.embeds,
+                components: [buttons]
+            }).catch(() => {});
 
             this.client.sender.reply(
                 i,
