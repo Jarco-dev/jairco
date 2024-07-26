@@ -87,7 +87,7 @@ export class Utilities {
                 : await source.guild!.members.fetch(source.user.id);
         const groups = await this.client.prisma.groups.findMany({
             where: {
-                Guilds: { discordId: source.guild!.id },
+                Guild: { discordId: source.guild!.id },
                 OR: [
                     { Users: { some: { discordId: member.id } } },
                     {
@@ -136,7 +136,7 @@ export class Utilities {
                           }
                       }
                     : { GivenByUser: { discordId: user.id } }),
-                Guilds: { discordId: i.guild!.id }
+                Guild: { discordId: i.guild!.id }
             },
             select: {
                 id: true,
@@ -235,7 +235,7 @@ export class Utilities {
             skip: (page - 1) * 10,
             take: 10,
             where: {
-                Guilds: { discordId: i.guild!.id }
+                Guild: { discordId: i.guild!.id }
             },
             orderBy: {
                 ...(type === "received"

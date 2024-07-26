@@ -63,14 +63,14 @@ export default class CringeResetConfirmButtonComponent extends ButtonComponent {
         if (context.type === "received") {
             await this.client.prisma.cringes.deleteMany({
                 where: {
-                    Guilds: { discordId: i.guild!.id },
+                    Guild: { discordId: i.guild!.id },
                     ReceivedByUser: { discordId: context.userId }
                 }
             });
         } else if (context.type === "given") {
             await this.client.prisma.cringes.deleteMany({
                 where: {
-                    Guilds: { discordId: i.guild!.id },
+                    Guild: { discordId: i.guild!.id },
                     GivenByUser: { discordId: context.userId }
                 }
             });

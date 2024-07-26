@@ -61,7 +61,7 @@ export default class CringeDeleteConfirmButtonComponent extends ButtonComponent 
         }
 
         await this.client.prisma.cringes.delete({
-            where: { Guilds: { discordId: i.guild!.id }, id: context.cringeId }
+            where: { Guild: { discordId: i.guild!.id }, id: context.cringeId }
         });
         this.client.redis.delMessageContext("cringeDelete", i.message.id);
 

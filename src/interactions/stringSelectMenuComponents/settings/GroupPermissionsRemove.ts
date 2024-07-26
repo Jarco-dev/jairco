@@ -55,7 +55,7 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
         }
 
         const group = await this.client.prisma.groups.findUnique({
-            where: { Guilds: { discordId: i.guild!.id }, id: context.groupId },
+            where: { Guild: { discordId: i.guild!.id }, id: context.groupId },
             select: { id: true, name: true, permissions: true }
         });
         if (!group) {
@@ -84,7 +84,7 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
             i.values as BotPermissionsString[]
         );
         await this.client.prisma.groups.update({
-            where: { Guilds: { discordId: i.guild!.id }, id: context.groupId },
+            where: { Guild: { discordId: i.guild!.id }, id: context.groupId },
             data: {
                 permissions:
                     groupPermissions.remove(removedPermissions).bitfield

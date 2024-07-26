@@ -24,7 +24,7 @@ model Users {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   guildId             Int
-  Guilds              Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild               Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Groups              Groups[]
   ReceivedCringes     Cringes[] @relation(name: "Cringes_userToUser")
   GivenCringes        Cringes[] @relation(name: "Cringes_byUserToUser")
@@ -36,7 +36,7 @@ model Roles {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   guildId   Int
-  Guilds    Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild     Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Groups    Groups[]
 }
 
@@ -47,7 +47,7 @@ model Groups {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   guildId     Int
-  Guilds      Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild       Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Users       Users[]
   Roles       Roles[]
 }
@@ -60,7 +60,7 @@ model Cringes {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   guildId          Int
-  Guilds           Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild            Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   receivedByUserId Int
   ReceivedByUser   Users    @relation(name: "Cringes_userToUser", fields: [receivedByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   givenByUserId    Int

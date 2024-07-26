@@ -45,7 +45,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
 
         const existingCringe = await this.client.prisma.cringes.findUnique({
             where: {
-                Guilds: { discordId: i.guild!.id },
+                Guild: { discordId: i.guild!.id },
                 messageId: i.targetMessage.id
             },
             select: { GivenByUser: { select: { discordId: true } } }
@@ -68,7 +68,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
         const [cringeCount] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
-                    Guilds: { discordId: i.guild!.id },
+                    Guild: { discordId: i.guild!.id },
                     ReceivedByUser: { discordId: i.targetMessage.author.id }
                 }
             }),
@@ -77,7 +77,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     channelId: i.targetMessage.channelId,
                     messageId: i.targetMessage.id,
                     messageContent: i.targetMessage.content,
-                    Guilds: {
+                    Guild: {
                         connectOrCreate: {
                             where: { discordId: i.guild!.id },
                             create: { discordId: i.guild!.id }
@@ -86,7 +86,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     ReceivedByUser: {
                         connectOrCreate: {
                             where: {
-                                Guilds: { discordId: i.guild!.id },
+                                Guild: { discordId: i.guild!.id },
                                 guildIdAndDiscordId:
                                     i.guild!.id + i.targetMessage.author.id
                             },
@@ -94,7 +94,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                                 discordId: i.targetMessage.author.id,
                                 guildIdAndDiscordId:
                                     i.guild!.id + i.targetMessage.author.id,
-                                Guilds: {
+                                Guild: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
                                         create: { discordId: i.guild!.id }
@@ -106,13 +106,13 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     GivenByUser: {
                         connectOrCreate: {
                             where: {
-                                Guilds: { discordId: i.guild!.id },
+                                Guild: { discordId: i.guild!.id },
                                 guildIdAndDiscordId: i.guild!.id + i.user.id
                             },
                             create: {
                                 discordId: i.user.id,
                                 guildIdAndDiscordId: i.guild!.id + i.user.id,
-                                Guilds: {
+                                Guild: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
                                         create: { discordId: i.guild!.id }

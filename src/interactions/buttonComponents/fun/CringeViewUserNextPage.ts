@@ -62,13 +62,13 @@ export default class CringeViewUserNextPageButtonComponent extends ButtonCompone
             context.type === "received"
                 ? await this.client.prisma.cringes.count({
                       where: {
-                          Guilds: { discordId: i.guild!.id },
+                          Guild: { discordId: i.guild!.id },
                           ReceivedByUser: { discordId: user.id }
                       }
                   })
                 : await this.client.prisma.cringes.count({
                       where: {
-                          Guilds: { discordId: i.guild!.id },
+                          Guild: { discordId: i.guild!.id },
                           GivenByUser: { discordId: user.id }
                       }
                   });
