@@ -27,7 +27,7 @@ export default class GroupPermissionsRemoveStringSelectMenuComponent extends Str
         if (!context) {
             this.client.sender.reply(
                 i,
-                { ephemeral: true, components: [] },
+                { components: [] },
                 {
                     langLocation: "misc.actionExpired",
                     msgType: "INVALID",

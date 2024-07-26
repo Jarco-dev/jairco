@@ -53,15 +53,18 @@ export default class CringeLeaderboardSelectPageModal extends Modal {
             i.message!.id
         );
         if (!context) {
+            const buttons = new ActionRowBuilder<ButtonBuilder>(i.message!.components[0].toJSON())
+            buttons.components.forEach(b => b.setDisabled(true));
+            i.message!.edit({ embeds: i.message!.embeds, components: [buttons] }).catch(() => {});
+
             this.client.sender.reply(
                 i,
-                { ephemeral: true, components: [] },
+                { ephemeral: true },
                 {
-                    langLocation: "misc.actionExpired",
+                    langLocation: "misc.pageMenuUnavailable",
                     msgType: "INVALID"
                 }
             );
-            i.message!.delete().catch(() => {});
             return { result: "ACTION_EXPIRED" };
         }
         if (i.user.id !== context.pageMenuOwnerId) {

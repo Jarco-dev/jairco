@@ -37,7 +37,7 @@ export default class CringeResetConfirmButtonComponent extends ButtonComponent {
         if (!context) {
             this.client.sender.reply(
                 i,
-                { ephemeral: true, components: [] },
+                { components: [] },
                 {
                     langLocation: "misc.actionExpired",
                     msgType: "INVALID",
