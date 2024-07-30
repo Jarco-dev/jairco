@@ -235,7 +235,7 @@ export class Utilities {
             skip: (page - 1) * 10,
             take: 10,
             where: {
-                Guild: { discordId: i.guild!.id }
+                Guild: { some: { discordId: i.guild!.id } }
             },
             orderBy: {
                 ...(type === "received"

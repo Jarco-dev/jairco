@@ -86,14 +86,10 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     ReceivedByUser: {
                         connectOrCreate: {
                             where: {
-                                Guild: { discordId: i.guild!.id },
-                                guildIdAndDiscordId:
-                                    i.guild!.id + i.targetMessage.author.id
+                                discordId: i.targetMessage.author.id
                             },
                             create: {
                                 discordId: i.targetMessage.author.id,
-                                guildIdAndDiscordId:
-                                    i.guild!.id + i.targetMessage.author.id,
                                 Guild: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
@@ -106,12 +102,10 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     GivenByUser: {
                         connectOrCreate: {
                             where: {
-                                Guild: { discordId: i.guild!.id },
-                                guildIdAndDiscordId: i.guild!.id + i.user.id
+                                discordId: i.user.id
                             },
                             create: {
                                 discordId: i.user.id,
-                                guildIdAndDiscordId: i.guild!.id + i.user.id,
                                 Guild: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },

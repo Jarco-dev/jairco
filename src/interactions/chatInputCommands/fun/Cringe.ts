@@ -282,12 +282,10 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                     ReceivedByUser: {
                         connectOrCreate: {
                             where: {
-                                Guild: { discordId: i.guild!.id },
-                                guildIdAndDiscordId: i.guild!.id + user.id
+                                discordId: user.id
                             },
                             create: {
                                 discordId: user.id,
-                                guildIdAndDiscordId: i.guild!.id + user.id,
                                 Guild: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
@@ -300,12 +298,10 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                     GivenByUser: {
                         connectOrCreate: {
                             where: {
-                                Guild: { discordId: i.guild!.id },
-                                guildIdAndDiscordId: i.guild!.id + i.user.id
+                                discordId: i.user.id,
                             },
                             create: {
                                 discordId: i.user.id,
-                                guildIdAndDiscordId: i.guild!.id + i.user.id,
                                 Guild: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
