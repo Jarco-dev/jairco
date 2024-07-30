@@ -24,8 +24,8 @@ model Users {
   updatedAt       DateTime  @updatedAt
   Guild           Guilds[]
   Groups          Groups[]
-  ReceivedCringes Cringes[] @relation(name: "Cringes_userToUser")
-  GivenCringes    Cringes[] @relation(name: "Cringes_byUserToUser")
+  CringesReceived Cringes[] @relation(name: "Cringes_userToUser")
+  CringesGiven    Cringes[] @relation(name: "Cringes_byUserToUser")
 }
 
 model Roles {

@@ -242,15 +242,15 @@ export class Utilities {
             },
             orderBy: {
                 ...(type === "received"
-                    ? { ReceivedCringes: { _count: "desc" } }
-                    : { GivenCringes: { _count: "desc" } })
+                    ? { CringesReceived: { _count: "desc" } }
+                    : { CringesGiven: { _count: "desc" } })
             },
             select: {
                 discordId: true,
                 _count: {
                     select: {
-                        ReceivedCringes: true,
-                        GivenCringes: true
+                        CringesReceived: true,
+                        CringesGiven: true
                     }
                 }
             }
@@ -262,7 +262,7 @@ export class Utilities {
                 "cringe.receivedLeaderboard",
                 {
                     topUsers: cringes
-                        .filter(c => c._count.ReceivedCringes > 0)
+                        .filter(c => c._count.CringesReceived > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -271,7 +271,7 @@ export class Utilities {
                                     i.locale,
                                     "cringe.wasCringeTimes",
                                     {
-                                        count: c._count.ReceivedCringes.toString()
+                                        count: c._count.CringesReceived.toString()
                                     }
                                 )}\n`),
                             ""
@@ -284,7 +284,7 @@ export class Utilities {
                 "cringe.givenLeaderboard",
                 {
                     topUsers: cringes
-                        .filter(c => c._count.GivenCringes > 0)
+                        .filter(c => c._count.CringesGiven > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -292,7 +292,7 @@ export class Utilities {
                                 }> ${this.client.lang.getString(
                                     i.locale,
                                     "cringe.givenCringeTimes",
-                                    { count: c._count.GivenCringes.toString() }
+                                    { count: c._count.CringesGiven.toString() }
                                 )}\n`),
                             ""
                         )
