@@ -128,6 +128,9 @@ export class Utilities {
         const cringes = await this.client.prisma.cringes.findMany({
             skip: (page - 1) * 10,
             take: 10,
+            orderBy: {
+                createdAt: "desc"
+            },
             where: {
                 ...(type === "received"
                     ? {
