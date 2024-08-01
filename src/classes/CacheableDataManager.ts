@@ -1,6 +1,11 @@
 import { Client } from "@/classes";
 import { Snowflake } from "discord.js";
-import { GuildCountingSettings, BlacklistData, Camelize } from "@/types";
+import {
+    GuildCountingSettings,
+    BlacklistData,
+    Camelize,
+    GuildCringeSettings
+} from "@/types";
 import Prisma from "@prisma/client";
 
 export class CacheableDataManager {
@@ -92,5 +97,36 @@ export class CacheableDataManager {
         this.client.redis.setBlacklist("counting", guildId, userId, blacklist);
 
         return blacklist;
+    }
+
+    public async getCringeSettings(
+        guildId: Snowflake
+    ): Promise<GuildCringeSettings | undefined> {
+        const cache: GuildCringeSettings | undefined =
+            await this.client.redis.getGuildSettings("cringe", guildId);
+        if (cache) return cache;
+
+        const settingTypes: Prisma.GuildSetting[] = ["CRINGE_ENABLED"];
+        const dbSettings = await this.client.prisma.guildSettings.findMany({
+            where: {
+                type: { in: settingTypes },
+                Guild: { discordId: guildId }
+            },
+            select: { type: true, value: true }
+        });
+        if (dbSettings.length === 0) return undefined;
+
+        const settings: GuildCringeSettings = {};
+        for (const setting of dbSettings) {
+            switch (setting.type) {
+                case "CRINGE_ENABLED":
+                    settings.cringeEnabled = !!parseInt(setting.value);
+                    break;
+            }
+        }
+
+        this.client.redis.setGuildSettings("cringe", guildId, settings);
+
+        return settings;
     }
 }

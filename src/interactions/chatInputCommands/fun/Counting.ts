@@ -347,8 +347,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 { ephemeral: true },
                 {
                     langLocation: newValue
-                        ? "counting.alreadyEnabled"
-                        : "counting.alreadyDisabled",
+                        ? "misc.featureAlreadyEnabled"
+                        : "misc.featureAlreadyDisabled",
                     msgType: "INVALID"
                 }
             );
@@ -385,8 +385,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             {},
             {
                 langLocation: newValue
-                    ? "counting.nowEnabled"
-                    : "counting.nowDisabled",
+                    ? "misc.featureNowEnabled"
+                    : "misc.featureNowDisabled",
                 msgType: "SUCCESS"
             }
         );

@@ -110,6 +110,7 @@ enum GuildSetting {
   HIGHEST_COUNT
   CURRENT_COUNT
   CURRENT_COUNT_USER
+  CRINGE_ENABLED
 }
 
 model GuildSettings {

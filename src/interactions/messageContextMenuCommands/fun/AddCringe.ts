@@ -24,6 +24,21 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
     public async run(
         i: MessageContextMenuCommandInteraction
     ): Promise<HandlerResult> {
+        const settings = await this.client.cacheableData.getCringeSettings(
+            i.guild!.id
+        );
+        if (!settings?.cringeEnabled) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "misc.featureDisabled",
+                    msgType: "INVALID"
+                }
+            );
+            return { result: "FEATURE_DISABLED" };
+        }
+
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (!permissions.has(BotPermissionsBitField.Flags.AddCringe)) {
             this.client.sender.reply(

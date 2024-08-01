@@ -32,6 +32,38 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 .setDMPermission(false)
                 .addSubcommand(builder =>
                     builder
+                        .setName("set-enabled")
+                        .setNameLocalization("nl", "zet-ingeschakeld")
+                        .setDescription(
+                            "Enable or disable the counting feature"
+                        )
+                        .setDescriptionLocalization(
+                            "nl",
+                            "Zet de tellen functie aan of uit"
+                        )
+                        .addStringOption(builder =>
+                            builder
+                                .setName("value")
+                                .setNameLocalization("nl", "waarde")
+                                .setDescription("The value")
+                                .setDescriptionLocalization("nl", "De waarde")
+                                .setRequired(true)
+                                .addChoices([
+                                    {
+                                        name: "Yes",
+                                        name_localizations: { nl: "Ja" },
+                                        value: "true"
+                                    },
+                                    {
+                                        name: "No",
+                                        name_localizations: { nl: "Nee" },
+                                        value: "false"
+                                    }
+                                ])
+                        )
+                )
+                .addSubcommand(builder =>
+                    builder
                         .setName("add")
                         .setNameLocalization("nl", "toevoegen")
                         .setDescription("Add a cringe to someone")
@@ -212,13 +244,33 @@ export default class CringeChatInputCommand extends ChatInputCommand {
         });
     }
 
-    public run(
-        i: ChatInputCommandInteraction
-    ): HandlerResult | Promise<HandlerResult> {
-        const subcommandGroupKey = i.options.getSubcommandGroup()
-            ? `${i.options.getSubcommandGroup()}.`
-            : "";
-        switch (`${subcommandGroupKey}${i.options.getSubcommand()}`) {
+    public async run(i: ChatInputCommandInteraction): Promise<HandlerResult> {
+        const key = `${
+            i.options.getSubcommandGroup()
+                ? `${i.options.getSubcommandGroup()}.`
+                : ""
+        }${i.options.getSubcommand()}`;
+
+        if (key !== "set-enabled") {
+            const settings = await this.client.cacheableData.getCringeSettings(
+                i.guild!.id
+            );
+            if (!settings?.cringeEnabled) {
+                this.client.sender.reply(
+                    i,
+                    { ephemeral: true },
+                    {
+                        langLocation: "misc.featureDisabled",
+                        msgType: "INVALID"
+                    }
+                );
+                return { result: "FEATURE_DISABLED" };
+            }
+        }
+
+        switch (key) {
+            case "set-enabled":
+                return this.runSetEnabled(i);
             case "add":
                 return this.runCringeAdd(i);
             case "delete":
@@ -239,6 +291,76 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                     error: new Error("Command executor not found")
                 };
         }
+    }
+
+    private async runSetEnabled(
+        i: ChatInputCommandInteraction
+    ): Promise<HandlerResult> {
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (!permissions.has(BotPermissionsBitField.Flags.ManageCounting)) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                { langLocation: "misc.missingPermissions", msgType: "INVALID" }
+            );
+            return { result: "USER_MISSING_PERMISSIONS" };
+        }
+
+        const settings = await this.client.cacheableData.getCringeSettings(
+            i.guild!.id
+        );
+        const newValue = i.options.getString("value", true) === "true";
+        if (settings?.cringeEnabled === newValue) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: newValue
+                        ? "misc.featureAlreadyEnabled"
+                        : "misc.featureAlreadyDisabled",
+                    msgType: "INVALID"
+                }
+            );
+            return { result: "INVALID_ARGUMENTS" };
+        }
+
+        if (settings?.cringeEnabled !== undefined) {
+            await this.client.prisma.guildSettings.updateMany({
+                where: {
+                    type: "CRINGE_ENABLED",
+                    Guild: { discordId: i.guild!.id }
+                },
+                data: { value: newValue ? "1" : "0" }
+            });
+        } else {
+            await this.client.prisma.guildSettings.create({
+                data: {
+                    type: "CRINGE_ENABLED",
+                    guildIdAndType: i.guild!.id + "CRINGE_ENABLED",
+                    value: newValue ? "1" : "0",
+                    Guild: {
+                        connectOrCreate: {
+                            where: { discordId: i.guild!.id },
+                            create: { discordId: i.guild!.id }
+                        }
+                    }
+                }
+            });
+        }
+        await this.client.redis.delGuildSettings("cringe", i.guild!.id);
+
+        this.client.sender.reply(
+            i,
+            {},
+            {
+                langLocation: newValue
+                    ? "misc.featureNowEnabled"
+                    : "misc.featureNowDisabled",
+                msgType: "SUCCESS"
+            }
+        );
+
+        return { result: "SUCCESS" };
     }
 
     private async runCringeAdd(
@@ -298,7 +420,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                     GivenByUser: {
                         connectOrCreate: {
                             where: {
-                                discordId: i.user.id,
+                                discordId: i.user.id
                             },
                             create: {
                                 discordId: i.user.id,
@@ -607,6 +729,11 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             type,
             cringeCount
         );
+        if (cringeCount <= 10) {
+            this.client.sender.reply(i, { embeds: [embed] });
+            return { result: "SUCCESS" };
+        }
+
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
             CringeListPreviousPageButtonComponent.builder,
             new ButtonBuilder(
@@ -617,7 +744,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
 
         const reply = await this.client.sender.reply(i, {
             embeds: [embed],
-            components: cringeCount > 10 ? [buttons] : [],
+            components: [buttons],
             fetchReply: true
         });
         if (!reply) {
@@ -666,6 +793,11 @@ export default class CringeChatInputCommand extends ChatInputCommand {
         }
 
         const embed = await this.client.utils.getCringeLeaderboardPage(i, type);
+        if (userCount <= 10) {
+            this.client.sender.reply(i, { embeds: [embed] });
+            return { result: "SUCCESS" };
+        }
+
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
             CringeLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
@@ -676,7 +808,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
 
         const reply = await this.client.sender.reply(i, {
             embeds: [embed],
-            components: userCount > 10 ? [buttons] : [],
+            components: [buttons],
             fetchReply: true
         });
         if (!reply) {

@@ -5,6 +5,7 @@ export { CommandLoadLevel } from "./CommandLoadLevel";
 export { CommandStatus } from "./CommandStatus";
 export { Config } from "./Config";
 export { GuildCountingSettings } from "./GuildCountingSettings";
+export { GuildCringeSettings } from "./GuildCringeSettings";
 export { HandlerResult } from "./HandlerResult";
 export { LangContentType } from "./LangContentType";
 export { LogLevel } from "./LogLevel";

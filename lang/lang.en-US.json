@@ -10,7 +10,11 @@
             "pageNumber": "Page number",
             "invalidPage": "The page number must be a valid number between 1 and {{maxPage}}",
             "pageMenuUnavailable": "This menu is no longer available, please rerun the command",
-            "featureDisabled": "This feature is disabled in this server"
+            "featureDisabled": "This feature is disabled in this server",
+            "featureAlreadyEnabled": "This feature is already enabled",
+            "featureAlreadyDisabled": "This feature is already disabled",
+            "featureNowEnabled": "This feature has been enabled",
+            "featureNowDisabled": "This feature has been disabled"
         },
         "permissions": {
             "Administrator": "Administrator",
@@ -21,10 +25,6 @@
             "ManageCountingBlacklist": "Manage counting blacklist"
         },
         "counting": {
-            "alreadyEnabled": "The counting feature is already enabled",
-            "alreadyDisabled": "The counting feature is already disabled",
-            "nowEnabled": "The counting feature has been enabled",
-            "nowDisabled": "The counting feature has been disabled",
             "channelSetCanceled": "Setting the counting channel has been canceled",
             "channelSet": "The counting channel has been set to {{channel}}",
             "newHighestCount": "{{newCount}} has just beaten the old highscore of {{oldCount}} by {{delta}}",

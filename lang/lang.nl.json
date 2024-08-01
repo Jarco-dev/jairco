@@ -10,7 +10,11 @@
             "pageNumber": "Pagina nummer",
             "invalidPage": "Het pagina nummer moet een geldig nummer zijn tussen 1 en {{maxPage}}",
             "pageMenuUnavailable": "Dit menu is niet meer beschikbaar, voer het command opnieuw uit",
-            "featureDisabled": "Deze functie is uitgeschakeld in deze server"
+            "featureDisabled": "Deze functie is uitgeschakeld in deze server",
+            "featureAlreadyEnabled": "Deze functie is al ingeschakeld",
+            "featureAlreadyDisabled": "Deze functie is al uitgeschakeld",
+            "featureNowEnabled": "De tellen functie is ingeschakeld",
+            "featureNowDisabled": "De tellen functie is uitgeschakeld"
         },
         "permissions": {
             "Administrator": "Beheerder",
@@ -21,10 +25,6 @@
             "ManageCountingBlacklist": "Beheer tellen blokkades"
         },
         "counting": {
-            "alreadyEnabled": "De tellen functie is al ingeschakeld",
-            "alreadyDisabled": "De tellen functie is al uitgeschakeld",
-            "nowEnabled": "De tellen functie is ingeschakeld",
-            "nowDisabled": "De tellen functie is uitgeschakeld",
             "channelSetCanceled": "Tellen kanaal instellen is geannuleerd",
             "channelSet": "Het tellen kanaal is ingesteld op {{channel}}",
             "newHighestCount": "{{newCount}} heeft zojuist het record verbroken van {{oldCount}} met {{delta}}",
