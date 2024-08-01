@@ -49,7 +49,9 @@ export class RedisClient {
         messageId: Snowflake,
         context: RedisMessageContextData[T]
     ): Promise<RedisMessageContextData[T] | undefined> {
-        this.client.logger.verbose(`[RedisClient] Set: ${this.prefixes.messageContext}:${type}:${messageId}`);
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.messageContext}:${type}:${messageId}`
+        );
         const res = await this.redis.setex(
             `${this.prefixes.messageContext}:${type}:${messageId}`,
             this.messageContextExpiry[type],
@@ -62,7 +64,9 @@ export class RedisClient {
         type: T,
         messageId: Snowflake
     ): Promise<RedisMessageContextData[T] | undefined> {
-        this.client.logger.verbose(`[RedisClient] Get: ${this.prefixes.messageContext}:${type}:${messageId}`);
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.messageContext}:${type}:${messageId}`
+        );
         const res = await this.redis.get(
             `${this.prefixes.messageContext}:${type}:${messageId}`
         );
@@ -73,7 +77,9 @@ export class RedisClient {
         type: T,
         messageId: Snowflake
     ): Promise<number> {
-        this.client.logger.verbose(`[RedisClient] Del: ${this.prefixes.messageContext}:${type}:${messageId}`);
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.messageContext}:${type}:${messageId}`
+        );
         return this.redis.del(
             `${this.prefixes.messageContext}:${type}:${messageId}`
         );
