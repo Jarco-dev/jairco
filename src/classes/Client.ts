@@ -8,7 +8,8 @@ import {
     EventLoader,
     TaskLoader,
     LanguageManager,
-    RedisClient
+    RedisClient,
+    CacheableDataManager
 } from "@/classes";
 import { PrismaClient } from "@prisma/client";
 import { Client as DiscordClient } from "discord.js";
@@ -23,6 +24,7 @@ export class Client extends DiscordClient {
     public lang = new LanguageManager(this);
     public sender = new Sender(this);
     public utils = new Utilities(this);
+    public cacheableData = new CacheableDataManager(this);
     public metrics = new MetricsManager(this);
     public interactionLoader = new InteractionLoader(this);
     public eventLoader = new EventLoader(this);

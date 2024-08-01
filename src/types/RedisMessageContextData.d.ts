@@ -26,4 +26,17 @@ export interface RedisMessageContextData {
         type: "given" | "received";
         pageMenuOwnerId: Snowflake;
     };
+    countingChannelSet: {
+        channelId: Snowflake;
+        buttonOwnerId: Snowflake;
+    };
+    countingBlacklistList: {
+        page: number;
+        pageMenuOwnerId: Snowflake;
+    };
+    countingLeaderboard: {
+        page: number;
+        type: "correct" | "incorrect" | "highest";
+        pageMenuOwnerId: Snowflake;
+    };
 }

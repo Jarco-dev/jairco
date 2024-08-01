@@ -300,4 +300,130 @@ export class Utilities {
             );
         }
     }
+
+    public async getCountingBlacklistListPage(
+        i: BaseInteraction,
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const blacklists = await this.client.prisma.blacklists.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where: {
+                Guild: { discordId: i.guild!.id }
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            select: {
+                id: true,
+                reason: true,
+                createdAt: true,
+                ReceivedByUser: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        return this.client.lang.getEmbed(
+            i.locale,
+            "counting.blacklistListEmbed",
+            {
+                blacklists: blacklists
+                    .map(b => {
+                        let string = `(${b.id}) <t:${Math.round(
+                            b.createdAt.getTime() / 1000
+                        )}:R> - <@${b.ReceivedByUser.discordId}>`;
+                        if (b.reason) {
+                            string += `\n${b.reason.substring(0, 50)}${
+                                b.reason.length > 50 ? "..." : ""
+                            }`;
+                        }
+                        return string;
+                    })
+                    .join("\n\n")
+            }
+        );
+    }
+
+    public async getCountingLeaderboardPage(
+        i: BaseInteraction,
+        type: "correct" | "incorrect" | "highest",
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const users = await this.client.prisma.countingStats.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : type === "incorrect"
+                      ? { incorrect: { gt: 0 } }
+                      : { highest: { gt: 0 } })
+            },
+            orderBy: {
+                ...(type === "correct"
+                    ? { correct: "desc" }
+                    : type === "incorrect"
+                      ? { incorrect: "desc" }
+                      : { highest: "desc" })
+            },
+            select: {
+                correct: true,
+                incorrect: true,
+                highest: true,
+                User: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        if (type === "correct") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.correctCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.correct}\n`),
+                        ""
+                    )
+                }
+            );
+        } else if (type === "incorrect") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.incorrectCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.incorrect}\n`),
+                        ""
+                    )
+                }
+            );
+        } else {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.highestCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.highest}\n`),
+                        ""
+                    )
+                }
+            );
+        }
+    }
 }
