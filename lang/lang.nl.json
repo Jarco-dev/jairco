@@ -89,6 +89,16 @@
             "highestCountedLeaderboardEmbed": {
                 "title": "Hoogst geteld scoreboard",
                 "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server tellen statistieken",
+                "description": [
+                    "**Hoogste score:** {{highest}}",
+                    "**Correct geteld:** {{correct}}",
+                    "**Incorrect geteld:** {{incorrect}}",
+                    "**Gebruikers correct geteld:** {{usersCorrect}}",
+                    "**Gebruikers Incorrect geteld:** {{usersIncorrect}}"
+                ]
             }
         },
         "invite": {

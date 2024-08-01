@@ -89,6 +89,16 @@
             "highestCountedLeaderboardEmbed": {
                 "title": "Highest counted leaderboard",
                 "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server counting statistics",
+                "description": [
+                    "**Highscore:** {{highest}}",
+                    "**Correctly counted:** {{correct}}",
+                    "**Incorrectly counted:** {{incorrect}}",
+                    "**Users counted correctly:** {{usersCorrect}}",
+                    "**Users counted incorrectly:** {{usersIncorrect}}"
+                ]
             }
         },
         "invite": {

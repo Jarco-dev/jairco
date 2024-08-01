@@ -61,6 +61,13 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 )
                 .addSubcommand(builder =>
                     builder
+                        .setName("statistics")
+                        .setNameLocalization("nl", "statistieken")
+                        .setDescription("View counting statistics for the server")
+                        .setDescriptionLocalization("nl", "Bekijk statistieken voor tellen van de hele server")
+                )
+                .addSubcommand(builder =>
+                    builder
                         .setName("leaderboard")
                         .setNameLocalization("nl", "scoreboard")
                         .setDescription("View a list of the highest scores")
@@ -296,6 +303,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         switch (key) {
             case "set-enabled":
                 return this.runSetEnabled(i);
+            case "statistics":
+                return this.runStatistics(i);
             case "leaderboard":
                 return this.runLeaderboard(i);
 
@@ -390,6 +399,40 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 msgType: "SUCCESS"
             }
         );
+
+        return { result: "SUCCESS" };
+    }
+
+    private async runStatistics(i: ChatInputCommandInteraction): Promise<HandlerResult> {
+        const userCounts = await this.client.prisma.countingStats.aggregate({
+            where: { Guild: { discordId: i.guild!.id } },
+            _sum: { correct: true, incorrect: true }
+        });
+        const usersCounted = await this.client.prisma.countingStats.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                correct: { gt: 0 }
+            }
+        });
+        const usersIncorrect = await this.client.prisma.countingStats.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                incorrect: { gt: 0 }
+            }
+        });
+        const countingSettings = await this.client.cacheableData.getCountingSettings(i.guild!.id);
+
+        this.client.sender.reply(i, {}, {
+            langType: "EMBED",
+            langLocation: "counting.statisticsEmbed",
+            langVariables: {
+                correct: (userCounts._sum.correct ?? 0).toString(),
+                incorrect: (userCounts._sum.incorrect ?? 0).toString(),
+                highest: (countingSettings?.highestCount ?? 0).toString(),
+                usersCorrect: usersCounted.toString(),
+                usersIncorrect: usersIncorrect.toString(),
+            }
+        });
 
         return { result: "SUCCESS" };
     }
