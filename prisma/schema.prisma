@@ -9,25 +9,29 @@ datasource db {
 }
 
 model Guilds {
-  id        Int       @id @default(autoincrement())
-  discordId String    @unique
-  Users     Users[]
-  Roles     Roles[]
-  Groups    Groups[]
-  Cringes   Cringes[]
+  id            Int             @id @default(autoincrement())
+  discordId     String          @unique
+  Users         Users[]
+  Roles         Roles[]
+  Groups        Groups[]
+  Cringes       Cringes[]
+  CountingStats CountingStats[]
+  Settings      GuildSettings[]
+  Blacklists    Blacklists[]
 }
 
 model Users {
-  id                  Int       @id @default(autoincrement())
-  guildIdAndDiscordId String    @unique // This is used to allow for easier connectOrCreate queries
-  discordId           String
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  guildId             Int
-  Guilds              Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  Groups              Groups[]
-  ReceivedCringes     Cringes[] @relation(name: "Cringes_userToUser")
-  GivenCringes        Cringes[] @relation(name: "Cringes_byUserToUser")
+  id                 Int             @id @default(autoincrement())
+  discordId          String          @unique
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  Guild              Guilds[]
+  Groups             Groups[]
+  CringesReceived    Cringes[]       @relation(name: "Cringes_userToUser")
+  CringesGiven       Cringes[]       @relation(name: "Cringes_byUserToUser")
+  CountingStats      CountingStats[]
+  BlacklistsReceived Blacklists[]    @relation(name: "Blacklists_userToUser")
+  BlacklistsGiven    Blacklists[]    @relation(name: "Blacklists_byUserToUser")
 }
 
 model Roles {
@@ -36,7 +40,7 @@ model Roles {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   guildId   Int
-  Guilds    Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild     Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Groups    Groups[]
 }
 
@@ -47,7 +51,7 @@ model Groups {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   guildId     Int
-  Guilds      Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild       Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   Users       Users[]
   Roles       Roles[]
 }
@@ -60,9 +64,60 @@ model Cringes {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   guildId          Int
-  Guilds           Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Guild            Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   receivedByUserId Int
   ReceivedByUser   Users    @relation(name: "Cringes_userToUser", fields: [receivedByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   givenByUserId    Int
   GivenByUser      Users    @relation(name: "Cringes_byUserToUser", fields: [givenByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model CountingStats {
+  id               Int      @id @default(autoincrement())
+  guildIdAndUserId String   @unique // This is used to allow for easier connectOrCreate queries
+  correct          Int      @default(0)
+  incorrect        Int      @default(0)
+  highest          Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  guildId          Int
+  Guild            Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId           Int
+  User             Users    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+enum BlacklistTypes {
+  COUNTING
+}
+
+model Blacklists {
+  id                Int            @id @default(autoincrement())
+  type              BlacklistTypes
+  reason            String?        @db.Text
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  guildIdUserIdType String         @unique // Used to ensure only 1 blacklist per case exists
+  guildId           Int
+  Guild             Guilds         @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  receivedByUserId  Int
+  ReceivedByUser    Users          @relation(name: "Blacklists_userToUser", fields: [receivedByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  givenByUserId     Int
+  GivenByUser       Users          @relation(name: "Blacklists_byUserToUser", fields: [givenByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+enum GuildSetting {
+  COUNTING_ENABLED
+  COUNTING_CHANNEL
+  HIGHEST_COUNT
+  CURRENT_COUNT
+  CURRENT_COUNT_USER
+  CRINGE_ENABLED
+}
+
+model GuildSettings {
+  id             Int          @id @default(autoincrement())
+  guildIdAndType String       @unique // This is used to allow for easier connectOrCreate queries
+  type           GuildSetting
+  value          String
+  guildId        Int?
+  Guild          Guilds?      @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

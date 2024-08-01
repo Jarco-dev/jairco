@@ -6,24 +6,24 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/CringeViewUserSelectPageStart";
-import CringeViewUserNextPageButtonComponent from "@/button/fun/CringeViewUserNextPage";
+import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/CountingLeaderboardPreviousPage";
+import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
 
-export default class CringeViewUserPreviousPageButtonComponent extends ButtonComponent {
+export default class CountingLeaderboardNextPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeViewUserPreviousPage")
+        .setCustomId("countingLeaderboardNextPage")
         .setStyle(ButtonStyle.Success)
-        .setLabel("<");
+        .setLabel(">");
 
     constructor() {
         super({
-            builder: CringeViewUserPreviousPageButtonComponent.builder
+            builder: CountingLeaderboardNextPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "countingLeaderboard",
             i.message.id
         );
         if (!context) {
@@ -57,24 +57,19 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const user = await this.client.users.fetch(context.userId);
-        const cringeCount =
-            context.type === "received"
-                ? await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          ReceivedByUser: { discordId: user.id }
-                      }
-                  })
-                : await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          GivenByUser: { discordId: user.id }
-                      }
-                  });
-        if (cringeCount === 0) {
+        const userCount = await this.client.prisma.countingStats.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(context.type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : context.type === "incorrect"
+                      ? { incorrect: { gt: 0 } }
+                      : { highest: { gt: 0 } })
+            }
+        });
+        if (userCount === 0) {
             this.client.redis.delMessageContext(
-                "cringeLeaderboard",
+                "countingLeaderboard",
                 i.message.id
             );
             this.client.sender.reply(
@@ -89,39 +84,40 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(cringeCount / 10);
-        const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getViewUserCringesPage(
+        const maxPage = Math.ceil(userCount / 10);
+        const newPage = context.page < maxPage ? context.page + 1 : 1;
+        const embed = await this.client.utils.getCountingLeaderboardPage(
             i,
-            user,
             context.type,
-            cringeCount,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CringeViewUserPreviousPageButtonComponent.builder,
+            CountingLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CringeViewUserSelectPageStartButtonComponent.builder.data
+                CountingLeaderboardSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CringeViewUserNextPageButtonComponent.builder
+            CountingLeaderboardNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
-            { embeds: [embed], components: [buttons] },
+            {
+                embeds: [embed],
+                components: userCount > 10 ? [buttons] : []
+            },
             { method: "UPDATE" }
         );
-        if (cringeCount > 10) {
+        if (userCount > 10) {
             this.client.redis.setMessageContext(
-                "cringeViewUser",
+                "countingLeaderboard",
                 i.message.id,
-                {
-                    ...context,
-                    page: newPage
-                }
+                { ...context, page: newPage }
             );
         } else {
-            this.client.redis.delMessageContext("cringeViewUser", i.message.id);
+            this.client.redis.delMessageContext(
+                "countingLeaderboard",
+                i.message.id
+            );
         }
 
         return { result: "SUCCESS" };

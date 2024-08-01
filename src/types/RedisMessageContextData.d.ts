@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
 import { Cringes, Groups } from "@prisma/client";
 
-export interface RedisMessageContext {
+export interface RedisMessageContextData {
     groupPermissions: {
         groupId: Groups["id"];
         menuOwnerId: Snowflake;
@@ -24,6 +24,19 @@ export interface RedisMessageContext {
     cringeLeaderboard: {
         page: number;
         type: "given" | "received";
+        pageMenuOwnerId: Snowflake;
+    };
+    countingChannelSet: {
+        channelId: Snowflake;
+        buttonOwnerId: Snowflake;
+    };
+    countingBlacklistList: {
+        page: number;
+        pageMenuOwnerId: Snowflake;
+    };
+    countingLeaderboard: {
+        page: number;
+        type: "correct" | "incorrect" | "highest";
         pageMenuOwnerId: Snowflake;
     };
 }

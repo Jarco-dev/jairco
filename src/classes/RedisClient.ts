@@ -1,23 +1,35 @@
 import { Client } from "@/classes";
 import Redis from "ioredis";
 import { Snowflake } from "discord.js";
-import { RedisMessageContext } from "@/types";
+import {
+    RedisMessageContextData,
+    RedisGuildSettingsData,
+    BlacklistData,
+    Camelize
+} from "@/types";
+import Prisma from "@prisma/client";
 
 export class RedisClient {
     private client: Client;
     private redis: Redis;
     private prefixes = {
-        messageContext: "messageContext"
+        messageContext: "messageContext",
+        guildSettings: "guildSettings",
+        blacklist: "blacklist"
     };
 
-    private messageContextExpiry: { [K in keyof RedisMessageContext]: number } =
-        {
-            groupPermissions: 60 * 15,
-            cringeDelete: 60 * 5,
-            cringeReset: 60 * 5,
-            cringeViewUser: 60 * 5,
-            cringeLeaderboard: 60 * 5
-        };
+    private messageContextExpiry: {
+        [K in keyof RedisMessageContextData]: number;
+    } = {
+        groupPermissions: 60 * 15,
+        cringeDelete: 60 * 5,
+        cringeReset: 60 * 5,
+        cringeViewUser: 60 * 15,
+        cringeLeaderboard: 60 * 15,
+        countingChannelSet: 60 * 5,
+        countingBlacklistList: 60 * 15,
+        countingLeaderboard: 60 * 15
+    };
 
     constructor(client: Client) {
         this.client = client;
@@ -32,11 +44,14 @@ export class RedisClient {
         );
     }
 
-    public async setMessageContext<T extends keyof RedisMessageContext>(
+    public async setMessageContext<T extends keyof RedisMessageContextData>(
         type: T,
         messageId: Snowflake,
-        context: RedisMessageContext[T]
-    ): Promise<RedisMessageContext[T] | undefined> {
+        context: RedisMessageContextData[T]
+    ): Promise<RedisMessageContextData[T] | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.messageContext}:${type}:${messageId}`
+        );
         const res = await this.redis.setex(
             `${this.prefixes.messageContext}:${type}:${messageId}`,
             this.messageContextExpiry[type],
@@ -45,23 +60,113 @@ export class RedisClient {
         return res === "OK" ? context : undefined;
     }
 
-    public async getMessageContext<T extends keyof RedisMessageContext>(
+    public async getMessageContext<T extends keyof RedisMessageContextData>(
         type: T,
         messageId: Snowflake
-    ): Promise<RedisMessageContext[T] | undefined> {
+    ): Promise<RedisMessageContextData[T] | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.messageContext}:${type}:${messageId}`
+        );
         const res = await this.redis.get(
             `${this.prefixes.messageContext}:${type}:${messageId}`
         );
-        if (!res) return undefined;
         return res ? JSON.parse(res) : undefined;
     }
 
-    public async delMessageContext<T extends keyof RedisMessageContext>(
+    public async delMessageContext<T extends keyof RedisMessageContextData>(
         type: T,
         messageId: Snowflake
     ): Promise<number> {
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.messageContext}:${type}:${messageId}`
+        );
         return this.redis.del(
-            `${this.prefixes.messageContext}:${type}:${messageId}}`
+            `${this.prefixes.messageContext}:${type}:${messageId}`
+        );
+    }
+
+    public async setGuildSettings<T extends keyof RedisGuildSettingsData>(
+        type: T,
+        guildId: Snowflake,
+        settings: RedisGuildSettingsData[T]
+    ): Promise<RedisGuildSettingsData[T] | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.guildSettings}:${type}:${guildId}`
+        );
+        const res = await this.redis.setex(
+            `${this.prefixes.guildSettings}:${type}:${guildId}`,
+            60 * 15,
+            JSON.stringify(settings)
+        );
+        return res === "OK" ? settings : undefined;
+    }
+
+    public async getGuildSettings<T extends keyof RedisGuildSettingsData>(
+        type: T,
+        guildId: Snowflake
+    ): Promise<RedisGuildSettingsData[T] | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.guildSettings}:${type}:${guildId}`
+        );
+        const res = await this.redis.get(
+            `${this.prefixes.guildSettings}:${type}:${guildId}`
+        );
+        return res ? JSON.parse(res) : undefined;
+    }
+
+    public async delGuildSettings<T extends keyof RedisGuildSettingsData>(
+        type: T,
+        guildId: Snowflake
+    ): Promise<number> {
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.guildSettings}:${type}:${guildId}`
+        );
+        return this.redis.del(
+            `${this.prefixes.guildSettings}:${type}:${guildId}`
+        );
+    }
+
+    public async setBlacklist(
+        type: Camelize<Prisma.BlacklistTypes>,
+        guildId: Snowflake,
+        userId: Snowflake,
+        data: BlacklistData
+    ): Promise<BlacklistData | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.blacklist}:${type}:${guildId}:${userId}`
+        );
+        const res = await this.redis.setex(
+            `${this.prefixes.blacklist}:${type}:${guildId}:${userId}`,
+            60 * 15,
+            JSON.stringify(data)
+        );
+        return res === "OK" ? data : undefined;
+    }
+
+    public async getBlacklist(
+        type: Camelize<Prisma.BlacklistTypes>,
+        guildId: Snowflake,
+        userId: Snowflake
+    ): Promise<BlacklistData | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.blacklist}:${type}:${guildId}:${userId}`
+        );
+        const res = await this.redis.get(
+            `${this.prefixes.blacklist}:${type}:${guildId}:${userId}`
+        );
+        return res ? JSON.parse(res) : undefined;
+    }
+
+    public async delBlacklist(
+        type: Camelize<Prisma.BlacklistTypes>,
+        guildId: Snowflake,
+        userId: Snowflake
+    ): Promise<number> {
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.blacklist}:${type}:${guildId}:${userId}`
+        );
+        return this.redis.del(
+            `${this.prefixes.blacklist}:${type}:${guildId}:${userId}`
         );
     }
 }

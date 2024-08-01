@@ -3,20 +3,20 @@ import { ButtonComponent } from "@/structures";
 import {
     ButtonInteraction,
     ButtonBuilder,
-    LocaleString,
-    ButtonStyle
+    ButtonStyle,
+    LocaleString
 } from "discord.js";
 import { BotPermissionsBitField, LanguageManager } from "@/classes";
 
-export default class CringeResetConfirmButtonComponent extends ButtonComponent {
+export default class CountingChannelConfirmButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeResetConfirm")
+        .setCustomId("countingChannelConfirm")
         .setLabel("placeholder")
         .setStyle(ButtonStyle.Success);
 
     constructor() {
         super({
-            builder: CringeResetConfirmButtonComponent.builder
+            builder: CountingChannelConfirmButtonComponent.builder
         });
     }
 
@@ -31,7 +31,7 @@ export default class CringeResetConfirmButtonComponent extends ButtonComponent {
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeReset",
+            "countingChannelSet",
             i.message.id
         );
         if (!context) {
@@ -47,9 +47,21 @@ export default class CringeResetConfirmButtonComponent extends ButtonComponent {
             return { result: "ACTION_EXPIRED" };
         }
 
+        const settings = await this.client.cacheableData.getCountingSettings(
+            i.guild!.id
+        );
+        if (!settings?.countingEnabled) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                { langLocation: "misc.featureDisabled", msgType: "INVALID" }
+            );
+            return { result: "FEATURE_DISABLED" };
+        }
+
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
-            !permissions.has(BotPermissionsBitField.Flags.ManageCringe) ||
+            !permissions.has(BotPermissionsBitField.Flags.ManageCounting) ||
             i.user.id !== context.buttonOwnerId
         ) {
             this.client.sender.reply(
@@ -60,32 +72,22 @@ export default class CringeResetConfirmButtonComponent extends ButtonComponent {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        if (context.type === "received") {
-            await this.client.prisma.cringes.deleteMany({
-                where: {
-                    Guild: { discordId: i.guild!.id },
-                    ReceivedByUser: { discordId: context.userId }
-                }
-            });
-        } else if (context.type === "given") {
-            await this.client.prisma.cringes.deleteMany({
-                where: {
-                    Guild: { discordId: i.guild!.id },
-                    GivenByUser: { discordId: context.userId }
-                }
-            });
-        }
-        this.client.redis.delMessageContext("cringeDelete", i.message.id);
+        await this.client.prisma.guildSettings.updateMany({
+            where: {
+                type: "COUNTING_CHANNEL",
+                Guild: { discordId: i.guild!.id }
+            },
+            data: { value: context.channelId }
+        });
+        this.client.redis.delGuildSettings("counting", i.guild!.id);
+        this.client.redis.delMessageContext("countingChannelSet", i.message.id);
 
         this.client.sender.reply(
             i,
             { components: [] },
             {
-                langLocation:
-                    context.type === "received"
-                        ? "cringe.cringeReceivedWasReset"
-                        : "cringe.cringeReceivedWasReset",
-                langVariables: { user: `<@${context.userId}>` },
+                langLocation: "counting.channelSet",
+                langVariables: { channel: `<#${context.channelId}>` },
                 msgType: "SUCCESS",
                 method: "UPDATE"
             }

@@ -6,24 +6,25 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/CringeViewUserSelectPageStart";
-import CringeViewUserNextPageButtonComponent from "@/button/fun/CringeViewUserNextPage";
+import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/CountingBlacklistListSelectPageStart";
+import CountingBlacklistListNextPageButtonComponent from "@/button/fun/CountingBlacklistListNextPage";
+import { BotPermissionsBitField } from "@/classes";
 
-export default class CringeViewUserPreviousPageButtonComponent extends ButtonComponent {
+export default class CountingBlacklistListPreviousPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeViewUserPreviousPage")
+        .setCustomId("countingBlacklistListPreviousPage")
         .setStyle(ButtonStyle.Success)
         .setLabel("<");
 
     constructor() {
         super({
-            builder: CringeViewUserPreviousPageButtonComponent.builder
+            builder: CountingBlacklistListPreviousPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "countingBlacklistList",
             i.message.id
         );
         if (!context) {
@@ -48,7 +49,14 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
+
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (
+            !permissions.has(
+                BotPermissionsBitField.Flags.ManageCountingBlacklist
+            ) ||
+            i.user.id !== context.pageMenuOwnerId
+        ) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -57,22 +65,10 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const user = await this.client.users.fetch(context.userId);
-        const cringeCount =
-            context.type === "received"
-                ? await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          ReceivedByUser: { discordId: user.id }
-                      }
-                  })
-                : await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          GivenByUser: { discordId: user.id }
-                      }
-                  });
-        if (cringeCount === 0) {
+        const blacklistCount = await this.client.prisma.blacklists.count({
+            where: { type: "COUNTING", Guild: { discordId: i.guild!.id } }
+        });
+        if (blacklistCount === 0) {
             this.client.redis.delMessageContext(
                 "cringeLeaderboard",
                 i.message.id
@@ -89,39 +85,39 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(cringeCount / 10);
+        const maxPage = Math.ceil(blacklistCount / 10);
         const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getViewUserCringesPage(
+        const embed = await this.client.utils.getCountingBlacklistListPage(
             i,
-            user,
-            context.type,
-            cringeCount,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CringeViewUserPreviousPageButtonComponent.builder,
+            CountingBlacklistListPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CringeViewUserSelectPageStartButtonComponent.builder.data
+                CountingBlacklistListSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CringeViewUserNextPageButtonComponent.builder
+            CountingBlacklistListNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
-            { embeds: [embed], components: [buttons] },
+            {
+                embeds: [embed],
+                components: blacklistCount > 10 ? [buttons] : []
+            },
             { method: "UPDATE" }
         );
-        if (cringeCount > 10) {
+        if (blacklistCount > 10) {
             this.client.redis.setMessageContext(
-                "cringeViewUser",
+                "countingBlacklistList",
                 i.message.id,
-                {
-                    ...context,
-                    page: newPage
-                }
+                { ...context, page: newPage }
             );
         } else {
-            this.client.redis.delMessageContext("cringeViewUser", i.message.id);
+            this.client.redis.delMessageContext(
+                "countingBlacklistList",
+                i.message.id
+            );
         }
 
         return { result: "SUCCESS" };

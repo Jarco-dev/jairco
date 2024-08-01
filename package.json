@@ -1,7 +1,7 @@
 {
-    "name": "airco-bot",
-    "version": "1.1.2-beta",
-    "description": "The airco discord bot",
+    "name": "jairco",
+    "version": "1.1.0-beta",
+    "description": "The jairco discord bot",
     "main": "dist/index.js",
     "engines": {
         "node": ">=20.15.1"
@@ -12,6 +12,8 @@
         "build": "gts clean && tsc --project tsconfig.json && tsc-alias",
         "start": "node dist/index.js",
         "dev": "nodemon --legacy-watch --watch \"src/**\" --watch \"lang/**\" --ext \"ts,json\" --exec \"ts-node -r tsconfig-paths/register ./src/index.ts\"",
+        "dev:enter:bot": "docker exec -it jairco-bot-1 bash",
+        "dev:enter:mariadb": "docker exec -it jairco-mariadb-1 mariadb --user=prisma --password=password discord-bot",
         "new:task": "ts-node scripts/task.ts",
         "new:event": "ts-node scripts/event.ts",
         "new:interaction": "ts-node scripts/interaction.ts"
