@@ -7,5 +7,6 @@ export { Logger } from "./Logger";
 export { RedisClient } from "./RedisClient";
 export { SecretConfig } from "./SecretConfig";
 export { Sender } from "./Sender";
+export { CacheableDataManager } from "./CacheableDataManager";
 export { TaskLoader } from "./TaskLoader";
 export { Utilities } from "./Utilities";

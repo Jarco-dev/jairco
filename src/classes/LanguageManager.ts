@@ -10,7 +10,7 @@ export class LanguageManager {
         path.join(__dirname, "../../lang"),
         "lang"
     );
-    private readonly default: LocaleString = "en-US";
+    public readonly default: LocaleString = "en-US";
     private readonly available: LocaleString[] = ["en-US", "nl"];
 
     constructor(client: Client) {

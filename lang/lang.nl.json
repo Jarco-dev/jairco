@@ -1,7 +1,7 @@
 {
     "data": {
         "misc": {
-            "missingPermissions": "You don't have the permissions required to do this",
+            "missingPermissions": "Je hebt niet de rechten die nodig zijn om dit te kunnen doen",
             "somethingWentWrong": "Er ging iets mis, probeer het alstublieft nog een keer",
             "actionExpired": "Door inactiviteit is dit niet meer beschikbaar, begin alstublieft opnieuw",
             "confirm": "Bevestig",
@@ -9,17 +9,101 @@
             "selectAPage": "Selecteer een pagina om naar toe te gaan",
             "pageNumber": "Pagina nummer",
             "invalidPage": "Het pagina nummer moet een geldig nummer zijn tussen 1 en {{maxPage}}",
-            "pageMenuUnavailable": "Dit menu is niet meer beschikbaar, voer het command opnieuw uit"
-        },
-        "invite": {
-            "invite": "Uitnodigen",
-            "pressToInvite": "Druk op de knop hier onder om de bot uit te nodigen voor een server"
+            "pageMenuUnavailable": "Dit menu is niet meer beschikbaar, voer het command opnieuw uit",
+            "featureDisabled": "Deze functie is uitgeschakeld in deze server",
+            "featureAlreadyEnabled": "Deze functie is al ingeschakeld",
+            "featureAlreadyDisabled": "Deze functie is al uitgeschakeld",
+            "featureNowEnabled": "De tellen functie is ingeschakeld",
+            "featureNowDisabled": "De tellen functie is uitgeschakeld"
         },
         "permissions": {
             "Administrator": "Beheerder",
             "ManageGroups": "Beheer groepen",
             "AddCringe": "Cringe toevoegen",
-            "ManageCringe": "Beheer cringe"
+            "ManageCringe": "Beheer cringe",
+            "ManageCounting": "Beheer tellen",
+            "ManageCountingBlacklist": "Beheer tellen blokkades"
+        },
+        "counting": {
+            "channelSetCanceled": "Tellen kanaal instellen is geannuleerd",
+            "channelSet": "Het tellen kanaal is ingesteld op {{channel}}",
+            "newHighestCount": "{{newCount}} heeft zojuist het record verbroken van {{oldCount}} met {{delta}}",
+            "noChannelSet": "Er is nog geen tellen kanaal ingesteld",
+            "viewChannel": "Het huidige tellen kanaal is ingesteld op {{channel}}",
+            "reasonTooLong": "De reden moet 255 tekens of minder zijn",
+            "alreadyBlacklisted": "{{user}} is al geblokkeerd van tellen",
+            "notBlacklisted": "{{user}} is niet geblokkeerd van tellen",
+            "cantBlacklistBot": "Deze gebruiker is een bot, bots kunnen niet worden geblokkeerd",
+            "blacklistAdded": "{{user}} is nu geblokkeerd van tellen",
+            "blacklistRemoved": "{{user}} is nu niet meer geblokkeerd van tellen",
+            "noBlacklistsExist": "Er zijn momenteel geen tellen blokkades",
+            "invalidBlacklistId": "Het gegeven blokkade id bestaat niet",
+            "noUsersOnLeaderboard": "Er staan geen gebruikers op dit scoreboard",
+            "validatedCountDeletedEmbed": {
+                "title": "Gevalideerd nummer verwijdert",
+                "description": [
+                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "Het huidige nummer is {{currentCount}} dus de volgende moet **{{nextCount}}** zijn"
+                ]
+            },
+            "incorrectCountEmbed": {
+                "title": "Onjuist nummer, tellen is gereset"
+            },
+            "channelConfirmEmbed": {
+                "title": "Een tellen kanaal is al ingesteld!",
+                "description": [
+                    "{{oldChannel}} is al ingesteld als het tellen kanaal",
+                    "weet je zeker dat je hem wil overschrijven met {{newChannel}}?"
+                ]
+            },
+            "botMissingPermsEmbed": {
+                "title": "De bot mist wat rechten!",
+                "description": [
+                    "Zorg er voor dat de bot de volgende rechten heeft in {{channel}}",
+                    "",
+                    "`Bekijk kanaal`, `Beheer kanaal`, `Stuur bericht`, `Beheer berichten`, `Reacties toevoegen`"
+                ]
+            },
+            "blacklistListEmbed": {
+                "title": "Tellen blokkades",
+                "description": "{{blacklists}}"
+            },
+            "blacklistEmbed": {
+                "title": "Bekijk blokkade",
+                "description": [
+                    "**ID:** {{id}}",
+                    "**Wanneer:** {{createdAt}}",
+                    "**Gegeven door:** {{givenByUser}}",
+                    "**Ontvangen door:** {{receivedByUser}}",
+                    "**Reden:** {{reason}}"
+                ]
+            },
+            "correctCountedLeaderboardEmbed": {
+                "title": "Correct geteld scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "incorrectCountedLeaderboardEmbed": {
+                "title": "Incorrect geteld scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "highestCountedLeaderboardEmbed": {
+                "title": "Hoogst geteld scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server tellen statistieken",
+                "description": [
+                    "**Hoogste score:** {{highest}}",
+                    "**Correct geteld:** {{correct}}",
+                    "**Incorrect geteld:** {{incorrect}}",
+                    "**Gebruikers correct geteld:** {{usersCorrect}}",
+                    "**Gebruikers Incorrect geteld:** {{usersIncorrect}}"
+                ]
+            }
+        },
+        "invite": {
+            "invite": "Uitnodigen",
+            "pressToInvite": "Druk op de knop hier onder om de bot uit te nodigen voor een server"
         },
         "cringe": {
             "goToMessage": "Ga naar bericht",

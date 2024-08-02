@@ -6,23 +6,24 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeViewUserSelectPageModal from "@/modal/fun/CringeViewUserSelectPage";
+import CountingBlacklistListSelectPageModal from "@/modal/fun/CountingBlacklistListSelectPage";
+import { BotPermissionsBitField } from "@/classes";
 
-export default class CringeViewUserSelectPageStartButtonComponent extends ButtonComponent {
+export default class CountingBlacklistListSelectPageStartButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeViewUserSelectPageStart")
+        .setCustomId("countingBlacklistListSelectPageStart")
         .setStyle(ButtonStyle.Secondary)
         .setLabel("placeholder");
 
     constructor() {
         super({
-            builder: CringeViewUserSelectPageStartButtonComponent.builder
+            builder: CountingBlacklistListSelectPageStartButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "countingBlacklistList",
             i.message.id
         );
         if (!context) {
@@ -47,7 +48,14 @@ export default class CringeViewUserSelectPageStartButtonComponent extends Button
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
+
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (
+            !permissions.has(
+                BotPermissionsBitField.Flags.ManageCountingBlacklist
+            ) ||
+            i.user.id !== context.pageMenuOwnerId
+        ) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -57,7 +65,7 @@ export default class CringeViewUserSelectPageStartButtonComponent extends Button
         }
 
         i.showModal(
-            CringeViewUserSelectPageModal.getTranslatedBuilder(
+            CountingBlacklistListSelectPageModal.getTranslatedBuilder(
                 i.locale,
                 this.client.lang
             )

@@ -27,13 +27,23 @@ export default class CringeViewUserNextPageButtonComponent extends ButtonCompone
             i.message.id
         );
         if (!context) {
+            const buttons = new ActionRowBuilder<ButtonBuilder>(
+                i.message.components[0].toJSON()
+            );
+            buttons.components.forEach(b => b.setDisabled(true));
+            await this.client.sender.reply(
+                i,
+                { embeds: i.message.embeds, components: [buttons] },
+                { method: "UPDATE" }
+            );
+
             this.client.sender.reply(
                 i,
-                { ephemeral: true, components: [] },
+                { ephemeral: true },
                 {
-                    langLocation: "misc.actionExpired",
+                    langLocation: "misc.pageMenuUnavailable",
                     msgType: "INVALID",
-                    method: "UPDATE"
+                    method: "FOLLOW_UP"
                 }
             );
             return { result: "ACTION_EXPIRED" };
@@ -52,13 +62,13 @@ export default class CringeViewUserNextPageButtonComponent extends ButtonCompone
             context.type === "received"
                 ? await this.client.prisma.cringes.count({
                       where: {
-                          Guilds: { discordId: i.guild!.id },
+                          Guild: { discordId: i.guild!.id },
                           ReceivedByUser: { discordId: user.id }
                       }
                   })
                 : await this.client.prisma.cringes.count({
                       where: {
-                          Guilds: { discordId: i.guild!.id },
+                          Guild: { discordId: i.guild!.id },
                           GivenByUser: { discordId: user.id }
                       }
                   });

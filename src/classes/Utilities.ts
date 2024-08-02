@@ -87,7 +87,7 @@ export class Utilities {
                 : await source.guild!.members.fetch(source.user.id);
         const groups = await this.client.prisma.groups.findMany({
             where: {
-                Guilds: { discordId: source.guild!.id },
+                Guild: { discordId: source.guild!.id },
                 OR: [
                     { Users: { some: { discordId: member.id } } },
                     {
@@ -128,6 +128,9 @@ export class Utilities {
         const cringes = await this.client.prisma.cringes.findMany({
             skip: (page - 1) * 10,
             take: 10,
+            orderBy: {
+                createdAt: "desc"
+            },
             where: {
                 ...(type === "received"
                     ? {
@@ -136,7 +139,7 @@ export class Utilities {
                           }
                       }
                     : { GivenByUser: { discordId: user.id } }),
-                Guilds: { discordId: i.guild!.id }
+                Guild: { discordId: i.guild!.id }
             },
             select: {
                 id: true,
@@ -235,19 +238,19 @@ export class Utilities {
             skip: (page - 1) * 10,
             take: 10,
             where: {
-                Guilds: { discordId: i.guild!.id }
+                Guilds: { every: { discordId: i.guild!.id } }
             },
             orderBy: {
                 ...(type === "received"
-                    ? { ReceivedCringes: { _count: "desc" } }
-                    : { GivenCringes: { _count: "desc" } })
+                    ? { CringesReceived: { _count: "desc" } }
+                    : { CringesGiven: { _count: "desc" } })
             },
             select: {
                 discordId: true,
                 _count: {
                     select: {
-                        ReceivedCringes: true,
-                        GivenCringes: true
+                        CringesReceived: true,
+                        CringesGiven: true
                     }
                 }
             }
@@ -259,7 +262,7 @@ export class Utilities {
                 "cringe.receivedLeaderboard",
                 {
                     topUsers: cringes
-                        .filter(c => c._count.ReceivedCringes > 0)
+                        .filter(c => c._count.CringesReceived > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -268,7 +271,7 @@ export class Utilities {
                                     i.locale,
                                     "cringe.wasCringeTimes",
                                     {
-                                        count: c._count.ReceivedCringes.toString()
+                                        count: c._count.CringesReceived.toString()
                                     }
                                 )}\n`),
                             ""
@@ -281,7 +284,7 @@ export class Utilities {
                 "cringe.givenLeaderboard",
                 {
                     topUsers: cringes
-                        .filter(c => c._count.GivenCringes > 0)
+                        .filter(c => c._count.CringesGiven > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -289,10 +292,136 @@ export class Utilities {
                                 }> ${this.client.lang.getString(
                                     i.locale,
                                     "cringe.givenCringeTimes",
-                                    { count: c._count.GivenCringes.toString() }
+                                    { count: c._count.CringesGiven.toString() }
                                 )}\n`),
                             ""
                         )
+                }
+            );
+        }
+    }
+
+    public async getCountingBlacklistListPage(
+        i: BaseInteraction,
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const blacklists = await this.client.prisma.blacklists.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where: {
+                Guild: { discordId: i.guild!.id }
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            select: {
+                id: true,
+                reason: true,
+                createdAt: true,
+                ReceivedByUser: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        return this.client.lang.getEmbed(
+            i.locale,
+            "counting.blacklistListEmbed",
+            {
+                blacklists: blacklists
+                    .map(b => {
+                        let string = `(${b.id}) <t:${Math.round(
+                            b.createdAt.getTime() / 1000
+                        )}:R> - <@${b.ReceivedByUser.discordId}>`;
+                        if (b.reason) {
+                            string += `\n${b.reason.substring(0, 50)}${
+                                b.reason.length > 50 ? "..." : ""
+                            }`;
+                        }
+                        return string;
+                    })
+                    .join("\n\n")
+            }
+        );
+    }
+
+    public async getCountingLeaderboardPage(
+        i: BaseInteraction,
+        type: "correct" | "incorrect" | "highest",
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const users = await this.client.prisma.countingStats.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : type === "incorrect"
+                      ? { incorrect: { gt: 0 } }
+                      : { highest: { gt: 0 } })
+            },
+            orderBy: {
+                ...(type === "correct"
+                    ? { correct: "desc" }
+                    : type === "incorrect"
+                      ? { incorrect: "desc" }
+                      : { highest: "desc" })
+            },
+            select: {
+                correct: true,
+                incorrect: true,
+                highest: true,
+                User: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        if (type === "correct") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.correctCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.correct}\n`),
+                        ""
+                    )
+                }
+            );
+        } else if (type === "incorrect") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.incorrectCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.incorrect}\n`),
+                        ""
+                    )
+                }
+            );
+        } else {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.highestCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.highest}\n`),
+                        ""
+                    )
                 }
             );
         }

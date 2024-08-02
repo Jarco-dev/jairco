@@ -3,21 +3,21 @@ import { Modal } from "@/structures";
 import {
     ModalSubmitInteraction,
     ModalBuilder,
-    LocaleString,
-    TextInputStyle,
     ActionRowBuilder,
     ModalActionRowComponentBuilder,
     TextInputBuilder,
+    TextInputStyle,
+    LocaleString,
     ButtonBuilder
 } from "discord.js";
 import { LanguageManager } from "@/classes";
-import CringeListPreviousPageButtonComponent from "@/button/fun/CringeViewUserPreviousPage";
-import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/CringeViewUserSelectPageStart";
-import CringeViewUserNextPageButtonComponent from "@/button/fun/CringeViewUserNextPage";
+import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/CountingLeaderboardPreviousPage";
+import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
+import CountingLeaderboardNextPageButtonComponent from "@/button/fun/CountingLeaderboardNextPage";
 
-export default class CringeViewUserSelectPageModal extends Modal {
+export default class CountingLeaderboardSelectPageModal extends Modal {
     public static readonly builder = new ModalBuilder()
-        .setCustomId("cringeViewUserSelectPage")
+        .setCustomId("countingLeaderboardSelectPage")
         .setTitle("placeholder")
         .setComponents([
             new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
@@ -30,7 +30,7 @@ export default class CringeViewUserSelectPageModal extends Modal {
 
     constructor() {
         super({
-            builder: CringeViewUserSelectPageModal.builder
+            builder: CountingLeaderboardSelectPageModal.builder
         });
     }
 
@@ -49,7 +49,7 @@ export default class CringeViewUserSelectPageModal extends Modal {
 
     public async run(i: ModalSubmitInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "countingLeaderboard",
             i.message!.id
         );
         if (!context) {
@@ -67,38 +67,26 @@ export default class CringeViewUserSelectPageModal extends Modal {
                 { ephemeral: true },
                 {
                     langLocation: "misc.pageMenuUnavailable",
-                    msgType: "INVALID"
+                    msgType: "INVALID",
+                    method: "FOLLOW_UP"
                 }
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
-            this.client.sender.reply(
-                i,
-                { ephemeral: true },
-                { langLocation: "misc.missingPermissions", msgType: "INVALID" }
-            );
-            return { result: "USER_MISSING_PERMISSIONS" };
-        }
 
-        const user = await this.client.users.fetch(context.userId);
-        const cringeCount =
-            context.type === "received"
-                ? await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          ReceivedByUser: { discordId: user.id }
-                      }
-                  })
-                : await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          GivenByUser: { discordId: user.id }
-                      }
-                  });
-        if (cringeCount === 0) {
+        const userCount = await this.client.prisma.countingStats.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(context.type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : context.type === "incorrect"
+                      ? { incorrect: { gt: 0 } }
+                      : { highest: { gt: 0 } })
+            }
+        });
+        if (userCount === 0) {
             this.client.redis.delMessageContext(
-                "cringeLeaderboard",
+                "countingLeaderboard",
                 i.message!.id
             );
             this.client.sender.reply(
@@ -113,7 +101,7 @@ export default class CringeViewUserSelectPageModal extends Modal {
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(cringeCount / 10);
+        const maxPage = Math.ceil(userCount / 10);
         const newPage = parseInt(i.fields.getTextInputValue("pageNumber"));
         if (isNaN(newPage) || newPage > maxPage) {
             this.client.sender.reply(
@@ -128,53 +116,55 @@ export default class CringeViewUserSelectPageModal extends Modal {
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const embed = await this.client.utils.getViewUserCringesPage(
+        const embed = await this.client.utils.getCountingLeaderboardPage(
             i,
-            user,
             context.type,
-            cringeCount,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CringeListPreviousPageButtonComponent.builder,
+            CountingLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CringeViewUserSelectPageStartButtonComponent.builder.data
+                CountingLeaderboardSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CringeViewUserNextPageButtonComponent.builder
+            CountingLeaderboardNextPageButtonComponent.builder
         );
 
         const reply = await this.client.sender.reply(i, {
             embeds: [embed],
-            components: [buttons],
+            components: userCount > 10 ? [buttons] : [],
             fetchReply: true
         });
         if (!reply) {
             this.client.sender.reply(
                 i,
-                {},
+                { ephemeral: true },
                 { msgType: "ERROR", langLocation: "misc.somethingWentWrong" }
             );
             i.message!.delete().catch(() => {});
             return {
                 result: "ERRORED",
-                note: "Cringe list select page message unavailable",
+                note: "Counting leaderboard page message unavailable",
                 error: new Error("Message unavailable")
             };
         }
 
         i.message!.delete().catch(() => {});
-        if (cringeCount > 10) {
+        if (userCount > 10) {
             this.client.redis.delMessageContext(
-                "cringeViewUser",
+                "countingLeaderboard",
                 i.message!.id
             );
-            this.client.redis.setMessageContext("cringeViewUser", reply.id, {
-                ...context,
-                page: newPage
-            });
+            this.client.redis.setMessageContext(
+                "countingLeaderboard",
+                reply.id,
+                {
+                    ...context,
+                    page: newPage
+                }
+            );
         } else {
             this.client.redis.delMessageContext(
-                "cringeViewUser",
+                "countingLeaderboard",
                 i.message!.id
             );
         }

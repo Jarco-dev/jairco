@@ -4,20 +4,20 @@ import {
     ModalSubmitInteraction,
     ModalBuilder,
     LocaleString,
-    TextInputStyle,
     ActionRowBuilder,
     ModalActionRowComponentBuilder,
     TextInputBuilder,
+    TextInputStyle,
     ButtonBuilder
 } from "discord.js";
-import { LanguageManager } from "@/classes";
-import CringeListPreviousPageButtonComponent from "@/button/fun/CringeViewUserPreviousPage";
-import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/CringeViewUserSelectPageStart";
-import CringeViewUserNextPageButtonComponent from "@/button/fun/CringeViewUserNextPage";
+import { BotPermissionsBitField, LanguageManager } from "@/classes";
+import CountingBlacklistListPreviousPageButtonComponent from "@/button/fun/CountingBlacklistListPreviousPage";
+import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/CountingBlacklistListSelectPageStart";
+import CountingBlacklistListNextPageButtonComponent from "@/button/fun/CountingBlacklistListNextPage";
 
-export default class CringeViewUserSelectPageModal extends Modal {
+export default class CountingBlacklistListSelectPageModal extends Modal {
     public static readonly builder = new ModalBuilder()
-        .setCustomId("cringeViewUserSelectPage")
+        .setCustomId("countingBlacklistListSelectPage")
         .setTitle("placeholder")
         .setComponents([
             new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
@@ -30,7 +30,7 @@ export default class CringeViewUserSelectPageModal extends Modal {
 
     constructor() {
         super({
-            builder: CringeViewUserSelectPageModal.builder
+            builder: CountingBlacklistListSelectPageModal.builder
         });
     }
 
@@ -49,7 +49,7 @@ export default class CringeViewUserSelectPageModal extends Modal {
 
     public async run(i: ModalSubmitInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "countingBlacklistList",
             i.message!.id
         );
         if (!context) {
@@ -67,12 +67,20 @@ export default class CringeViewUserSelectPageModal extends Modal {
                 { ephemeral: true },
                 {
                     langLocation: "misc.pageMenuUnavailable",
-                    msgType: "INVALID"
+                    msgType: "INVALID",
+                    method: "FOLLOW_UP"
                 }
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
+
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (
+            !permissions.has(
+                BotPermissionsBitField.Flags.ManageCountingBlacklist
+            ) ||
+            i.user.id !== context.pageMenuOwnerId
+        ) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -81,22 +89,10 @@ export default class CringeViewUserSelectPageModal extends Modal {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const user = await this.client.users.fetch(context.userId);
-        const cringeCount =
-            context.type === "received"
-                ? await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          ReceivedByUser: { discordId: user.id }
-                      }
-                  })
-                : await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          GivenByUser: { discordId: user.id }
-                      }
-                  });
-        if (cringeCount === 0) {
+        const blacklistCount = await this.client.prisma.blacklists.count({
+            where: { type: "COUNTING", Guild: { discordId: i.guild!.id } }
+        });
+        if (blacklistCount === 0) {
             this.client.redis.delMessageContext(
                 "cringeLeaderboard",
                 i.message!.id
@@ -113,7 +109,7 @@ export default class CringeViewUserSelectPageModal extends Modal {
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(cringeCount / 10);
+        const maxPage = Math.ceil(blacklistCount / 10);
         const newPage = parseInt(i.fields.getTextInputValue("pageNumber"));
         if (isNaN(newPage) || newPage > maxPage) {
             this.client.sender.reply(
@@ -128,53 +124,54 @@ export default class CringeViewUserSelectPageModal extends Modal {
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const embed = await this.client.utils.getViewUserCringesPage(
+        const embed = await this.client.utils.getCountingBlacklistListPage(
             i,
-            user,
-            context.type,
-            cringeCount,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CringeListPreviousPageButtonComponent.builder,
+            CountingBlacklistListPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CringeViewUserSelectPageStartButtonComponent.builder.data
+                CountingBlacklistListSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CringeViewUserNextPageButtonComponent.builder
+            CountingBlacklistListNextPageButtonComponent.builder
         );
 
         const reply = await this.client.sender.reply(i, {
             embeds: [embed],
-            components: [buttons],
+            components: blacklistCount > 10 ? [buttons] : [],
             fetchReply: true
         });
         if (!reply) {
             this.client.sender.reply(
                 i,
-                {},
+                { ephemeral: true },
                 { msgType: "ERROR", langLocation: "misc.somethingWentWrong" }
             );
             i.message!.delete().catch(() => {});
             return {
                 result: "ERRORED",
-                note: "Cringe list select page message unavailable",
+                note: "Counting blacklist list page message unavailable",
                 error: new Error("Message unavailable")
             };
         }
 
         i.message!.delete().catch(() => {});
-        if (cringeCount > 10) {
+        if (blacklistCount > 10) {
             this.client.redis.delMessageContext(
-                "cringeViewUser",
+                "countingBlacklistList",
                 i.message!.id
             );
-            this.client.redis.setMessageContext("cringeViewUser", reply.id, {
-                ...context,
-                page: newPage
-            });
+            this.client.redis.setMessageContext(
+                "countingBlacklistList",
+                reply.id,
+                {
+                    ...context,
+                    page: newPage
+                }
+            );
         } else {
             this.client.redis.delMessageContext(
-                "cringeViewUser",
+                "countingBlacklistList",
                 i.message!.id
             );
         }

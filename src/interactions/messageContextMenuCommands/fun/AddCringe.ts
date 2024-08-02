@@ -24,6 +24,21 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
     public async run(
         i: MessageContextMenuCommandInteraction
     ): Promise<HandlerResult> {
+        const settings = await this.client.cacheableData.getCringeSettings(
+            i.guild!.id
+        );
+        if (!settings?.cringeEnabled) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "misc.featureDisabled",
+                    msgType: "INVALID"
+                }
+            );
+            return { result: "FEATURE_DISABLED" };
+        }
+
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (!permissions.has(BotPermissionsBitField.Flags.AddCringe)) {
             this.client.sender.reply(
@@ -45,7 +60,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
 
         const existingCringe = await this.client.prisma.cringes.findUnique({
             where: {
-                Guilds: { discordId: i.guild!.id },
+                Guild: { discordId: i.guild!.id },
                 messageId: i.targetMessage.id
             },
             select: { GivenByUser: { select: { discordId: true } } }
@@ -68,7 +83,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
         const [cringeCount] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
-                    Guilds: { discordId: i.guild!.id },
+                    Guild: { discordId: i.guild!.id },
                     ReceivedByUser: { discordId: i.targetMessage.author.id }
                 }
             }),
@@ -77,7 +92,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     channelId: i.targetMessage.channelId,
                     messageId: i.targetMessage.id,
                     messageContent: i.targetMessage.content,
-                    Guilds: {
+                    Guild: {
                         connectOrCreate: {
                             where: { discordId: i.guild!.id },
                             create: { discordId: i.guild!.id }
@@ -86,14 +101,10 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     ReceivedByUser: {
                         connectOrCreate: {
                             where: {
-                                Guilds: { discordId: i.guild!.id },
-                                guildIdAndDiscordId:
-                                    i.guild!.id + i.targetMessage.author.id
+                                discordId: i.targetMessage.author.id
                             },
                             create: {
                                 discordId: i.targetMessage.author.id,
-                                guildIdAndDiscordId:
-                                    i.guild!.id + i.targetMessage.author.id,
                                 Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
@@ -106,12 +117,10 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                     GivenByUser: {
                         connectOrCreate: {
                             where: {
-                                Guilds: { discordId: i.guild!.id },
-                                guildIdAndDiscordId: i.guild!.id + i.user.id
+                                discordId: i.user.id
                             },
                             create: {
                                 discordId: i.user.id,
-                                guildIdAndDiscordId: i.guild!.id + i.user.id,
                                 Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },

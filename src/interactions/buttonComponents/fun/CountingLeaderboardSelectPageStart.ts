@@ -6,23 +6,23 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeViewUserSelectPageModal from "@/modal/fun/CringeViewUserSelectPage";
+import CountingLeaderboardSelectPageModal from "@/modal/fun/CountingLeaderboardSelectPage";
 
-export default class CringeViewUserSelectPageStartButtonComponent extends ButtonComponent {
+export default class CountingLeaderboardSelectPageStartButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeViewUserSelectPageStart")
+        .setCustomId("countingLeaderboardSelectPageStart")
         .setStyle(ButtonStyle.Secondary)
         .setLabel("placeholder");
 
     constructor() {
         super({
-            builder: CringeViewUserSelectPageStartButtonComponent.builder
+            builder: CountingLeaderboardSelectPageStartButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "countingLeaderboard",
             i.message.id
         );
         if (!context) {
@@ -47,17 +47,9 @@ export default class CringeViewUserSelectPageStartButtonComponent extends Button
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
-            this.client.sender.reply(
-                i,
-                { ephemeral: true },
-                { langLocation: "misc.missingPermissions", msgType: "INVALID" }
-            );
-            return { result: "USER_MISSING_PERMISSIONS" };
-        }
 
         i.showModal(
-            CringeViewUserSelectPageModal.getTranslatedBuilder(
+            CountingLeaderboardSelectPageModal.getTranslatedBuilder(
                 i.locale,
                 this.client.lang
             )

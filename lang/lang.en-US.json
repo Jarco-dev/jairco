@@ -9,17 +9,101 @@
             "selectAPage": "Select a page to go to",
             "pageNumber": "Page number",
             "invalidPage": "The page number must be a valid number between 1 and {{maxPage}}",
-            "pageMenuUnavailable": "This menu is no longer available, please rerun the command"
-        },
-        "invite": {
-            "invite": "Invite",
-            "pressToInvite": "Press the button below to invite the bot to a server"
+            "pageMenuUnavailable": "This menu is no longer available, please rerun the command",
+            "featureDisabled": "This feature is disabled in this server",
+            "featureAlreadyEnabled": "This feature is already enabled",
+            "featureAlreadyDisabled": "This feature is already disabled",
+            "featureNowEnabled": "This feature has been enabled",
+            "featureNowDisabled": "This feature has been disabled"
         },
         "permissions": {
             "Administrator": "Administrator",
             "ManageGroups": "Manage groups",
             "AddCringe": "Add cringe",
-            "ManageCringe": "Manage cringe"
+            "ManageCringe": "Manage cringe",
+            "ManageCounting": "Manage counting",
+            "ManageCountingBlacklist": "Manage counting blacklist"
+        },
+        "counting": {
+            "channelSetCanceled": "Setting the counting channel has been canceled",
+            "channelSet": "The counting channel has been set to {{channel}}",
+            "newHighestCount": "{{newCount}} has just beaten the old highscore of {{oldCount}} by {{delta}}",
+            "noChannelSet": "A counting channel hasn't been configured yet",
+            "viewChannel": "The current counting channel is set to {{channel}}",
+            "reasonTooLong": "Please keep the reason 255 characters or less",
+            "alreadyBlacklisted": "{{user}} is already blacklisted from counting",
+            "notBlacklisted": "{{user}} is not blacklisted from counting",
+            "cantBlacklistBot": "This user is a bot, bots cannot be blacklisted",
+            "blacklistAdded": "{{user}} is now blacklisted from counting",
+            "blacklistRemoved": "{{user}} is no longer blacklisted from counting",
+            "noBlacklistsExist": "There are currently no counting blacklists",
+            "invalidBlacklistId": "The given blacklist id does not exist",
+            "noUsersOnLeaderboard": "No users are on this leaderboard",
+            "validatedCountDeletedEmbed": {
+                "title": "Validated count deleted",
+                "description": [
+                    "{{user}} wanted to troll by deleting a message but got blacklisted instead",
+                    "The current number is {{currentCount}} so the next one should be **{{nextCount}}**"
+                ]
+            },
+            "incorrectCountEmbed": {
+                "title": "Incorrect number, counter has been reset"
+            },
+            "channelConfirmEmbed": {
+                "title": "A counting channel already exists!",
+                "description": [
+                    "{{oldChannel}} is already set as the counting channel",
+                    "are you sure you want to overwrite it with {{newChannel}}?"
+                ]
+            },
+            "botMissingPermsEmbed": {
+                "title": "The bot is missing some permissions!",
+                "description": [
+                    "Please make sure the bot has the following permissions in {{channel}}",
+                    "",
+                    "`View channel`, `Manage Channel`, `Send messages`, `Manage messages`, `Add reactions`"
+                ]
+            },
+            "blacklistListEmbed": {
+                "title": "Counting blacklists",
+                "description": "{{blacklists}}"
+            },
+            "blacklistEmbed": {
+                "title": "View blacklist",
+                "description": [
+                    "**ID:** {{id}}",
+                    "**When:** {{createdAt}}",
+                    "**Given by:** {{givenByUser}}",
+                    "**Received by:** {{receivedByUser}}",
+                    "**Reason:** {{reason}}"
+                ]
+            },
+            "correctCountedLeaderboardEmbed": {
+                "title": "Correctly counted leaderboard",
+                "description": "{{topUsers}}"
+            },
+            "incorrectCountedLeaderboardEmbed": {
+                "title": "Incorrectly counted leaderboard",
+                "description": "{{topUsers}}"
+            },
+            "highestCountedLeaderboardEmbed": {
+                "title": "Highest counted leaderboard",
+                "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server counting statistics",
+                "description": [
+                    "**Highscore:** {{highest}}",
+                    "**Correctly counted:** {{correct}}",
+                    "**Incorrectly counted:** {{incorrect}}",
+                    "**Users counted correctly:** {{usersCorrect}}",
+                    "**Users counted incorrectly:** {{usersIncorrect}}"
+                ]
+            }
+        },
+        "invite": {
+            "invite": "Invite",
+            "pressToInvite": "Press the button below to invite the bot to a server"
         },
         "cringe": {
             "goToMessage": "Go to message",
