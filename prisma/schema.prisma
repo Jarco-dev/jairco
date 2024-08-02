@@ -25,7 +25,7 @@ model Users {
   discordId          String          @unique
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
-  Guild              Guilds[]
+  Guilds             Guilds[]
   Groups             Groups[]
   CringesReceived    Cringes[]       @relation(name: "Cringes_userToUser")
   CringesGiven       Cringes[]       @relation(name: "Cringes_byUserToUser")

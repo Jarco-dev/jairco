@@ -77,7 +77,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                                 where: { discordId: msg.author.id },
                                 create: {
                                     discordId: msg.author.id,
-                                    Guild: {
+                                    Guilds: {
                                         connect: { discordId: msg.guild.id }
                                     }
                                 }
@@ -88,7 +88,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                                 where: { discordId: this.client.user!.id },
                                 create: {
                                     discordId: this.client.user!.id,
-                                    Guild: {
+                                    Guilds: {
                                         connect: { discordId: msg.guild.id }
                                     }
                                 }

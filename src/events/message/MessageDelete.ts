@@ -73,7 +73,7 @@ export default class MessageDeleteEventHandler extends EventHandler<"messageDele
                             where: { discordId: msg.author.id },
                             create: {
                                 discordId: msg.author.id,
-                                Guild: {
+                                Guilds: {
                                     connect: { discordId: msg.guild.id }
                                 }
                             }
@@ -84,7 +84,7 @@ export default class MessageDeleteEventHandler extends EventHandler<"messageDele
                             where: { discordId: this.client.user!.id },
                             create: {
                                 discordId: this.client.user!.id,
-                                Guild: {
+                                Guilds: {
                                     connect: { discordId: msg.guild.id }
                                 }
                             }

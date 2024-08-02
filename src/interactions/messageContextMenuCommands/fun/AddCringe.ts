@@ -105,7 +105,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                             },
                             create: {
                                 discordId: i.targetMessage.author.id,
-                                Guild: {
+                                Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
                                         create: { discordId: i.guild!.id }
@@ -121,7 +121,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                             },
                             create: {
                                 discordId: i.user.id,
-                                Guild: {
+                                Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
                                         create: { discordId: i.guild!.id }

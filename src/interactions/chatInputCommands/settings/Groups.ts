@@ -981,7 +981,7 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
                         },
                         create: {
                             discordId: user.id,
-                            Guild: {
+                            Guilds: {
                                 connectOrCreate: {
                                     where: { discordId: i.guild!.id },
                                     create: { discordId: i.guild!.id }
