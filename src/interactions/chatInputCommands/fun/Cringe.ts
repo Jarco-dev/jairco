@@ -408,7 +408,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                             },
                             create: {
                                 discordId: user.id,
-                                Guild: {
+                                Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
                                         create: { discordId: i.guild!.id }
@@ -424,7 +424,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                             },
                             create: {
                                 discordId: i.user.id,
-                                Guild: {
+                                Guilds: {
                                     connectOrCreate: {
                                         where: { discordId: i.guild!.id },
                                         create: { discordId: i.guild!.id }
