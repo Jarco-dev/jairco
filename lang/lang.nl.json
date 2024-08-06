@@ -46,6 +46,13 @@
                     "Het huidige nummer is {{currentCount}} dus de volgende moet **{{nextCount}}** zijn"
                 ]
             },
+            "validatedCountEditedEmbed": {
+                "title": "Gevalideerd nummer bewerkt",
+                "description": [
+                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "Het huidige nummer is {{currentCount}} dus de volgende moet **{{nextCount}}** zijn"
+                ]
+            },
             "incorrectCountEmbed": {
                 "title": "Onjuist nummer, tellen is gereset"
             },

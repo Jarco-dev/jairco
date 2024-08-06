@@ -46,6 +46,13 @@
                     "The current number is {{currentCount}} so the next one should be **{{nextCount}}**"
                 ]
             },
+            "validatedCountEditedEmbed": {
+                "title": "Validated count edited",
+                "description": [
+                    "{{user}} wanted to troll by editing a number but got blacklisted instead",
+                    "The current number is {{currentCount}} so the next one should be **{{nextCount}}**"
+                ]
+            },
             "incorrectCountEmbed": {
                 "title": "Incorrect number, counter has been reset"
             },
