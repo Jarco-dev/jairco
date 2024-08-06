@@ -111,6 +111,13 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                             nl: "Hoogste geteld"
                                         },
                                         value: "highest"
+                                    },
+                                    {
+                                        name: "Correct to incorrect ratio",
+                                        name_localizations: {
+                                            nl: "Correcte tot onjuiste verhouding"
+                                        },
+                                        value: "ratio"
                                     }
                                 ])
                         )
@@ -455,11 +462,12 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         const type = i.options.getString("type", true) as
             | "correct"
             | "incorrect"
-            | "highest";
+            | "highest"
+            | "ratio";
         const userCount = await this.client.prisma.countingStats.count({
             where: {
                 Guild: { discordId: i.guild!.id },
-                ...(type === "correct"
+                ...(type === "correct" || type === "ratio"
                     ? { correct: { gt: 0 } }
                     : type === "incorrect"
                       ? { incorrect: { gt: 0 } }

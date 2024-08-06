@@ -13,8 +13,8 @@
             "featureDisabled": "Deze functie is uitgeschakeld in deze server",
             "featureAlreadyEnabled": "Deze functie is al ingeschakeld",
             "featureAlreadyDisabled": "Deze functie is al uitgeschakeld",
-            "featureNowEnabled": "De tellen functie is ingeschakeld",
-            "featureNowDisabled": "De tellen functie is uitgeschakeld"
+            "featureNowEnabled": "De functie is ingeschakeld",
+            "featureNowDisabled": "De functie is uitgeschakeld"
         },
         "permissions": {
             "Administrator": "Beheerder",
@@ -41,6 +41,13 @@
             "noUsersOnLeaderboard": "Er staan geen gebruikers op dit scoreboard",
             "validatedCountDeletedEmbed": {
                 "title": "Gevalideerd nummer verwijdert",
+                "description": [
+                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "Het huidige nummer is {{currentCount}} dus de volgende moet **{{nextCount}}** zijn"
+                ]
+            },
+            "validatedCountEditedEmbed": {
+                "title": "Gevalideerd nummer bewerkt",
                 "description": [
                     "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
                     "Het huidige nummer is {{currentCount}} dus de volgende moet **{{nextCount}}** zijn"
@@ -88,6 +95,10 @@
             },
             "highestCountedLeaderboardEmbed": {
                 "title": "Hoogst geteld scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "ratioCountedLeaderboardEmbed": {
+                "title": "Correct naar incorrect verhouding scoreboard",
                 "description": "{{topUsers}}"
             },
             "statisticsEmbed": {
