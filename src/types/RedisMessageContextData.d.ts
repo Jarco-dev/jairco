@@ -36,7 +36,7 @@ export interface RedisMessageContextData {
     };
     countingLeaderboard: {
         page: number;
-        type: "correct" | "incorrect" | "highest";
+        type: "correct" | "incorrect" | "highest" | "ratio";
         pageMenuOwnerId: Snowflake;
     };
 }

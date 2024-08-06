@@ -90,6 +90,10 @@
                 "title": "Highest counted leaderboard",
                 "description": "{{topUsers}}"
             },
+            "ratioCountedLeaderboardEmbed": {
+                "title": "Correct to incorrect ratio leaderboard",
+                "description": "{{topUsers}}"
+            },
             "statisticsEmbed": {
                 "title": "Server counting statistics",
                 "description": [

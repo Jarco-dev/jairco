@@ -5,6 +5,7 @@ import {
     GuildChannelResolvable,
     GuildMember,
     PermissionResolvable,
+    Snowflake,
     User
 } from "discord.js";
 
@@ -349,9 +350,34 @@ export class Utilities {
 
     public async getCountingLeaderboardPage(
         i: BaseInteraction,
-        type: "correct" | "incorrect" | "highest",
+        type: "correct" | "incorrect" | "highest" | "ratio",
         page = 1
     ): Promise<EmbedBuilder> {
+        if (type === "ratio") {
+            const users: { discordId: Snowflake; ratio: number }[] = await this
+                .client.prisma
+                .$queryRaw`SELECT Users.discordId, CASE WHEN correct / incorrect IS NULL THEN correct WHEN correct / incorrect=0 THEN -incorrect ELSE correct / incorrect END AS ratio FROM CountingStats JOIN Users ON userId=Users.id ORDER BY ratio DESC OFFSET ${
+                (page - 1) * 10
+            } ROWS FETCH NEXT 10 ROWS ONLY`;
+
+            return this.client.lang.getEmbed(
+                i.locale,
+                "counting.ratioCountedLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.discordId
+                            }> - ${c.ratio
+                                .toFixed(1)
+                                .replace(".0", "")
+                                .replace(".", ",")}\n`),
+                        ""
+                    )
+                }
+            );
+        }
+
         const users = await this.client.prisma.countingStats.findMany({
             skip: (page - 1) * 10,
             take: 10,

@@ -90,6 +90,10 @@
                 "title": "Hoogst geteld scoreboard",
                 "description": "{{topUsers}}"
             },
+            "ratioCountedLeaderboardEmbed": {
+                "title": "Correct naar incorrect verhouding scoreboard",
+                "description": "{{topUsers}}"
+            },
             "statisticsEmbed": {
                 "title": "Server tellen statistieken",
                 "description": [
