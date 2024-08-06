@@ -13,8 +13,8 @@
             "featureDisabled": "Deze functie is uitgeschakeld in deze server",
             "featureAlreadyEnabled": "Deze functie is al ingeschakeld",
             "featureAlreadyDisabled": "Deze functie is al uitgeschakeld",
-            "featureNowEnabled": "De tellen functie is ingeschakeld",
-            "featureNowDisabled": "De tellen functie is uitgeschakeld"
+            "featureNowEnabled": "De functie is ingeschakeld",
+            "featureNowDisabled": "De functie is uitgeschakeld"
         },
         "permissions": {
             "Administrator": "Beheerder",
