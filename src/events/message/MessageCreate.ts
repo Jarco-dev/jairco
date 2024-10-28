@@ -10,49 +10,19 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
     }
 
     public run(msg: Message): HandlerResult | Promise<HandlerResult> {
-        // TODO: Make a permanent solution
         try {
-            this.runQuestionOfTheDayPing(msg);
+            return this.runCounting(msg);
         } catch (err: any) {
             this.client.logger.error(
                 "Error while handling message for counting",
                 err
             );
-        }
-
-        try {
-            this.runCounting(msg);
-        } catch (err: any) {
-            this.client.logger.error(
-                "Error while handling message for counting",
-                err
-            );
-        }
-
-        return { result: "SUCCESS" };
-    }
-
-    // TODO: Make a permanent solution
-    private async runQuestionOfTheDayPing(
-        msg: Message
-    ): Promise<HandlerResult> {
-        if (msg.author.bot || !msg.inGuild()) {
             return {
-                result: "OTHER",
-                note: "Message is from bot or not in guild"
+                result: "ERRORED",
+                note: "Error while running counting",
+                error: err
             };
         }
-
-        if (msg.channelId !== this.client.sConfig.QOTD_CHANNEL)
-            return {
-                result: "OTHER",
-                note: "Not in question of the day channel"
-            };
-        this.client.sender.msgChannel(msg.channel, {
-            content: `<@&${this.client.sConfig.QOTD_ROLE}>`
-        });
-
-        return { result: "SUCCESS" };
     }
 
     private async runCounting(msg: Message): Promise<HandlerResult> {
