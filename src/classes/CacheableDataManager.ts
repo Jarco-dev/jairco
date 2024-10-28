@@ -54,7 +54,6 @@ export class CacheableDataManager {
                     settings.currentCount = parseInt(setting.value);
                     break;
                 case "CURRENT_COUNT_USER":
-                    this.client.logger.debug(setting);
                     settings.currentCountUser = setting.value;
                     break;
             }
