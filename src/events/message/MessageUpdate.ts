@@ -1,6 +1,6 @@
 import { HandlerResult } from "@/types";
 import { EventHandler } from "@/structures";
-import {Message} from "discord.js";
+import { Message } from "discord.js";
 
 export default class MessageUpdateEventHandler extends EventHandler<"messageUpdate"> {
     constructor() {
@@ -9,7 +9,10 @@ export default class MessageUpdateEventHandler extends EventHandler<"messageUpda
         });
     }
 
-    public run(oldMsg: Message, newMsg: Message): HandlerResult | Promise<HandlerResult> {
+    public run(
+        oldMsg: Message,
+        newMsg: Message
+    ): HandlerResult | Promise<HandlerResult> {
         try {
             return this.runCounting(oldMsg, newMsg);
         } catch (err: any) {
@@ -25,7 +28,10 @@ export default class MessageUpdateEventHandler extends EventHandler<"messageUpda
         }
     }
 
-    private async runCounting(oldMsg: Message, newMsg: Message): Promise<HandlerResult> {
+    private async runCounting(
+        oldMsg: Message,
+        newMsg: Message
+    ): Promise<HandlerResult> {
         if (newMsg.author.bot || !newMsg.inGuild())
             return {
                 result: "OTHER",
@@ -55,9 +61,13 @@ export default class MessageUpdateEventHandler extends EventHandler<"messageUpda
             };
         }
 
-        const regex = /^[0-9]+/
-        const oldCount = regex.test(oldMsg.content) ? parseInt(regex.exec(oldMsg.content)![0]) : undefined;
-        const newCount = regex.test(newMsg.content) ? parseInt(regex.exec(newMsg.content)![0]) : undefined;
+        const regex = /^[0-9]+/;
+        const oldCount = regex.test(oldMsg.content)
+            ? parseInt(regex.exec(oldMsg.content)![0])
+            : undefined;
+        const newCount = regex.test(newMsg.content)
+            ? parseInt(regex.exec(newMsg.content)![0])
+            : undefined;
         if (oldCount === newCount) {
             return { result: "OTHER", note: "Number is still present" };
         }
