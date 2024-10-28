@@ -94,6 +94,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         }
 
         if (count !== (settings?.currentCount ?? 0) + 1) {
+            const highestCountBeaten = (settings?.currentCount ?? 0) > (settings.highestCount ?? 0);
             await this.client.prisma.$transaction([
                 this.client.prisma.blacklists.create({
                     data: {
@@ -142,7 +143,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         type: { in: ["CURRENT_COUNT", "CURRENT_COUNT_USER"] }
                     }
                 }),
-                ...(count > (settings.highestCount ?? 0)
+                ...(highestCountBeaten
                     ? [
                           this.client.prisma.guildSettings.upsert({
                               where: {
@@ -173,14 +174,14 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 ...settings,
                 currentCount: undefined,
                 currentCountUser: undefined,
-                highestCount: settings.currentCount
+                ...((highestCountBeaten) ? ({highestCount: settings.currentCount}) : ({}))
             });
 
             const embed = this.client.lang.getEmbed(
                 this.client.lang.default,
                 "counting.incorrectCountEmbed"
             );
-            if (count > (settings.highestCount ?? 0)) {
+            if (highestCountBeaten) {
                 embed.setDescription(
                     this.client.lang.getString(
                         this.client.lang.default,
