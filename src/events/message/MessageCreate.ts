@@ -12,7 +12,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
     public run(msg: Message): HandlerResult | Promise<HandlerResult> {
         // TODO: Make a permanent solution
         try {
-            return this.runQuestionOfTheDayPing(msg);
+            this.runQuestionOfTheDayPing(msg);
         } catch (err: any) {
             this.client.logger.error(
                 "Error while handling message for counting",
@@ -21,7 +21,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         }
 
         try {
-            return this.runCounting(msg);
+            this.runCounting(msg);
         } catch (err: any) {
             this.client.logger.error(
                 "Error while handling message for counting",
