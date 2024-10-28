@@ -12,6 +12,8 @@ services:
             LOG_LEVEL: ${LOG_LEVEL}
             METRICS_PORT: ${METRICS_PORT}
             DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+            QOTD_CHANNEL: ${QOTD_CHANNEL}
+            QOTD_ROLE: ${QOTD_ROLE}
         volumes:
             - "bot_data:/usr/src/app/storage"
         depends_on:
