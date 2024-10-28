@@ -16,6 +16,10 @@ export class SecretConfig {
     public LOG_LEVEL = process.env.LOG_LEVEL as LogLevel;
     public METRICS_PORT = parseInt(process.env.METRICS_PORT ?? "NaN");
 
+    // TODO: Remove after implementing permanent solution
+    public QOTD_CHANNEL = process.env.QOTD_CHANNEL as string;
+    public QOTD_ROLE = process.env.QOTD_ROLE as string;
+
     constructor() {}
 
     public validate(logger: Logger) {
@@ -67,6 +71,14 @@ export class SecretConfig {
             errors.push("METRICS_PORT is required but not given");
         } else if (isNaN(this.METRICS_PORT)) {
             errors.push("METRICS_PORT is a invalid value");
+        }
+
+        if (!this.QOTD_CHANNEL) {
+            errors.push("QOTD_CHANNEL is required but not given");
+        }
+
+        if (!this.QOTD_ROLE) {
+            errors.push("QOTD_ROLE is required but not given");
         }
 
         if (errors.length > 0) {
