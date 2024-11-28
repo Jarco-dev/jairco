@@ -133,7 +133,6 @@
             "cringeGivenWasReset": "Cringe gegeven is gereset voor {{user}}",
             "cringeReceivedWasReset": "Cringe ontvangen is gereset voor {{user}}",
             "cringeResetCanceled": "Cringe reset is geannuleerd",
-            "cringeAddTip": "Tip: Als je cringe geeft via rechts klikken (of lang drukken op mobiel) op een bericht > apps > cringe toevoegen bewaard hij het bericht",
             "contextMenuTipEmbed": {
                 "title": "Cringe toevoegen en het bericht bewaren het kan!",
                 "description": [
