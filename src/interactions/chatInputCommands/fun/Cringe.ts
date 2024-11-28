@@ -437,7 +437,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             })
         ]);
 
-        this.client.sender.reply(
+        await this.client.sender.reply(
             i,
             { content: user.toString() },
             {
@@ -450,6 +450,16 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 }
             }
         );
+
+        const cringeTipTimeout = await this.client.redis.getCringeAddTipTimeout(i.user.id);
+        if (!cringeTipTimeout) {
+            this.client.sender.reply(i, { ephemeral: true }, {
+                langType: "EMBED",
+                langLocation: "cringe.contextMenuTipEmbed",
+                method: "FOLLOW_UP"
+            });
+            this.client.redis.setCringeAddTipTimeout(i.user.id, new Date());
+        }
 
         return { result: "SUCCESS" };
     }
