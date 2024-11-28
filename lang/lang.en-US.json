@@ -133,6 +133,14 @@
             "cringeGivenWasReset": "Cringe given has been reset for {{user}}",
             "cringeReceivedWasReset": "Cringe received has been reset for {{user}}",
             "cringeResetCanceled": "Cringe reset has been canceled",
+            "contextMenuTipEmbed": {
+                "title": "Add cringe and save the message it's possible!",
+                "description": [
+                    "1. Right click (or hold down for mobile) on the desired message",
+                    "2. Go to `apps`",
+                    "3. Click on `add cringe`"
+                ]
+            },
             "addedEmbed": {
                 "title": "Cringe added to {{user}} they now have {{cringeCount}} cringe(s)",
                 "description": "{{messageContent}}"
