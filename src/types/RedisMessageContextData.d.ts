@@ -39,4 +39,8 @@ export interface RedisMessageContextData {
         type: "correct" | "incorrect" | "highest" | "ratio";
         pageMenuOwnerId: Snowflake;
     };
+    calendarEvents: {
+        page: number;
+        pageMenuOwnerId: Snowflake;
+    };
 }

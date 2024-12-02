@@ -70,7 +70,7 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
         });
         if (blacklistCount === 0) {
             this.client.redis.delMessageContext(
-                "cringeLeaderboard",
+                "countingBlacklistList",
                 i.message.id
             );
             this.client.sender.reply(
