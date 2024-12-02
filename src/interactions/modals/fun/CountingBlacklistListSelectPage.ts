@@ -94,7 +94,7 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
         });
         if (blacklistCount === 0) {
             this.client.redis.delMessageContext(
-                "cringeLeaderboard",
+                "countingBlacklistList",
                 i.message!.id
             );
             this.client.sender.reply(
