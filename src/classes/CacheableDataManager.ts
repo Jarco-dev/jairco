@@ -4,7 +4,8 @@ import {
     GuildCountingSettings,
     BlacklistData,
     Camelize,
-    GuildCringeSettings
+    GuildCringeSettings,
+    GuildCalendarSettings
 } from "@/types";
 import Prisma from "@prisma/client";
 
@@ -125,6 +126,43 @@ export class CacheableDataManager {
         }
 
         this.client.redis.setGuildSettings("cringe", guildId, settings);
+
+        return settings;
+    }
+
+    public async getCalendarSettings(
+        guildId: Snowflake
+    ): Promise<GuildCalendarSettings | undefined> {
+        const cache: GuildCalendarSettings | undefined =
+            await this.client.redis.getGuildSettings("calendar", guildId);
+        if (cache) return cache;
+
+        const settingTypes: Prisma.GuildSetting[] = [
+            "CALENDAR_ENABLED",
+            "CALENDAR_AUTO_DELETE"
+        ];
+        const dbSettings = await this.client.prisma.guildSettings.findMany({
+            where: {
+                type: { in: settingTypes },
+                Guild: { discordId: guildId }
+            },
+            select: { type: true, value: true }
+        });
+        if (dbSettings.length === 0) return undefined;
+
+        const settings: GuildCalendarSettings = {};
+        for (const setting of dbSettings) {
+            switch (setting.type) {
+                case "CALENDAR_ENABLED":
+                    settings.calendarEnabled = !!parseInt(setting.value);
+                    break;
+                case "CALENDAR_AUTO_DELETE":
+                    settings.calendarAutoDelete = !!parseInt(setting.value);
+                    break;
+            }
+        }
+
+        this.client.redis.setGuildSettings("calendar", guildId, settings);
 
         return settings;
     }

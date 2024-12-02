@@ -16,7 +16,7 @@ export class RedisClient {
         messageContext: "messageContext",
         guildSettings: "guildSettings",
         blacklist: "blacklist",
-        cringeAddTipTimeout: "cringeAddTipTimeout",
+        cringeAddTipTimeout: "cringeAddTipTimeout"
     };
 
     private messageContextExpiry: {
@@ -29,7 +29,8 @@ export class RedisClient {
         cringeLeaderboard: 60 * 15,
         countingChannelSet: 60 * 5,
         countingBlacklistList: 60 * 15,
-        countingLeaderboard: 60 * 15
+        countingLeaderboard: 60 * 15,
+        calendarEvents: 60 * 15
     };
 
     constructor(client: Client) {
@@ -171,7 +172,10 @@ export class RedisClient {
         );
     }
 
-    public async setCringeAddTipTimeout(userId: Snowflake, date: Date): Promise<Date | undefined> {
+    public async setCringeAddTipTimeout(
+        userId: Snowflake,
+        date: Date
+    ): Promise<Date | undefined> {
         this.client.logger.verbose(
             `[RedisClient] Set: ${this.prefixes.cringeAddTipTimeout}:${userId}`
         );
@@ -183,7 +187,9 @@ export class RedisClient {
         return res ? date : undefined;
     }
 
-    public async getCringeAddTipTimeout(userId: Snowflake): Promise<Date | undefined> {
+    public async getCringeAddTipTimeout(
+        userId: Snowflake
+    ): Promise<Date | undefined> {
         this.client.logger.verbose(
             `[RedisClient] Get: ${this.prefixes.cringeAddTipTimeout}:${userId}`
         );
@@ -197,8 +203,6 @@ export class RedisClient {
         this.client.logger.verbose(
             `[RedisClient] Del: ${this.prefixes.cringeAddTipTimeout}:${userId}`
         );
-        return this.redis.del(
-            `${this.prefixes.cringeAddTipTimeout}:${userId}`
-        );
+        return this.redis.del(`${this.prefixes.cringeAddTipTimeout}:${userId}`);
     }
 }

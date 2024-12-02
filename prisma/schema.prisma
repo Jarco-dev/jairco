@@ -9,29 +9,31 @@ datasource db {
 }
 
 model Guilds {
-  id            Int             @id @default(autoincrement())
-  discordId     String          @unique
-  Users         Users[]
-  Roles         Roles[]
-  Groups        Groups[]
-  Cringes       Cringes[]
-  CountingStats CountingStats[]
-  Settings      GuildSettings[]
-  Blacklists    Blacklists[]
+  id             Int              @id @default(autoincrement())
+  discordId      String           @unique
+  Users          Users[]
+  Roles          Roles[]
+  Groups         Groups[]
+  Cringes        Cringes[]
+  CountingStats  CountingStats[]
+  Settings       GuildSettings[]
+  Blacklists     Blacklists[]
+  CalendarEvents CalendarEvents[]
 }
 
 model Users {
-  id                 Int             @id @default(autoincrement())
-  discordId          String          @unique
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-  Guilds             Guilds[]
-  Groups             Groups[]
-  CringesReceived    Cringes[]       @relation(name: "Cringes_userToUser")
-  CringesGiven       Cringes[]       @relation(name: "Cringes_byUserToUser")
-  CountingStats      CountingStats[]
-  BlacklistsReceived Blacklists[]    @relation(name: "Blacklists_userToUser")
-  BlacklistsGiven    Blacklists[]    @relation(name: "Blacklists_byUserToUser")
+  id                    Int              @id @default(autoincrement())
+  discordId             String           @unique
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  Guilds                Guilds[]
+  Groups                Groups[]
+  CringesReceived       Cringes[]        @relation(name: "Cringes_userToUser")
+  CringesGiven          Cringes[]        @relation(name: "Cringes_byUserToUser")
+  CountingStats         CountingStats[]
+  BlacklistsReceived    Blacklists[]     @relation(name: "Blacklists_userToUser")
+  BlacklistsGiven       Blacklists[]     @relation(name: "Blacklists_byUserToUser")
+  CreatedCalendarEvents CalendarEvents[]
 }
 
 model Roles {
@@ -111,6 +113,8 @@ enum GuildSetting {
   CURRENT_COUNT
   CURRENT_COUNT_USER
   CRINGE_ENABLED
+  CALENDAR_ENABLED
+  CALENDAR_AUTO_DELETE
 }
 
 model GuildSettings {
@@ -120,4 +124,18 @@ model GuildSettings {
   value          String
   guildId        Int?
   Guild          Guilds?      @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model CalendarEvents {
+  id              Int       @id @default(autoincrement())
+  date            String
+  description     String
+  organisers      String
+  endDate         DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  guildId         Int
+  Guild           Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  createdByUserId Int
+  createdByUser   Users     @relation(fields: [createdByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

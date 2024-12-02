@@ -312,6 +312,33 @@
                     ":heart_decoration: **Heartbeat**: The delay between the bot and the discord api servers"
                 ]
             }
+        },
+        "calendar": {
+            "invalidEndDate": "Invalid end date, please provide it formated like 2024/02/21",
+            "invalidEventId": "The given event id does not exist",
+            "eventInfo": "### Event #{{id}}\n**Date:** {{date}}\n**End Date:** {{endDate}}\n**By:** {{organisers}}\n**Description:** {{description}}",
+            "eventsEmbed": {
+                "title": "Planned events",
+                "description": "{{events}}"
+            },
+            "eventAddedEmbed": {
+                "title": "Event #{{id}} added to calendar",
+                "description": [
+                    "**Date:** {{date}}",
+                    "**End date:** {{endDate}}",
+                    "**Organisers:** {{organisers}}",
+                    "**Description:** {{description}}"
+                ]
+            },
+            "eventRemovedEmbed": {
+                "title": "Event #{{id}} removed from calendar",
+                "description": [
+                    "**Date:** {{date}}",
+                    "**End date:** {{endDate}}",
+                    "**Organisers:** {{organisers}}",
+                    "**Description:** {{description}}"
+                ]
+            }
         }
     },
     "refs": {

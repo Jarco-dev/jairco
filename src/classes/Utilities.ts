@@ -452,4 +452,45 @@ export class Utilities {
             );
         }
     }
+
+    public async getCalendarEventsPage(
+        i: BaseInteraction,
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const events = await this.client.prisma.calendarEvents.findMany({
+            skip: (page - 1) * 5,
+            take: 5,
+            where: {
+                Guild: { discordId: i.guild!.id }
+            },
+            orderBy: {
+                endDate: "asc"
+            },
+            select: {
+                id: true,
+                date: true,
+                endDate: true,
+                description: true,
+                organisers: true
+            }
+        });
+
+        return this.client.lang.getEmbed(i.locale, "calendar.eventsEmbed", {
+            events: events
+                .map(e =>
+                    this.client.lang.getString(i.locale, "calendar.eventInfo", {
+                        id: e.id.toString(),
+                        date: e.date,
+                        description: e.description,
+                        organisers: e.organisers,
+                        endDate: e.endDate
+                            ? `<t:${Math.ceil(
+                                  e.endDate.getTime() / 1000
+                              ).toString()}:D>`
+                            : "-"
+                    })
+                )
+                .join("\n\n")
+        });
+    }
 }

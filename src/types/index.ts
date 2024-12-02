@@ -4,6 +4,7 @@ export { Camelize } from "./Camelize";
 export { CommandLoadLevel } from "./CommandLoadLevel";
 export { CommandStatus } from "./CommandStatus";
 export { Config } from "./Config";
+export { GuildCalendarSettings } from "./GuildCalendarSettings";
 export { GuildCountingSettings } from "./GuildCountingSettings";
 export { GuildCringeSettings } from "./GuildCringeSettings";
 export { HandlerResult } from "./HandlerResult";
