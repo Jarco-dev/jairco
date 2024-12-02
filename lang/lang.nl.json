@@ -22,7 +22,11 @@
             "AddCringe": "Cringe toevoegen",
             "ManageCringe": "Beheer cringe",
             "ManageCounting": "Beheer tellen",
-            "ManageCountingBlacklist": "Beheer tellen blokkades"
+            "ManageCountingBlacklist": "Beheer tellen blokkades",
+            "ConfigureCalendar": "Configureer kalender",
+            "AddToCalendar": "Toevoegen aan kalender",
+            "RemoveFromCalendar": "Verwijderen van kalender",
+            "ViewCalendar": "Bekijk kalender"
         },
         "counting": {
             "channelSetCanceled": "Tellen kanaal instellen is geannuleerd",

@@ -22,7 +22,11 @@
             "AddCringe": "Add cringe",
             "ManageCringe": "Manage cringe",
             "ManageCounting": "Manage counting",
-            "ManageCountingBlacklist": "Manage counting blacklist"
+            "ManageCountingBlacklist": "Manage counting blacklist",
+            "ConfigureCalendar": "Configure calendar",
+            "AddToCalendar": "Add to calendar",
+            "RemoveFromCalendar": "Remove from calendar",
+            "ViewCalendar": "View calendar"
         },
         "counting": {
             "channelSetCanceled": "Setting the counting channel has been canceled",
