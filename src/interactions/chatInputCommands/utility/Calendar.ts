@@ -10,6 +10,7 @@ import { BotPermissionsBitField } from "@/classes";
 import CalendarEventsPreviousPageButtonComponent from "@/button/fun/CalendarEventsPreviousPage";
 import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/CalendarEventsSelectPageStart";
 import CalendarEventsNextPageButtonComponent from "@/button/fun/CalendarEventsNextPage";
+import moment from "moment";
 
 export default class CalendarChatInputCommand extends ChatInputCommand {
     constructor() {
@@ -145,11 +146,11 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
                                 .setName("end-date")
                                 .setNameLocalization("nl", "einddatum")
                                 .setDescription(
-                                    "The last (or only) day the event takes place (formated like yyyy/mm/dd)"
+                                    "The last (or only) day the event takes place (formated like dd/mm/yyyy)"
                                 )
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "De laatste (of enigste) dag waarop het evenement plaats vind (geformatteerd als yyyy/mm/dd)"
+                                    "De laatste (of enigste) dag waarop het evenement plaats vind (geformatteerd als dd/mm/jjjj)"
                                 )
                         )
                 )
@@ -389,12 +390,8 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
         }
 
         const rawEndDate = i.options.getString("end-date");
-        const endDate = rawEndDate ? Date.parse(rawEndDate) : undefined;
-        if (
-            endDate !== undefined &&
-            (isNaN(endDate) ||
-                !/[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2}/.test(rawEndDate || ""))
-        ) {
+        const endDate = moment(rawEndDate, ["DD/MM/YYYY","DD-MM-YYYY"], true);
+        if (rawEndDate && !endDate.isValid()) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -423,7 +420,7 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
                 date,
                 description,
                 organisers,
-                endDate: endDate ? new Date(endDate) : undefined
+                endDate: endDate ? endDate.toDate() : undefined
             }
         });
 

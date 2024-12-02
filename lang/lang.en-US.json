@@ -318,7 +318,7 @@
             }
         },
         "calendar": {
-            "invalidEndDate": "Invalid end date, please provide it formated like 2024/02/21",
+            "invalidEndDate": "Invalid end date, please provide it formated like 21/02/2024",
             "invalidEventId": "The given event id does not exist",
             "eventInfo": "### Event #{{id}}\n**Date:** {{date}}\n**End Date:** {{endDate}}\n**By:** {{organisers}}\n**Description:** {{description}}",
             "eventsEmbed": {

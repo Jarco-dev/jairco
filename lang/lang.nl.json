@@ -318,7 +318,7 @@
             }
         },
         "calendar": {
-            "invalidEndDate": "Ongeldige einddatum, geef deze op in de notatie 2024/02/21",
+            "invalidEndDate": "Ongeldige einddatum, geef deze op in de notatie 21/02/2024",
             "invalidEventId": "Het gegeven evenement id bestaat niet",
             "eventInfo": "### Evenement #{{id}}\n**Datum:** {{date}}\n**Einddatum:** {{endDate}}\n**By:** {{organisers}}\n**Beschrijving:** {{description}}",
             "eventsEmbed": {
