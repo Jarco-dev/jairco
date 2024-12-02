@@ -22,7 +22,11 @@
             "AddCringe": "Add cringe",
             "ManageCringe": "Manage cringe",
             "ManageCounting": "Manage counting",
-            "ManageCountingBlacklist": "Manage counting blacklist"
+            "ManageCountingBlacklist": "Manage counting blacklist",
+            "ConfigureCalendar": "Configure calendar",
+            "AddToCalendar": "Add to calendar",
+            "RemoveFromCalendar": "Remove from calendar",
+            "ViewCalendar": "View calendar"
         },
         "counting": {
             "channelSetCanceled": "Setting the counting channel has been canceled",
@@ -314,7 +318,7 @@
             }
         },
         "calendar": {
-            "invalidEndDate": "Invalid end date, please provide it formated like 2024/02/21",
+            "invalidEndDate": "Invalid end date, please provide it formated like 21/02/2024",
             "invalidEventId": "The given event id does not exist",
             "eventInfo": "### Event #{{id}}\n**Date:** {{date}}\n**End Date:** {{endDate}}\n**By:** {{organisers}}\n**Description:** {{description}}",
             "eventsEmbed": {
