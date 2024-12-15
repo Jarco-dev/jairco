@@ -390,7 +390,7 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
         }
 
         const rawEndDate = i.options.getString("end-date");
-        const endDate = moment(rawEndDate, ["DD/MM/YYYY","DD-MM-YYYY"], true);
+        const endDate = moment(rawEndDate, ["DD/MM/YYYY", "DD-MM-YYYY"], true);
         if (rawEndDate && !endDate.isValid()) {
             this.client.sender.reply(
                 i,
