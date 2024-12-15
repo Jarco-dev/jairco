@@ -8,7 +8,6 @@ import {
     Snowflake,
     User
 } from "discord.js";
-import moment from "moment";
 
 export class Utilities {
     private client: Client;
@@ -471,12 +470,14 @@ export class Utilities {
             take: 5,
             where: {
                 Guild: { discordId: i.guild!.id },
-                ...withOld ? {} : ({
-                    OR: [
-                        { endDate: null },
-                        { endDate: { gte: this.getCalendarCutOffDate() } }
-                    ]
-                })
+                ...(withOld
+                    ? {}
+                    : {
+                          OR: [
+                              { endDate: null },
+                              { endDate: { gte: this.getCalendarCutOffDate() } }
+                          ]
+                      })
             },
             orderBy: {
                 endDate: "asc"

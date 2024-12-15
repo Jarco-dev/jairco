@@ -604,15 +604,19 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
         if (!group) {
             this.client.sender.reply(
                 i,
-                {ephemeral: true},
-                {langLocation: "groups.noGroup", msgType: "INVALID"}
+                { ephemeral: true },
+                { langLocation: "groups.noGroup", msgType: "INVALID" }
             );
-            return {result: "INVALID_ARGUMENTS"};
+            return { result: "INVALID_ARGUMENTS" };
         }
 
-        const toPurge = group.Roles.filter(r => !i.guild!.roles.cache.has(r.discordId));
+        const toPurge = group.Roles.filter(
+            r => !i.guild!.roles.cache.has(r.discordId)
+        );
         if (toPurge.length > 0) {
-            group.Roles = group.Roles.filter(r => i.guild!.roles.cache.has(r.discordId));
+            group.Roles = group.Roles.filter(r =>
+                i.guild!.roles.cache.has(r.discordId)
+            );
             await this.client.prisma.roles.deleteMany({
                 where: { discordId: { in: toPurge.map(r => r.discordId) } }
             });

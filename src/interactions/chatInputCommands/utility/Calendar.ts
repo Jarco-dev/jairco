@@ -189,9 +189,15 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
                         .addBooleanOption(builder =>
                             builder
                                 .setName("with-old-events")
-                                .setNameLocalization("nl", "met-oude-evenementen")
+                                .setNameLocalization(
+                                    "nl",
+                                    "met-oude-evenementen"
+                                )
                                 .setDescription("With old events")
-                                .setDescriptionLocalization("nl", "Met oude evenementen")
+                                .setDescriptionLocalization(
+                                    "nl",
+                                    "Met oude evenementen"
+                                )
                         )
                 )
         });
@@ -530,12 +536,18 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
         const eventCount = await this.client.prisma.calendarEvents.count({
             where: {
                 Guild: { discordId: i.guild!.id },
-                ...withOld ? {} : ({
-                    OR: [
-                        { endDate: null },
-                        { endDate: { gte: this.client.utils.getCalendarCutOffDate() } }
-                    ]
-                })
+                ...(withOld
+                    ? {}
+                    : {
+                          OR: [
+                              { endDate: null },
+                              {
+                                  endDate: {
+                                      gte: this.client.utils.getCalendarCutOffDate()
+                                  }
+                              }
+                          ]
+                      })
             }
         });
         const embed = await this.client.utils.getCalendarEventsPage(i, withOld);

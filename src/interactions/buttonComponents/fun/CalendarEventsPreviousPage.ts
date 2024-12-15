@@ -66,12 +66,18 @@ export default class CalendarEventsPreviousPageButtonComponent extends ButtonCom
         const eventCount = await this.client.prisma.calendarEvents.count({
             where: {
                 Guild: { discordId: i.guild!.id },
-                ...context.withOld ? {} : ({
-                    OR: [
-                        { endDate: null },
-                        { endDate: { gte: this.client.utils.getCalendarCutOffDate() } }
-                    ]
-                })
+                ...(context.withOld
+                    ? {}
+                    : {
+                          OR: [
+                              { endDate: null },
+                              {
+                                  endDate: {
+                                      gte: this.client.utils.getCalendarCutOffDate()
+                                  }
+                              }
+                          ]
+                      })
             }
         });
         if (eventCount === 0) {
@@ -90,7 +96,11 @@ export default class CalendarEventsPreviousPageButtonComponent extends ButtonCom
 
         const maxPage = Math.ceil(eventCount / 5);
         const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getCalendarEventsPage(i, context.withOld, newPage);
+        const embed = await this.client.utils.getCalendarEventsPage(
+            i,
+            context.withOld,
+            newPage
+        );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
             CalendarEventsPreviousPageButtonComponent.builder,
             new ButtonBuilder(
