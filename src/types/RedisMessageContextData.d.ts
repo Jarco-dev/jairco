@@ -42,5 +42,6 @@ export interface RedisMessageContextData {
     calendarEvents: {
         page: number;
         pageMenuOwnerId: Snowflake;
+        withOld: boolean;
     };
 }

@@ -610,6 +610,18 @@ export default class GroupsChatInputCommand extends ChatInputCommand {
             return { result: "INVALID_ARGUMENTS" };
         }
 
+        const toPurge = group.Roles.filter(
+            r => !i.guild!.roles.cache.has(r.discordId)
+        );
+        if (toPurge.length > 0) {
+            group.Roles = group.Roles.filter(r =>
+                i.guild!.roles.cache.has(r.discordId)
+            );
+            await this.client.prisma.roles.deleteMany({
+                where: { discordId: { in: toPurge.map(r => r.discordId) } }
+            });
+        }
+
         const roles =
             group.Roles.length > 0
                 ? group.Roles.map(u => `<@&${u.discordId}>`).join(", ")

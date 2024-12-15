@@ -453,15 +453,31 @@ export class Utilities {
         }
     }
 
+    public getCalendarCutOffDate(): Date {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 1);
+        cutoff.setHours(0, 0, 0, 0);
+        return cutoff;
+    }
+
     public async getCalendarEventsPage(
         i: BaseInteraction,
+        withOld: boolean,
         page = 1
     ): Promise<EmbedBuilder> {
         const events = await this.client.prisma.calendarEvents.findMany({
             skip: (page - 1) * 5,
             take: 5,
             where: {
-                Guild: { discordId: i.guild!.id }
+                Guild: { discordId: i.guild!.id },
+                ...(withOld
+                    ? {}
+                    : {
+                          OR: [
+                              { endDate: null },
+                              { endDate: { gte: this.getCalendarCutOffDate() } }
+                          ]
+                      })
             },
             orderBy: {
                 endDate: "asc"
