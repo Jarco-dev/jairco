@@ -420,7 +420,7 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
                 date,
                 description,
                 organisers,
-                endDate: endDate ? endDate.toDate() : undefined
+                endDate: rawEndDate ? endDate.toDate() : undefined
             }
         });
 
