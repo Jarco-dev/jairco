@@ -10,14 +10,10 @@ export default class PurgeCalendarTask extends Task {
     }
 
     async run(): Promise<TimerTaskResult> {
-        const purgeFrom = new Date();
-        purgeFrom.setDate(purgeFrom.getDate() - 1);
-        purgeFrom.setHours(0, 0, 0, 0);
-
         const events = await this.client.prisma.calendarEvents.findMany({
             where: {
                 endDate: {
-                    lte: purgeFrom
+                    lte: this.client.utils.getCalendarCutOffDate()
                 },
                 Guild: {
                     Settings: {

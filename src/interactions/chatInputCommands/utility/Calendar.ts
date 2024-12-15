@@ -186,6 +186,13 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
                             "nl",
                             "Bekijk de evenementen in de kalender"
                         )
+                        .addBooleanOption(builder =>
+                            builder
+                                .setName("with-old-events")
+                                .setNameLocalization("nl", "met-oude-evenementen")
+                                .setDescription("With old events")
+                                .setDescriptionLocalization("nl", "Met oude evenementen")
+                        )
                 )
         });
     }
@@ -519,10 +526,19 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
+        const withOld = i.options.getBoolean("with-old-events") ?? false;
         const eventCount = await this.client.prisma.calendarEvents.count({
-            where: { Guild: { discordId: i.guild!.id } }
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...withOld ? {} : ({
+                    OR: [
+                        { endDate: null },
+                        { endDate: { gte: this.client.utils.getCalendarCutOffDate() } }
+                    ]
+                })
+            }
         });
-        const embed = await this.client.utils.getCalendarEventsPage(i);
+        const embed = await this.client.utils.getCalendarEventsPage(i, withOld);
         if (eventCount <= 5) {
             this.client.sender.reply(i, { embeds: [embed] });
             return { result: "SUCCESS" };
@@ -556,7 +572,8 @@ export default class CalendarChatInputCommand extends ChatInputCommand {
 
         this.client.redis.setMessageContext("calendarEvents", reply.id, {
             page: 1,
-            pageMenuOwnerId: i.user.id
+            pageMenuOwnerId: i.user.id,
+            withOld
         });
 
         return { result: "SUCCESS" };
