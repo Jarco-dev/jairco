@@ -1,6 +1,6 @@
 {
     "name": "jairco",
-    "version": "1.6.2",
+    "version": "1.6.3",
     "description": "The jairco discord bot",
     "main": "dist/index.js",
     "engines": {
@@ -20,6 +20,7 @@
     },
     "author": "Jarco-dev",
     "dependencies": {
+        "@discordjs/builders": "1.8.x",
         "@prisma/client": "^5.17.0",
         "@sematext/gc-stats": "^1.5.9",
         "discord.js": "^14.15.3",
