@@ -308,16 +308,9 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             };
         }
 
-        const wordCount = await this.client.prisma.usedWordSnakeWords.count({
-            where: {
-                Guild: { discordId: msg.guild.id },
-                content: word
-            }
-        });
         if (
             settings.currentWord !== undefined &&
             (!wordIsValid ||
-                wordCount > 0 ||
                 (settings.currentWord ?? word).slice(-1) !== word.slice(0, 1))
         ) {
             const highestStreakBeaten =
@@ -327,8 +320,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 this.client.prisma.blacklists.create({
                     data: {
                         type: "WORD_SNAKE",
-                        reason:
-                            wordCount > 0 ? "Duplicate word" : "Incorrect word",
+                        reason: "Incorrect word",
                         guildIdUserIdType:
                             msg.guild.id + msg.author.id + "WORD_SNAKE",
                         Guild: { connect: { discordId: msg.guild.id } },
@@ -378,11 +370,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         }
                     }
                 }),
-                this.client.prisma.usedWordSnakeWords.deleteMany({
-                    where: {
-                        Guild: { discordId: msg.guild.id }
-                    }
-                }),
                 ...(highestStreakBeaten
                     ? [
                           this.client.prisma.guildSettings.upsert({
@@ -429,9 +416,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
 
             const embed = this.client.lang.getEmbed(
                 this.client.lang.default,
-                wordCount > 0
-                    ? "wordSnake.duplicateWordEmbed"
-                    : "wordSnake.incorrectWordEmbed"
+                "wordSnake.incorrectWordEmbed"
             );
             if (highestStreakBeaten) {
                 embed.setDescription(
@@ -492,12 +477,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                             create: { discordId: msg.guild.id }
                         }
                     }
-                }
-            }),
-            this.client.prisma.usedWordSnakeWords.create({
-                data: {
-                    Guild: { connect: { discordId: msg.guild.id } },
-                    content: word
                 }
             }),
             this.client.prisma.wordSnakeStats.upsert({

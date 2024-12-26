@@ -434,9 +434,6 @@
             "firstWordInvalidEmbed": {
                 "title": "Dit is een ongeldig woord, probeer het nog eens",
                 "description": "Let er op, als er een reeks gaande was zou hij nu verbroken zijn"
-            },
-            "duplicateWordEmbed": {
-                "title": "Dubbel woord, woorden slang is gereset"
             }
         }
     },
