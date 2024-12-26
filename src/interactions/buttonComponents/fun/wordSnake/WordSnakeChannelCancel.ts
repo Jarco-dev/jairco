@@ -8,15 +8,15 @@ import {
 } from "discord.js";
 import { BotPermissionsBitField, LanguageManager } from "@/classes";
 
-export default class CountingChannelConfirmButtonComponent extends ButtonComponent {
+export default class WordSnakeChannelCancelButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("countingChannelConfirm")
+        .setCustomId("wordSnakeChannelCancel")
         .setLabel("placeholder")
-        .setStyle(ButtonStyle.Success);
+        .setStyle(ButtonStyle.Danger);
 
     constructor() {
         super({
-            builder: CountingChannelConfirmButtonComponent.builder
+            builder: WordSnakeChannelCancelButtonComponent.builder
         });
     }
 
@@ -25,13 +25,13 @@ export default class CountingChannelConfirmButtonComponent extends ButtonCompone
         langManager: LanguageManager
     ): ButtonBuilder {
         return new ButtonBuilder(this.builder.toJSON()).setLabel(
-            langManager.getString(locale, "misc.confirm")
+            langManager.getString(locale, "misc.cancel")
         );
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "countingChannelSet",
+            "wordSnakeChannelSet",
             i.message.id
         );
         if (!context) {
@@ -47,10 +47,10 @@ export default class CountingChannelConfirmButtonComponent extends ButtonCompone
             return { result: "ACTION_EXPIRED" };
         }
 
-        const settings = await this.client.cacheableData.getCountingSettings(
+        const settings = await this.client.cacheableData.getWordSnakeSettings(
             i.guild!.id
         );
-        if (!settings?.countingEnabled) {
+        if (!settings?.wordSnakeEnabled) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -61,7 +61,7 @@ export default class CountingChannelConfirmButtonComponent extends ButtonCompone
 
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
-            !permissions.has(BotPermissionsBitField.Flags.ManageCounting) ||
+            !permissions.has(BotPermissionsBitField.Flags.ManageWordSnake) ||
             i.user.id !== context.buttonOwnerId
         ) {
             this.client.sender.reply(
@@ -72,22 +72,15 @@ export default class CountingChannelConfirmButtonComponent extends ButtonCompone
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        await this.client.prisma.guildSettings.updateMany({
-            where: {
-                type: "COUNTING_CHANNEL",
-                Guild: { discordId: i.guild!.id }
-            },
-            data: { value: context.channelId }
-        });
-        this.client.redis.delGuildSettings("counting", i.guild!.id);
-        this.client.redis.delMessageContext("countingChannelSet", i.message.id);
-
+        this.client.redis.delMessageContext(
+            "wordSnakeChannelSet",
+            i.message.id
+        );
         this.client.sender.reply(
             i,
             { components: [] },
             {
-                langLocation: "counting.channelSet",
-                langVariables: { channel: `<#${context.channelId}>` },
+                langLocation: "wordSnake.channelSetCanceled",
                 msgType: "SUCCESS",
                 method: "UPDATE"
             }

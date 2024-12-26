@@ -26,9 +26,12 @@
             "ConfigureCalendar": "Configure calendar",
             "AddToCalendar": "Add to calendar",
             "RemoveFromCalendar": "Remove from calendar",
-            "ViewCalendar": "View calendar"
+            "ViewCalendar": "View calendar",
+            "ManageWordSnake": "Manage word snake",
+            "ManageWordSnakeBlacklist": "Manage word snake blacklist"
         },
         "counting": {
+            "channelReset": "The counting channel has been reset",
             "channelSetCanceled": "Setting the counting channel has been canceled",
             "channelSet": "The counting channel has been set to {{channel}}",
             "newHighestCount": "{{newCount}} has just beaten the old highscore of {{oldCount}} by {{delta}}",
@@ -342,6 +345,98 @@
                     "**Organisers:** {{organisers}}",
                     "**Description:** {{description}}"
                 ]
+            }
+        },
+        "wordSnake": {
+            "channelReset": "The word snake channel has been reset",
+            "channelSetCanceled": "Setting the word snake channel has been canceled",
+            "channelSet": "The word snake channel has been set to {{channel}}",
+            "newHighestWordSnake": "{{newStreak}} words has just beaten the old highscore of {{oldStreak}} words by {{delta}}",
+            "noChannelSet": "A word snake channel hasn't been configured yet",
+            "viewChannel": "The current word snake channel is set to {{channel}}",
+            "reasonTooLong": "Please keep the reason 255 characters or less",
+            "alreadyBlacklisted": "{{user}} is already blacklisted from counting",
+            "notBlacklisted": "{{user}} is not blacklisted from counting",
+            "cantBlacklistBot": "This user is a bot, bots cannot be blacklisted",
+            "blacklistAdded": "{{user}} is now blacklisted from counting",
+            "blacklistRemoved": "{{user}} is no longer blacklisted from counting",
+            "noBlacklistsExist": "There are currently no counting blacklists",
+            "invalidBlacklistId": "The given blacklist id does not exist",
+            "noUsersOnLeaderboard": "No users are on this leaderboard",
+            "validatedWordDeletedEmbed": {
+                "title": "Validated word deleted",
+                "description": [
+                    "{{user}} wanted to troll by deleting a message but got blacklisted instead",
+                    "The current word is **{{currentWord}}** so the next one should start with **{{nextLetter}}**"
+                ]
+            },
+            "validatedWordEditedEmbed": {
+                "title": "Validated word edited",
+                "description": [
+                    "{{user}} wanted to troll by editing a word but got blacklisted instead",
+                    "The current word is **{{currentWord}}** so the next one one should start with **{{nextLetter}}**"
+                ]
+            },
+            "incorrectWordEmbed": {
+                "title": "Incorrect word, word snake has been reset"
+            },
+            "channelConfirmEmbed": {
+                "title": "A word snake channel already exists!",
+                "description": [
+                    "{{oldChannel}} is already set as the word snake channel",
+                    "are you sure you want to overwrite it with {{newChannel}}?"
+                ]
+            },
+            "botMissingPermsEmbed": {
+                "title": "The bot is missing some permissions!",
+                "description": [
+                    "Please make sure the bot has the following permissions in {{channel}}",
+                    "",
+                    "`View channel`, `Send messages`, `Manage messages`, `Add reactions`"
+                ]
+            },
+            "blacklistListEmbed": {
+                "title": "Word snake blacklists",
+                "description": "{{blacklists}}"
+            },
+            "blacklistEmbed": {
+                "title": "View blacklist",
+                "description": [
+                    "**ID:** {{id}}",
+                    "**When:** {{createdAt}}",
+                    "**Given by:** {{givenByUser}}",
+                    "**Received by:** {{receivedByUser}}",
+                    "**Reason:** {{reason}}"
+                ]
+            },
+            "correctWordSnakeLeaderboardEmbed": {
+                "title": "Correct words leaderboard",
+                "description": "{{topUsers}}"
+            },
+            "incorrectWordSnakeLeaderboardEmbed": {
+                "title": "Incorrect words leaderboard",
+                "description": "{{topUsers}}"
+            },
+            "ratioWordSnakeLeaderboardEmbed": {
+                "title": "Correct to incorrect word ratio leaderboard",
+                "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server word snake statistics",
+                "description": [
+                    "**Highscore:** {{highest}}",
+                    "**Correct words:** {{correct}}",
+                    "**Incorrect words:** {{incorrect}}",
+                    "**Users snaked correctly:** {{usersCorrect}}",
+                    "**Users snaked incorrectly:** {{usersIncorrect}}"
+                ]
+            },
+            "firstWordInvalidEmbed": {
+                "title": "This is a invalid word, please try again",
+                "description": "Be aware, once a streak has started this would have broken it"
+            },
+            "duplicateWordEmbed": {
+                "title": "Duplicate word, word snake has been reset"
             }
         }
     },

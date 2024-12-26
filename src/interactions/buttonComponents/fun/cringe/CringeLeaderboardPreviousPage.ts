@@ -6,24 +6,24 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
-import CountingLeaderboardNextPageButtonComponent from "@/button/fun/CountingLeaderboardNextPage";
+import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/cringe/CringeLeaderboardSelectPageStart";
+import CringeLeaderboardNextPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardNextPage";
 
-export default class CountingLeaderboardPreviousPageButtonComponent extends ButtonComponent {
+export default class CringeLeaderboardPreviousPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("countingLeaderboardPreviousPage")
+        .setCustomId("cringeLeaderboardPreviousPage")
         .setStyle(ButtonStyle.Success)
         .setLabel("<");
 
     constructor() {
         super({
-            builder: CountingLeaderboardPreviousPageButtonComponent.builder
+            builder: CringeLeaderboardPreviousPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "countingLeaderboard",
+            "cringeLeaderboard",
             i.message.id
         );
         if (!context) {
@@ -57,19 +57,18 @@ export default class CountingLeaderboardPreviousPageButtonComponent extends Butt
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const userCount = await this.client.prisma.countingStats.count({
-            where: {
-                Guild: { discordId: i.guild!.id },
-                ...(context.type === "correct"
-                    ? { correct: { gt: 0 } }
-                    : context.type === "incorrect"
-                      ? { incorrect: { gt: 0 } }
-                      : { highest: { gt: 0 } })
-            }
-        });
+        const dbRes: [{ received: bigint; given: bigint }] = await this.client
+            .prisma
+            .$queryRaw`SELECT COUNT(DISTINCT Cringes.receivedByUserId) as received, COUNT(DISTINCT Cringes.givenByUserId) as given FROM Cringes JOIN Guilds ON Cringes.guildId=Guilds.id WHERE Guilds.discordId=${
+            i.guild!.id
+        }`;
+        const userCount =
+            context.type === "received"
+                ? Number(dbRes[0].received)
+                : Number(dbRes[0].given);
         if (userCount === 0) {
             this.client.redis.delMessageContext(
-                "countingLeaderboard",
+                "cringeLeaderboard",
                 i.message.id
             );
             this.client.sender.reply(
@@ -86,36 +85,36 @@ export default class CountingLeaderboardPreviousPageButtonComponent extends Butt
 
         const maxPage = Math.ceil(userCount / 10);
         const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getCountingLeaderboardPage(
+        const embed = await this.client.utils.getCringeLeaderboardPage(
             i,
             context.type,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingLeaderboardPreviousPageButtonComponent.builder,
+            CringeLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingLeaderboardSelectPageStartButtonComponent.builder.data
+                CringeLeaderboardSelectPageStartButtonComponent.builder.toJSON()
             ).setLabel(`${newPage}/${maxPage}`),
-            CountingLeaderboardNextPageButtonComponent.builder
+            CringeLeaderboardNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
-            {
-                embeds: [embed],
-                components: userCount > 10 ? [buttons] : []
-            },
+            { embeds: [embed], components: userCount > 10 ? [buttons] : [] },
             { method: "UPDATE" }
         );
         if (userCount > 10) {
             this.client.redis.setMessageContext(
-                "countingLeaderboard",
+                "cringeLeaderboard",
                 i.message.id,
-                { ...context, page: newPage }
+                {
+                    ...context,
+                    page: newPage
+                }
             );
         } else {
             this.client.redis.delMessageContext(
-                "countingLeaderboard",
+                "cringeLeaderboard",
                 i.message.id
             );
         }

@@ -26,9 +26,12 @@
             "ConfigureCalendar": "Configureer kalender",
             "AddToCalendar": "Toevoegen aan kalender",
             "RemoveFromCalendar": "Verwijderen van kalender",
-            "ViewCalendar": "Bekijk kalender"
+            "ViewCalendar": "Bekijk kalender",
+            "ManageWordSnake": "Beheer woord slangen",
+            "ManageWOrdSnakeBlacklist": "Beheer woord slang blokkades"
         },
         "counting": {
+            "channelReset": "Het tellen kanaal is gereset",
             "channelSetCanceled": "Tellen kanaal instellen is geannuleerd",
             "channelSet": "Het tellen kanaal is ingesteld op {{channel}}",
             "newHighestCount": "{{newCount}} heeft zojuist het record verbroken van {{oldCount}} met {{delta}}",
@@ -342,6 +345,98 @@
                     "**Organisatoren:** {{organisers}}",
                     "**Beschrijving:** {{description}}"
                 ]
+            }
+        },
+        "wordSnake": {
+            "channelReset": "Het woorden slang kanaal is gereset",
+            "channelSetCanceled": "Woorden slang kanaal instellen is geannuleerd",
+            "channelSet": "Het woorden slang kanaal is ingesteld op {{channel}}",
+            "newHighestWordSnake": "{{newStreak}} woorden heeft zojuist het record verbroken van {{oldStreak}} woorden met{{delta}}",
+            "noChannelSet": "Er is nog geen woorden slang kanaal ingesteld",
+            "viewChannel": "Het huidige woorden slang kanaal is ingesteld op {{channel}}",
+            "reasonTooLong": "De reden moet 255 tekens of minder zijn",
+            "alreadyBlacklisted": "{{user}} is al geblokkeerd van woorden slang",
+            "notBlacklisted": "{{user}} is niet geblokkeerd van woorden slang",
+            "cantBlacklistBot": "Deze gebruiker is een bot, bots kunnen niet worden geblokkeerd",
+            "blacklistAdded": "{{user}} is nu geblokkeerd van woorden slang",
+            "blacklistRemoved": "{{user}} is nu niet meer geblokkeerd van woorden slang",
+            "noBlacklistsExist": "Er zijn momenteel geen tellen blokkades",
+            "invalidBlacklistId": "Het gegeven blokkade id bestaat niet",
+            "noUsersOnLeaderboard": "Er staan geen gebruikers op dit scoreboard",
+            "validatedWordDeletedEmbed": {
+                "title": "Gevalideerd word verwijdert",
+                "description": [
+                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "Het huidige woord is **{{currentWord}}** dus de volgende moet beginnen met **{{nextLetter}}**"
+                ]
+            },
+            "validatedWordEditedEmbed": {
+                "title": "Gevalideerd woord bewerkt",
+                "description": [
+                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "Het huidige woord is **{{currentWord}}** dus de volgende moet beginnen met **{{nextLetter}}**"
+                ]
+            },
+            "incorrectWordEmbed": {
+                "title": "Onjuist woord, woorden slang is gereset"
+            },
+            "channelConfirmEmbed": {
+                "title": "Een woorden slang kanaal is al ingesteld!",
+                "description": [
+                    "{{oldChannel}} is al ingesteld als het woorden slang kanaal",
+                    "weet je zeker dat je hem wil overschrijven met {{newChannel}}?"
+                ]
+            },
+            "botMissingPermsEmbed": {
+                "title": "De bot mist wat rechten!",
+                "description": [
+                    "Zorg er voor dat de bot de volgende rechten heeft in {{channel}}",
+                    "",
+                    "`Bekijk kanaal`, `Beheer kanaal`, `Stuur bericht`, `Beheer berichten`, `Reacties toevoegen`"
+                ]
+            },
+            "blacklistListEmbed": {
+                "title": "Woorden slang blokkades",
+                "description": "{{blacklists}}"
+            },
+            "blacklistEmbed": {
+                "title": "Belijk blokkade",
+                "description": [
+                    "**ID:** {{id}}",
+                    "**Wanneer:** {{createdAt}}",
+                    "**Gegeven door:** {{givenByUser}}",
+                    "**Ontvangen door:** {{receivedByUser}}",
+                    "**Reden:** {{reason}}"
+                ]
+            },
+            "correctWordSnakeLeaderboardEmbed": {
+                "title": "Correcte woorden scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "incorrectWordSnakeLeaderboardEmbed": {
+                "title": "Incorrecte woorden scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "ratioWordSnakeLeaderboardEmbed": {
+                "title": "Correct naar incorrect verhouding scoreboard",
+                "description": "{{topUsers}}"
+            },
+            "statisticsEmbed": {
+                "title": "Server woorden slang statistieken",
+                "description": [
+                    "**Hoogste score:** {{highest}}",
+                    "**Correcte woorden:** {{correct}}",
+                    "**Incorrecte woorden:** {{incorrect}}",
+                    "**Gebruikers correcte woorden:** {{usersCorrect}}",
+                    "**Gebruikers incorrecte woorden:** {{usersIncorrect}}"
+                ]
+            },
+            "firstWordInvalidEmbed": {
+                "title": "Dit is een ongeldig woord, probeer het nog eens",
+                "description": "Let er op, als er een reeks gaande was zou hij nu verbroken zijn"
+            },
+            "duplicateWordEmbed": {
+                "title": "Dubbel woord, woorden slang is gereset"
             }
         }
     },

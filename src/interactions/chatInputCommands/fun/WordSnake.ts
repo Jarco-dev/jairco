@@ -9,34 +9,37 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
-import CountingChannelConfirmButtonComponent from "@/button/fun/counting/CountingChannelConfirm";
-import CountingChannelCancelButtonComponent from "@/button/fun/counting/CountingChannelCancel";
-import CountingBlacklistListNextPageButtonComponent from "@/button/fun/counting/CountingBlacklistListNextPage";
-import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/counting/CountingBlacklistListSelectPageStart";
-import CountingBlacklistListPreviousPageButtonComponent from "@/button/fun/counting/CountingBlacklistListPreviousPage";
-import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/counting/CountingLeaderboardPreviousPage";
-import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/counting/CountingLeaderboardSelectPageStart";
-import CountingLeaderboardNextPageButtonComponent from "@/button/fun/counting/CountingLeaderboardNextPage";
+import WordSnakeChannelConfirmButtonComponent from "@/button/fun/wordSnake/WordSnakeChannelConfirm";
+import WordSnakeChannelCancelButtonComponent from "@/button/fun/wordSnake/WordSnakeChannelCancel";
+import WordSnakeBlacklistListPreviousPageButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListPreviousPage";
+import WordSnakeBlacklistListSelectPageStartButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListSelectPageStart";
+import WordSnakeBlacklistListNextPageButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListNextPage";
+import WordSnakeLeaderboardPreviousPageButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardPreviousPage";
+import WordSnakeLeaderboardSelectPageStartButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardSelectPageStart";
+import WordSnakeLeaderboardNextPageButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardNextPage";
 
-export default class CountingChatInputCommand extends ChatInputCommand {
+export default class WordSnakeChatInputCommand extends ChatInputCommand {
     constructor() {
         super({
             builder: new SlashCommandBuilder()
-                .setName("counting")
-                .setNameLocalization("nl", "tellen")
-                .setDescription("Everything to do with counting")
-                .setDescriptionLocalization("nl", "Alles temaken met tellen")
+                .setName("word-snake")
+                .setNameLocalization("nl", "woorden-slang")
+                .setDescription("Everything to do with word snakes")
+                .setDescriptionLocalization(
+                    "nl",
+                    "Alles temaken met woord slangen"
+                )
                 .setDMPermission(false)
                 .addSubcommand(builder =>
                     builder
                         .setName("set-enabled")
                         .setNameLocalization("nl", "zet-ingeschakeld")
                         .setDescription(
-                            "Enable or disable the counting feature"
+                            "Enable or disable the word snake feature"
                         )
                         .setDescriptionLocalization(
                             "nl",
-                            "Zet de tellen functie aan of uit"
+                            "Zet de woord slang functie aan of uit"
                         )
                         .addStringOption(builder =>
                             builder
@@ -64,11 +67,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                         .setName("statistics")
                         .setNameLocalization("nl", "statistieken")
                         .setDescription(
-                            "View counting statistics for the server"
+                            "View word snake statistics for the server"
                         )
                         .setDescriptionLocalization(
                             "nl",
-                            "Bekijk statistieken voor tellen van de hele server"
+                            "Bekijk statistieken voor woord slangen van de hele server"
                         )
                 )
                 .addSubcommand(builder =>
@@ -92,25 +95,18 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                 .setRequired(true)
                                 .addChoices([
                                     {
-                                        name: "Correctly counted",
+                                        name: "Correct words",
                                         name_localizations: {
-                                            nl: "Correct geteld"
+                                            nl: "Correcte woorden"
                                         },
                                         value: "correct"
                                     },
                                     {
-                                        name: "Incorrectly counted",
+                                        name: "Incorrect words",
                                         name_localizations: {
-                                            nl: "Incorrect geteld"
+                                            nl: "Incorrecte woorden"
                                         },
                                         value: "incorrect"
-                                    },
-                                    {
-                                        name: "Highest counted",
-                                        name_localizations: {
-                                            nl: "Hoogste geteld"
-                                        },
-                                        value: "highest"
                                     },
                                     {
                                         name: "Correct to incorrect ratio",
@@ -126,19 +122,19 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                     builder
                         .setName("channel")
                         .setNameLocalization("nl", "kanaal")
-                        .setDescription("Configure the counting channel")
+                        .setDescription("Configure the word snake channel")
                         .setDescriptionLocalization(
                             "nl",
-                            "Instellingen voor het tellen kanaal"
+                            "Instellingen voor het word slangen kanaal"
                         )
                         .addSubcommand(builder =>
                             builder
                                 .setName("set")
                                 .setNameLocalization("nl", "instellen")
-                                .setDescription("Set the counting channel")
+                                .setDescription("Set the word snake channel")
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "Selecteer het tellen kanaal"
+                                    "Selecteer het woord slangen kanaal"
                                 )
                                 .addChannelOption(builder =>
                                     builder
@@ -158,11 +154,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                 .setName("view")
                                 .setNameLocalization("nl", "bekijk")
                                 .setDescription(
-                                    "View the current counting channel"
+                                    "View the current word snake channel"
                                 )
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "Bekijk het huidige tellen kanaal"
+                                    "Bekijk het huidige woord slangen kanaal"
                                 )
                         )
                         .addSubcommand(builder =>
@@ -170,11 +166,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                 .setName("reset")
                                 .setNameLocalization("nl", "resetten")
                                 .setDescription(
-                                    "Delete the configured channel and the current count"
+                                    "Delete the configured channel and the current word snake"
                                 )
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "Verwijder het ingestelde kanaal en het huidige nummer"
+                                    "Verwijder het ingestelde kanaal en de huidige woorden slang"
                                 )
                         )
                 )
@@ -182,21 +178,21 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                     builder
                         .setName("blacklist")
                         .setNameLocalization("nl", "blokkades")
-                        .setDescription("Manage counting blacklists")
+                        .setDescription("Manage word snake blacklists")
                         .setDescriptionLocalization(
                             "nl",
-                            "Beheer tellen blokkades"
+                            "Beheer woord slangen blokkades"
                         )
                         .addSubcommand(builder =>
                             builder
                                 .setName("add")
                                 .setNameLocalization("nl", "toevoegen")
                                 .setDescription(
-                                    "Blacklist a user from counting"
+                                    "Blacklist a user from sending word snakes"
                                 )
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "Blokkeer een gebruiker van tellen"
+                                    "Blokkeer een gebruiker van woord slangen sturen"
                                 )
                                 .addUserOption(builder =>
                                     builder
@@ -227,11 +223,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                 .setName("remove")
                                 .setNameLocalization("nl", "verwijderen")
                                 .setDescription(
-                                    "Undo a blacklist for a user from counting"
+                                    "Undo a blacklist for a user from sending word snakes"
                                 )
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "Deblokkeer een gebruiker van tellen"
+                                    "Deblokkeer een gebruiker van woord slangen sturen"
                                 )
                                 .addUserOption(builder =>
                                     builder
@@ -250,11 +246,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                 .setName("list")
                                 .setNameLocalization("nl", "lijst")
                                 .setDescription(
-                                    "View a list of all counting blacklists"
+                                    "View a list of all word snake blacklists"
                                 )
                                 .setDescriptionLocalization(
                                     "nl",
-                                    "Bekijk een lijst van alle tellen blokkades"
+                                    "Bekijk een lijst van alle woord slangen blokkades"
                                 )
                         )
                         .addSubcommand(builder =>
@@ -274,11 +270,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                                             "blokkade-id"
                                         )
                                         .setDescription(
-                                            "The id of the blacklist to delete, get the id using /counting blacklist list"
+                                            "The id of the blacklist to delete, get the id using /wordsnake blacklist list"
                                         )
                                         .setDescriptionLocalization(
                                             "nl",
-                                            "Het id van de blokkade om te verwijderen, verkrijg het id met /counting blacklist list"
+                                            "Het id van de blokkade om te verwijderen, verkrijg het id met /woord-slang blacklist lijst"
                                         )
                                         .setRequired(true)
                                 )
@@ -296,10 +292,10 @@ export default class CountingChatInputCommand extends ChatInputCommand {
 
         if (key !== "set-enabled") {
             const settings =
-                await this.client.cacheableData.getCountingSettings(
+                await this.client.cacheableData.getWordSnakeSettings(
                     i.guild!.id
                 );
-            if (!settings?.countingEnabled) {
+            if (!settings?.wordSnakeEnabled) {
                 this.client.sender.reply(
                     i,
                     { ephemeral: true },
@@ -339,7 +335,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             default:
                 return {
                     result: "ERRORED",
-                    note: "Counting subcommand executor not found",
+                    note: "Word snake subcommand executor not found",
                     error: new Error("Command executor not found")
                 };
         }
@@ -349,7 +345,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
-        if (!permissions.has(BotPermissionsBitField.Flags.ManageCounting)) {
+        if (!permissions.has(BotPermissionsBitField.Flags.ManageWordSnake)) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -358,11 +354,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const settings = await this.client.cacheableData.getCountingSettings(
+        const settings = await this.client.cacheableData.getWordSnakeSettings(
             i.guild!.id
         );
         const newValue = i.options.getString("value", true) === "true";
-        if (settings?.countingEnabled === newValue) {
+        if (settings?.wordSnakeEnabled === newValue) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -376,10 +372,10 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        if (settings?.countingEnabled !== undefined) {
+        if (settings?.wordSnakeEnabled !== undefined) {
             await this.client.prisma.guildSettings.updateMany({
                 where: {
-                    type: "COUNTING_ENABLED",
+                    type: "WORD_SNAKE_ENABLED",
                     Guild: { discordId: i.guild!.id }
                 },
                 data: { value: newValue ? "1" : "0" }
@@ -387,8 +383,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         } else {
             await this.client.prisma.guildSettings.create({
                 data: {
-                    type: "COUNTING_ENABLED",
-                    guildIdAndType: i.guild!.id + "COUNTING_ENABLED",
+                    type: "WORD_SNAKE_ENABLED",
+                    guildIdAndType: i.guild!.id + "WORD_SNAKE_ENABLED",
                     value: newValue ? "1" : "0",
                     Guild: {
                         connectOrCreate: {
@@ -399,7 +395,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 }
             });
         }
-        await this.client.redis.delGuildSettings("counting", i.guild!.id);
+        await this.client.redis.delGuildSettings("wordSnake", i.guild!.id);
 
         this.client.sender.reply(
             i,
@@ -418,35 +414,37 @@ export default class CountingChatInputCommand extends ChatInputCommand {
     private async runStatistics(
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
-        const userCounts = await this.client.prisma.countingStats.aggregate({
+        const userCounts = await this.client.prisma.wordSnakeStats.aggregate({
             where: { Guild: { discordId: i.guild!.id } },
             _sum: { correct: true, incorrect: true }
         });
-        const usersCounted = await this.client.prisma.countingStats.count({
+        const usersCounted = await this.client.prisma.wordSnakeStats.count({
             where: {
                 Guild: { discordId: i.guild!.id },
                 correct: { gt: 0 }
             }
         });
-        const usersIncorrect = await this.client.prisma.countingStats.count({
+        const usersIncorrect = await this.client.prisma.wordSnakeStats.count({
             where: {
                 Guild: { discordId: i.guild!.id },
                 incorrect: { gt: 0 }
             }
         });
-        const countingSettings =
-            await this.client.cacheableData.getCountingSettings(i.guild!.id);
+        const wordSnakeSettings =
+            await this.client.cacheableData.getWordSnakeSettings(i.guild!.id);
 
         this.client.sender.reply(
             i,
             {},
             {
                 langType: "EMBED",
-                langLocation: "counting.statisticsEmbed",
+                langLocation: "wordSnake.statisticsEmbed",
                 langVariables: {
                     correct: (userCounts._sum.correct ?? 0).toString(),
                     incorrect: (userCounts._sum.incorrect ?? 0).toString(),
-                    highest: (countingSettings?.highestCount ?? 0).toString(),
+                    highest: (
+                        wordSnakeSettings?.highestWordSnake ?? 0
+                    ).toString(),
                     usersCorrect: usersCounted.toString(),
                     usersIncorrect: usersIncorrect.toString()
                 }
@@ -462,16 +460,13 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         const type = i.options.getString("type", true) as
             | "correct"
             | "incorrect"
-            | "highest"
             | "ratio";
-        const userCount = await this.client.prisma.countingStats.count({
+        const userCount = await this.client.prisma.wordSnakeStats.count({
             where: {
                 Guild: { discordId: i.guild!.id },
                 ...(type === "correct" || type === "ratio"
                     ? { correct: { gt: 0 } }
-                    : type === "incorrect"
-                      ? { incorrect: { gt: 0 } }
-                      : { highest: { gt: 0 } })
+                    : { incorrect: { gt: 0 } })
             }
         });
         if (userCount === 0) {
@@ -479,14 +474,14 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.noUsersOnLeaderboard",
+                    langLocation: "wordSnake.noUsersOnLeaderboard",
                     msgType: "INVALID"
                 }
             );
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const embed = await this.client.utils.getCountingLeaderboardPage(
+        const embed = await this.client.utils.getWordSnakeLeaderboardPage(
             i,
             type
         );
@@ -496,11 +491,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         }
 
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingLeaderboardPreviousPageButtonComponent.builder,
+            WordSnakeLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingLeaderboardSelectPageStartButtonComponent.builder.toJSON()
+                WordSnakeLeaderboardSelectPageStartButtonComponent.builder.toJSON()
             ).setLabel(`1/${Math.ceil(userCount / 10)}`),
-            CountingLeaderboardNextPageButtonComponent.builder
+            WordSnakeLeaderboardNextPageButtonComponent.builder
         );
 
         const reply = await this.client.sender.reply(i, {
@@ -516,12 +511,12 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             );
             return {
                 result: "ERRORED",
-                note: "Counting leaderboard message unavailable",
+                note: "Word snake leaderboard message unavailable",
                 error: new Error("Message unavailable")
             };
         }
 
-        this.client.redis.setMessageContext("countingLeaderboard", reply.id, {
+        this.client.redis.setMessageContext("wordSnakeLeaderboard", reply.id, {
             pageMenuOwnerId: i.user.id,
             type,
             page: 1
@@ -534,7 +529,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
-        if (!permissions.has(BotPermissionsBitField.Flags.ManageCounting)) {
+        if (!permissions.has(BotPermissionsBitField.Flags.ManageWordSnake)) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -559,21 +554,21 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 { ephemeral: true },
                 {
                     langType: "EMBED",
-                    langLocation: "counting.botMissingPermsEmbed",
+                    langLocation: "wordSnake.botMissingPermsEmbed",
                     langVariables: { channel: channel.toString() }
                 }
             );
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const settings = await this.client.cacheableData.getCountingSettings(
+        const settings = await this.client.cacheableData.getWordSnakeSettings(
             i.guild!.id
         );
-        if (!settings?.countingChannel) {
+        if (!settings?.wordSnakeChannel) {
             await this.client.prisma.guildSettings.create({
                 data: {
-                    type: "COUNTING_CHANNEL",
-                    guildIdAndType: i.guild!.id + "COUNTING_CHANNEL",
+                    type: "WORD_SNAKE_CHANNEL",
+                    guildIdAndType: i.guild!.id + "WORD_SNAKE_CHANNEL",
                     value: channel.id,
                     Guild: {
                         connectOrCreate: {
@@ -583,13 +578,13 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                     }
                 }
             });
-            this.client.redis.delGuildSettings("counting", i.guild!.id);
+            this.client.redis.delGuildSettings("wordSnake", i.guild!.id);
 
             this.client.sender.reply(
                 i,
                 {},
                 {
-                    langLocation: "counting.channelSet",
+                    langLocation: "wordSnake.channelSet",
                     langVariables: { channel: channel.toString() },
                     msgType: "SUCCESS"
                 }
@@ -599,11 +594,11 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         }
 
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingChannelConfirmButtonComponent.getTranslatedBuilder(
+            WordSnakeChannelConfirmButtonComponent.getTranslatedBuilder(
                 i.locale,
                 this.client.lang
             ),
-            CountingChannelCancelButtonComponent.getTranslatedBuilder(
+            WordSnakeChannelCancelButtonComponent.getTranslatedBuilder(
                 i.locale,
                 this.client.lang
             )
@@ -614,9 +609,9 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             { components: [buttons], fetchReply: true },
             {
                 langType: "EMBED",
-                langLocation: "counting.channelConfirmEmbed",
+                langLocation: "wordSnake.channelConfirmEmbed",
                 langVariables: {
-                    oldChannel: `<#${settings.countingChannel}>`,
+                    oldChannel: `<#${settings.wordSnakeChannel}>`,
                     newChannel: channel.toString()
                 }
             }
@@ -629,12 +624,12 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             );
             return {
                 result: "ERRORED",
-                note: "Counting channel message unavailable",
+                note: "Word snake channel message unavailable",
                 error: new Error("Message unavailable")
             };
         }
 
-        this.client.redis.setMessageContext("countingChannelSet", reply.id, {
+        this.client.redis.setMessageContext("wordSnakeChannelSet", reply.id, {
             buttonOwnerId: i.user.id,
             channelId: channel.id
         });
@@ -646,7 +641,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
-        if (!permissions.has(BotPermissionsBitField.Flags.ManageCounting)) {
+        if (!permissions.has(BotPermissionsBitField.Flags.ManageWordSnake)) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -655,17 +650,17 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const settings = await this.client.cacheableData.getCountingSettings(
+        const settings = await this.client.cacheableData.getWordSnakeSettings(
             i.guild!.id
         );
-        if (settings?.countingChannel) {
+        if (settings?.wordSnakeChannel) {
             this.client.sender.reply(
                 i,
                 {},
                 {
-                    langLocation: "counting.viewChannel",
+                    langLocation: "wordSnake.viewChannel",
                     langVariables: {
-                        channel: `<#${settings.countingChannel}>`
+                        channel: `<#${settings.wordSnakeChannel}>`
                     },
                     msgType: "SUCCESS"
                 }
@@ -675,7 +670,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 {},
                 {
-                    langLocation: "counting.noChannelSet",
+                    langLocation: "wordSnake.noChannelSet",
                     msgType: "INVALID"
                 }
             );
@@ -688,7 +683,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
-        if (!permissions.has(BotPermissionsBitField.Flags.ManageCounting)) {
+        if (!permissions.has(BotPermissionsBitField.Flags.ManageWordSnake)) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -697,33 +692,38 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const settings = await this.client.cacheableData.getCountingSettings(
+        const settings = await this.client.cacheableData.getWordSnakeSettings(
             i.guild!.id
         );
-        if (!settings?.countingChannel) {
+        if (!settings?.wordSnakeChannel) {
             this.client.sender.reply(
                 i,
                 {},
                 {
-                    langLocation: "counting.noChannelSet",
+                    langLocation: "wordSnake.noChannelSet",
                     msgType: "INVALID"
                 }
             );
-            return { result: "OTHER", note: "No counting channel is set" };
+            return { result: "OTHER", note: "No word snake channel is set" };
         }
 
         await this.client.prisma.guildSettings.deleteMany({
             where: {
                 type: {
                     in: [
-                        "COUNTING_CHANNEL",
-                        "CURRENT_COUNT",
-                        "CURRENT_COUNT_USER"
+                        "WORD_SNAKE_CHANNEL",
+                        "CURRENT_WORD",
+                        "CURRENT_WORD_USER"
                     ]
                 }
             }
         });
-        this.client.redis.delGuildSettings("counting", i.guild!.id);
+        await this.client.prisma.usedWordSnakeWords.deleteMany({
+            where: {
+                Guild: { discordId: i.guild!.id }
+            }
+        });
+        this.client.redis.delGuildSettings("wordSnake", i.guild!.id);
 
         this.client.sender.reply(
             i,
@@ -740,7 +740,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
             !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
+                BotPermissionsBitField.Flags.ManageWordSnakeBlacklist
             )
         ) {
             this.client.sender.reply(
@@ -757,7 +757,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.cantBlacklistBot",
+                    langLocation: "wordSnake.cantBlacklistBot",
                     msgType: "INVALID"
                 }
             );
@@ -765,7 +765,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         }
 
         const blacklist = await this.client.cacheableData.getBlacklist(
-            "counting",
+            "wordsnake",
             i.guild!.id,
             user.id
         );
@@ -774,7 +774,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.alreadyBlacklisted",
+                    langLocation: "wordSnake.alreadyBlacklisted",
                     langVariables: { user: user.toString() },
                     msgType: "INVALID"
                 }
@@ -787,7 +787,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
-                { langLocation: "counting.reasonTooLong", msgType: "INVALID" }
+                { langLocation: "wordSnake.reasonTooLong", msgType: "INVALID" }
             );
             return { result: "INVALID_ARGUMENTS" };
         }
@@ -795,8 +795,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         await this.client.prisma.blacklists.create({
             data: {
                 reason,
-                type: "COUNTING",
-                guildIdUserIdType: i.guild!.id + user.id + "COUNTING",
+                type: "WORD_SNAKE",
+                guildIdUserIdType: i.guild!.id + user.id + "WORD_SNAKE",
                 Guild: {
                     connectOrCreate: {
                         where: { discordId: i.guild!.id },
@@ -822,7 +822,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             i,
             {},
             {
-                langLocation: "counting.blacklistAdded",
+                langLocation: "wordSnake.blacklistAdded",
                 langVariables: { user: user.toString() },
                 msgType: "SUCCESS"
             }
@@ -837,7 +837,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
             !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
+                BotPermissionsBitField.Flags.ManageWordSnakeBlacklist
             )
         ) {
             this.client.sender.reply(
@@ -854,7 +854,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.cantBlacklistBot",
+                    langLocation: "wordSnake.cantBlacklistBot",
                     msgType: "INVALID"
                 }
             );
@@ -862,7 +862,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         }
 
         const blacklist = await this.client.cacheableData.getBlacklist(
-            "counting",
+            "wordsnake",
             i.guild!.id,
             user.id
         );
@@ -871,7 +871,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.notBlacklisted",
+                    langLocation: "wordSnake.notBlacklisted",
                     langVariables: { user: user.toString() },
                     msgType: "INVALID"
                 }
@@ -880,15 +880,15 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         }
 
         await this.client.prisma.blacklists.delete({
-            where: { guildIdUserIdType: i.guild!.id + user.id + "COUNTING" }
+            where: { guildIdUserIdType: i.guild!.id + user.id + "WORD_SNAKE" }
         });
-        this.client.redis.delBlacklist("counting", i.guild!.id, user.id);
+        this.client.redis.delBlacklist("wordsnake", i.guild!.id, user.id);
 
         this.client.sender.reply(
             i,
             {},
             {
-                langLocation: "counting.blacklistRemoved",
+                langLocation: "wordSnake.blacklistRemoved",
                 langVariables: { user: user.toString() },
                 msgType: "SUCCESS"
             }
@@ -903,7 +903,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
             !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
+                BotPermissionsBitField.Flags.ManageWordSnakeBlacklist
             )
         ) {
             this.client.sender.reply(
@@ -915,32 +915,32 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         }
 
         const blacklistCount = await this.client.prisma.blacklists.count({
-            where: { type: "COUNTING", Guild: { discordId: i.guild!.id } }
+            where: { type: "WORD_SNAKE", Guild: { discordId: i.guild!.id } }
         });
         if (blacklistCount === 0) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.noBlacklistsExist",
+                    langLocation: "wordSnake.noBlacklistsExist",
                     msgType: "INVALID"
                 }
             );
             return { result: "SUCCESS" };
         }
 
-        const embed = await this.client.utils.getCountingBlacklistListPage(i);
+        const embed = await this.client.utils.getWordSnakeBlacklistListPage(i);
         if (blacklistCount <= 10) {
             this.client.sender.reply(i, { embeds: [embed] });
             return { result: "SUCCESS" };
         }
 
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingBlacklistListPreviousPageButtonComponent.builder,
+            WordSnakeBlacklistListPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingBlacklistListSelectPageStartButtonComponent.builder.toJSON()
+                WordSnakeBlacklistListSelectPageStartButtonComponent.builder.toJSON()
             ).setLabel(`1/${Math.ceil(blacklistCount / 10)}`),
-            CountingBlacklistListNextPageButtonComponent.builder
+            WordSnakeBlacklistListNextPageButtonComponent.builder
         );
 
         const reply = await this.client.sender.reply(i, {
@@ -956,15 +956,19 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             );
             return {
                 result: "ERRORED",
-                note: "Counting blacklist list message unavailable",
+                note: "Word snake blacklist list message unavailable",
                 error: new Error("Message unavailable")
             };
         }
 
-        this.client.redis.setMessageContext("countingBlacklistList", reply.id, {
-            page: 1,
-            pageMenuOwnerId: i.user.id
-        });
+        this.client.redis.setMessageContext(
+            "wordSnakeBlacklistList",
+            reply.id,
+            {
+                page: 1,
+                pageMenuOwnerId: i.user.id
+            }
+        );
 
         return { result: "SUCCESS" };
     }
@@ -975,7 +979,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
             !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
+                BotPermissionsBitField.Flags.ManageWordSnakeBlacklist
             )
         ) {
             this.client.sender.reply(
@@ -1010,7 +1014,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 i,
                 { ephemeral: true },
                 {
-                    langLocation: "counting.invalidBlacklistId",
+                    langLocation: "wordSnake.invalidBlacklistId",
                     msgType: "INVALID"
                 }
             );
@@ -1022,7 +1026,7 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             {},
             {
                 langType: "EMBED",
-                langLocation: "counting.blacklistEmbed",
+                langLocation: "wordSnake.blacklistEmbed",
                 langVariables: {
                     id: blacklist.id.toString(),
                     createdAt: `<t:${Math.round(

@@ -3,21 +3,21 @@ import { Modal } from "@/structures";
 import {
     ModalSubmitInteraction,
     ModalBuilder,
-    LocaleString,
     ActionRowBuilder,
     ModalActionRowComponentBuilder,
     TextInputBuilder,
     TextInputStyle,
+    LocaleString,
     ButtonBuilder
 } from "discord.js";
-import { BotPermissionsBitField, LanguageManager } from "@/classes";
-import CountingBlacklistListPreviousPageButtonComponent from "@/button/fun/counting/CountingBlacklistListPreviousPage";
-import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/counting/CountingBlacklistListSelectPageStart";
-import CountingBlacklistListNextPageButtonComponent from "@/button/fun/counting/CountingBlacklistListNextPage";
+import { LanguageManager } from "@/classes";
+import WordSnakeLeaderboardPreviousPageButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardPreviousPage";
+import WordSnakeLeaderboardSelectPageStartButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardSelectPageStart";
+import WordSnakeLeaderboardNextPageButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardNextPage";
 
-export default class CountingBlacklistListSelectPageModal extends Modal {
+export default class WordSnakeLeaderboardSelectPageModal extends Modal {
     public static readonly builder = new ModalBuilder()
-        .setCustomId("countingBlacklistListSelectPage")
+        .setCustomId("wordSnakeLeaderboardSelectPage")
         .setTitle("placeholder")
         .setComponents([
             new ActionRowBuilder<ModalActionRowComponentBuilder>().setComponents(
@@ -30,7 +30,7 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
 
     constructor() {
         super({
-            builder: CountingBlacklistListSelectPageModal.builder
+            builder: WordSnakeLeaderboardSelectPageModal.builder
         });
     }
 
@@ -49,7 +49,7 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
 
     public async run(i: ModalSubmitInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "countingBlacklistList",
+            "wordSnakeLeaderboard",
             i.message!.id
         );
         if (!context) {
@@ -74,27 +74,17 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
             return { result: "ACTION_EXPIRED" };
         }
 
-        const permissions = await this.client.utils.getMemberBotPermissions(i);
-        if (
-            !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
-            ) ||
-            i.user.id !== context.pageMenuOwnerId
-        ) {
-            this.client.sender.reply(
-                i,
-                { ephemeral: true },
-                { langLocation: "misc.missingPermissions", msgType: "INVALID" }
-            );
-            return { result: "USER_MISSING_PERMISSIONS" };
-        }
-
-        const blacklistCount = await this.client.prisma.blacklists.count({
-            where: { type: "COUNTING", Guild: { discordId: i.guild!.id } }
+        const userCount = await this.client.prisma.countingStats.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(context.type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : { incorrect: { gt: 0 } })
+            }
         });
-        if (blacklistCount === 0) {
+        if (userCount === 0) {
             this.client.redis.delMessageContext(
-                "countingBlacklistList",
+                "wordSnakeLeaderboard",
                 i.message!.id
             );
             this.client.sender.reply(
@@ -109,7 +99,7 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(blacklistCount / 10);
+        const maxPage = Math.ceil(userCount / 10);
         const newPage = parseInt(i.fields.getTextInputValue("pageNumber"));
         if (isNaN(newPage) || newPage > maxPage) {
             this.client.sender.reply(
@@ -124,21 +114,22 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const embed = await this.client.utils.getCountingBlacklistListPage(
+        const embed = await this.client.utils.getWordSnakeLeaderboardPage(
             i,
+            context.type,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingBlacklistListPreviousPageButtonComponent.builder,
+            WordSnakeLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingBlacklistListSelectPageStartButtonComponent.builder.data
+                WordSnakeLeaderboardSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CountingBlacklistListNextPageButtonComponent.builder
+            WordSnakeLeaderboardNextPageButtonComponent.builder
         );
 
         const reply = await this.client.sender.reply(i, {
             embeds: [embed],
-            components: blacklistCount > 10 ? [buttons] : [],
+            components: userCount > 10 ? [buttons] : [],
             fetchReply: true
         });
         if (!reply) {
@@ -150,19 +141,19 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
             i.message!.delete().catch(() => {});
             return {
                 result: "ERRORED",
-                note: "Counting blacklist list page message unavailable",
+                note: "Word snake leaderboard page message unavailable",
                 error: new Error("Message unavailable")
             };
         }
 
         i.message!.delete().catch(() => {});
-        if (blacklistCount > 10) {
+        if (userCount > 10) {
             this.client.redis.delMessageContext(
-                "countingBlacklistList",
+                "wordSnakeLeaderboard",
                 i.message!.id
             );
             this.client.redis.setMessageContext(
-                "countingBlacklistList",
+                "wordSnakeLeaderboard",
                 reply.id,
                 {
                     ...context,
@@ -171,7 +162,7 @@ export default class CountingBlacklistListSelectPageModal extends Modal {
             );
         } else {
             this.client.redis.delMessageContext(
-                "countingBlacklistList",
+                "wordSnakeLeaderboard",
                 i.message!.id
             );
         }
