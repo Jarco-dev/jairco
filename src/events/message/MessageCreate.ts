@@ -293,9 +293,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         }
 
         const wordIsValid = await this.client.utils.wordExists(word);
-        this.client.logger.debug(
-            `Current: ${settings.currentWord}, new: ${word}, isValid: ${wordIsValid}`
-        ); // TODO: REMOVE
         if (settings.currentWord === undefined && !wordIsValid) {
             const embed = this.client.lang.getEmbed(
                 "en-US",
@@ -311,12 +308,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             };
         }
 
-        this.client.logger.debug(
-            `${(settings.currentWord ?? word).slice(-1)} !== ${word.slice(
-                0,
-                1
-            )}`
-        ); // TODO: REMOVE
         const wordCount = await this.client.prisma.usedWordSnakeWords.count({
             where: {
                 Guild: { discordId: msg.guild.id },

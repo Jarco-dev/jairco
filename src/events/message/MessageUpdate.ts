@@ -172,7 +172,6 @@ export default class MessageUpdateEventHandler extends EventHandler<"messageUpda
         const newWords = newMsg.content.split(" ");
         const newWord =
             newWords.length >= 1 ? newWords[0].toLowerCase() : undefined;
-        this.client.logger.debug(`Update, old: ${oldWord} new: ${newWord}`); // TODO: REMOVE THIS
         if (oldWord === newWord) {
             return { result: "OTHER", note: "Word is still present" };
         }
