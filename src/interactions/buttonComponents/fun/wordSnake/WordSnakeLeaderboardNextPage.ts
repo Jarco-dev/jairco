@@ -6,24 +6,24 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/CringeLeaderboardPreviousPage";
-import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/CringeLeaderboardSelectPageStart";
+import WordSnakeLeaderboardPreviousPageButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardPreviousPage";
+import WordSnakeLeaderboardSelectPageStartButtonComponent from "@/button/fun/wordSnake/WordSnakeLeaderboardSelectPageStart";
 
-export default class CringeLeaderboardNextPageButtonComponent extends ButtonComponent {
+export default class WordSnakeLeaderboardNextPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeLeaderboardNextPage")
+        .setCustomId("wordSnakeLeaderboardNextPage")
         .setStyle(ButtonStyle.Success)
         .setLabel(">");
 
     constructor() {
         super({
-            builder: CringeLeaderboardNextPageButtonComponent.builder
+            builder: WordSnakeLeaderboardNextPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeLeaderboard",
+            "wordSnakeLeaderboard",
             i.message.id
         );
         if (!context) {
@@ -57,18 +57,17 @@ export default class CringeLeaderboardNextPageButtonComponent extends ButtonComp
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const dbRes: [{ received: bigint; given: bigint }] = await this.client
-            .prisma
-            .$queryRaw`SELECT COUNT(DISTINCT Cringes.receivedByUserId) as received, COUNT(DISTINCT Cringes.givenByUserId) as given FROM Cringes JOIN Guilds ON Cringes.guildId=Guilds.id WHERE Guilds.discordId=${
-            i.guild!.id
-        }`;
-        const userCount =
-            context.type === "received"
-                ? Number(dbRes[0].received)
-                : Number(dbRes[0].given);
+        const userCount = await this.client.prisma.wordSnakeStats.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(context.type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : { incorrect: { gt: 0 } })
+            }
+        });
         if (userCount === 0) {
             this.client.redis.delMessageContext(
-                "cringeLeaderboard",
+                "wordSnakeLeaderboard",
                 i.message.id
             );
             this.client.sender.reply(
@@ -85,36 +84,36 @@ export default class CringeLeaderboardNextPageButtonComponent extends ButtonComp
 
         const maxPage = Math.ceil(userCount / 10);
         const newPage = context.page < maxPage ? context.page + 1 : 1;
-        const embed = await this.client.utils.getCringeLeaderboardPage(
+        const embed = await this.client.utils.getWordSnakeLeaderboardPage(
             i,
             context.type,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CringeLeaderboardPreviousPageButtonComponent.builder,
+            WordSnakeLeaderboardPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CringeLeaderboardSelectPageStartButtonComponent.builder.toJSON()
+                WordSnakeLeaderboardSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CringeLeaderboardNextPageButtonComponent.builder
+            WordSnakeLeaderboardNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
-            { embeds: [embed], components: userCount > 10 ? [buttons] : [] },
+            {
+                embeds: [embed],
+                components: userCount > 10 ? [buttons] : []
+            },
             { method: "UPDATE" }
         );
         if (userCount > 10) {
             this.client.redis.setMessageContext(
-                "cringeLeaderboard",
+                "wordSnakeLeaderboard",
                 i.message.id,
-                {
-                    ...context,
-                    page: newPage
-                }
+                { ...context, page: newPage }
             );
         } else {
             this.client.redis.delMessageContext(
-                "cringeLeaderboard",
+                "wordSnakeLeaderboard",
                 i.message.id
             );
         }

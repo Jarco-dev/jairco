@@ -6,25 +6,25 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/CountingBlacklistListSelectPageStart";
-import CountingBlacklistListNextPageButtonComponent from "@/button/fun/CountingBlacklistListNextPage";
 import { BotPermissionsBitField } from "@/classes";
+import WordSnakeBlacklistListSelectPageStartButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListSelectPageStart";
+import WordSnakeBlacklistListNextPageButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListNextPage";
 
-export default class CountingBlacklistListPreviousPageButtonComponent extends ButtonComponent {
+export default class WordSnakeBlacklistListPreviousPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("countingBlacklistListPreviousPage")
+        .setCustomId("wordSnakeBlacklistListPreviousPage")
         .setStyle(ButtonStyle.Success)
         .setLabel("<");
 
     constructor() {
         super({
-            builder: CountingBlacklistListPreviousPageButtonComponent.builder
+            builder: WordSnakeBlacklistListPreviousPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "countingBlacklistList",
+            "wordSnakeBlacklistList",
             i.message.id
         );
         if (!context) {
@@ -53,7 +53,7 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
             !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
+                BotPermissionsBitField.Flags.ManageWordSnakeBlacklist
             ) ||
             i.user.id !== context.pageMenuOwnerId
         ) {
@@ -66,11 +66,11 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
         }
 
         const blacklistCount = await this.client.prisma.blacklists.count({
-            where: { type: "COUNTING", Guild: { discordId: i.guild!.id } }
+            where: { type: "WORD_SNAKE", Guild: { discordId: i.guild!.id } }
         });
         if (blacklistCount === 0) {
             this.client.redis.delMessageContext(
-                "countingBlacklistList",
+                "wordSnakeBlacklistList",
                 i.message.id
             );
             this.client.sender.reply(
@@ -87,16 +87,16 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
 
         const maxPage = Math.ceil(blacklistCount / 10);
         const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getCountingBlacklistListPage(
+        const embed = await this.client.utils.getWordSnakeBlacklistListPage(
             i,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingBlacklistListPreviousPageButtonComponent.builder,
+            WordSnakeBlacklistListPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingBlacklistListSelectPageStartButtonComponent.builder.data
+                WordSnakeBlacklistListSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CountingBlacklistListNextPageButtonComponent.builder
+            WordSnakeBlacklistListNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
@@ -109,13 +109,13 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
         );
         if (blacklistCount > 10) {
             this.client.redis.setMessageContext(
-                "countingBlacklistList",
+                "wordSnakeBlacklistList",
                 i.message.id,
                 { ...context, page: newPage }
             );
         } else {
             this.client.redis.delMessageContext(
-                "countingBlacklistList",
+                "wordSnakeBlacklistList",
                 i.message.id
             );
         }

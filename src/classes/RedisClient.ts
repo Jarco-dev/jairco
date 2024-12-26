@@ -30,7 +30,10 @@ export class RedisClient {
         countingChannelSet: 60 * 5,
         countingBlacklistList: 60 * 15,
         countingLeaderboard: 60 * 15,
-        calendarEvents: 60 * 15
+        calendarEvents: 60 * 15,
+        wordSnakeChannelSet: 60 * 5,
+        wordSnakeBlacklistList: 60 * 15,
+        wordSnakeLeaderboard: 16 * 15
     };
 
     constructor(client: Client) {

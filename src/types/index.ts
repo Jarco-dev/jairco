@@ -7,6 +7,7 @@ export { Config } from "./Config";
 export { GuildCalendarSettings } from "./GuildCalendarSettings";
 export { GuildCountingSettings } from "./GuildCountingSettings";
 export { GuildCringeSettings } from "./GuildCringeSettings";
+export { GuildWordSnakeSettings } from "./GuildWordSnakeSettings";
 export { HandlerResult } from "./HandlerResult";
 export { LangContentType } from "./LangContentType";
 export { LogLevel } from "./LogLevel";

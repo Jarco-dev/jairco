@@ -6,24 +6,25 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/CringeViewUserSelectPageStart";
-import CringeViewUserNextPageButtonComponent from "@/button/fun/CringeViewUserNextPage";
+import { BotPermissionsBitField } from "@/classes";
+import CalendarEventsPreviousPageButtonComponent from "@/button/fun/calendar/CalendarEventsPreviousPage";
+import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/calendar/CalendarEventsSelectPageStart";
 
-export default class CringeViewUserPreviousPageButtonComponent extends ButtonComponent {
+export default class CalendarEventsNextPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeViewUserPreviousPage")
+        .setCustomId("calendarEventsNextPage")
         .setStyle(ButtonStyle.Success)
-        .setLabel("<");
+        .setLabel(">");
 
     constructor() {
         super({
-            builder: CringeViewUserPreviousPageButtonComponent.builder
+            builder: CalendarEventsNextPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "cringeViewUser",
+            "calendarEvents",
             i.message.id
         );
         if (!context) {
@@ -48,7 +49,12 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
+
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (
+            !permissions.has(BotPermissionsBitField.Flags.ViewCalendar) ||
+            i.user.id !== context.pageMenuOwnerId
+        ) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -57,26 +63,25 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const user = await this.client.users.fetch(context.userId);
-        const cringeCount =
-            context.type === "received"
-                ? await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          ReceivedByUser: { discordId: user.id }
-                      }
-                  })
-                : await this.client.prisma.cringes.count({
-                      where: {
-                          Guild: { discordId: i.guild!.id },
-                          GivenByUser: { discordId: user.id }
-                      }
-                  });
-        if (cringeCount === 0) {
-            this.client.redis.delMessageContext(
-                "cringeLeaderboard",
-                i.message.id
-            );
+        const eventCount = await this.client.prisma.calendarEvents.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(context.withOld
+                    ? {}
+                    : {
+                          OR: [
+                              { endDate: null },
+                              {
+                                  endDate: {
+                                      gte: this.client.utils.getCalendarCutOffDate()
+                                  }
+                              }
+                          ]
+                      })
+            }
+        });
+        if (eventCount === 0) {
+            this.client.redis.delMessageContext("calendarEvents", i.message.id);
             this.client.sender.reply(
                 i,
                 { ephemeral: true, components: [] },
@@ -89,39 +94,37 @@ export default class CringeViewUserPreviousPageButtonComponent extends ButtonCom
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(cringeCount / 10);
-        const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getViewUserCringesPage(
+        const maxPage = Math.ceil(eventCount / 5);
+        const newPage = context.page < maxPage ? context.page + 1 : 1;
+        const embed = await this.client.utils.getCalendarEventsPage(
             i,
-            user,
-            context.type,
-            cringeCount,
+            context.withOld,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CringeViewUserPreviousPageButtonComponent.builder,
+            CalendarEventsPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CringeViewUserSelectPageStartButtonComponent.builder.data
+                CalendarEventsSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CringeViewUserNextPageButtonComponent.builder
+            CalendarEventsNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
-            { embeds: [embed], components: [buttons] },
+            {
+                embeds: [embed],
+                components: eventCount > 5 ? [buttons] : []
+            },
             { method: "UPDATE" }
         );
-        if (cringeCount > 10) {
+        if (eventCount > 5) {
             this.client.redis.setMessageContext(
-                "cringeViewUser",
+                "calendarEvents",
                 i.message.id,
-                {
-                    ...context,
-                    page: newPage
-                }
+                { ...context, page: newPage }
             );
         } else {
-            this.client.redis.delMessageContext("cringeViewUser", i.message.id);
+            this.client.redis.delMessageContext("calendarEvents", i.message.id);
         }
 
         return { result: "SUCCESS" };

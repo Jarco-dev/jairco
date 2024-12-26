@@ -8,6 +8,8 @@ import {
     Snowflake,
     User
 } from "discord.js";
+import fetch from "node-fetch";
+import { load as cheerioLoad } from "cheerio";
 
 export class Utilities {
     private client: Client;
@@ -117,6 +119,21 @@ export class Utilities {
         }
 
         return permissions;
+    }
+
+    public async wordExists(word: string): Promise<boolean> {
+        const baseUrl =
+            "https://www.vandale.nl/gratis-woordenboek/nederlands/betekenis";
+        const res = await fetch(`${baseUrl}/${word.toLowerCase()}`).catch(err =>
+            this.client.logger.error(
+                `Error while fetching word from vandale: ${word}`,
+                err
+            )
+        );
+        if (!res) return false;
+
+        const s = cheerioLoad(await res.text());
+        return s("h1.title").text().includes("Betekenis");
     }
 
     public async getViewUserCringesPage(
@@ -310,7 +327,8 @@ export class Utilities {
             skip: (page - 1) * 10,
             take: 10,
             where: {
-                Guild: { discordId: i.guild!.id }
+                Guild: { discordId: i.guild!.id },
+                type: "COUNTING"
             },
             orderBy: {
                 createdAt: "desc"
@@ -330,6 +348,53 @@ export class Utilities {
         return this.client.lang.getEmbed(
             i.locale,
             "counting.blacklistListEmbed",
+            {
+                blacklists: blacklists
+                    .map(b => {
+                        let string = `(${b.id}) <t:${Math.round(
+                            b.createdAt.getTime() / 1000
+                        )}:R> - <@${b.ReceivedByUser.discordId}>`;
+                        if (b.reason) {
+                            string += `\n${b.reason.substring(0, 50)}${
+                                b.reason.length > 50 ? "..." : ""
+                            }`;
+                        }
+                        return string;
+                    })
+                    .join("\n\n")
+            }
+        );
+    }
+
+    public async getWordSnakeBlacklistListPage(
+        i: BaseInteraction,
+        page = 1
+    ): Promise<EmbedBuilder> {
+        const blacklists = await this.client.prisma.blacklists.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where: {
+                Guild: { discordId: i.guild!.id },
+                type: "WORD_SNAKE"
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            select: {
+                id: true,
+                reason: true,
+                createdAt: true,
+                ReceivedByUser: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        return this.client.lang.getEmbed(
+            i.locale,
+            "wordSnake.blacklistListEmbed",
             {
                 blacklists: blacklists
                     .map(b => {
@@ -446,6 +511,92 @@ export class Utilities {
                             (a += `**#${(page - 1) * 10 + index + 1}** <@${
                                 c.User.discordId
                             }> - ${c.highest}\n`),
+                        ""
+                    )
+                }
+            );
+        }
+    }
+
+    public async getWordSnakeLeaderboardPage(
+        i: BaseInteraction,
+        type: "correct" | "incorrect" | "ratio",
+        page = 1
+    ): Promise<EmbedBuilder> {
+        if (type === "ratio") {
+            const users: { discordId: Snowflake; ratio: number }[] = await this
+                .client.prisma
+                .$queryRaw`SELECT Users.discordId, CASE WHEN correct / incorrect IS NULL THEN correct WHEN correct / incorrect=0 THEN -incorrect ELSE correct / incorrect END AS ratio FROM WordSnakeStats JOIN Users ON userId=Users.id ORDER BY ratio DESC OFFSET ${
+                (page - 1) * 10
+            } ROWS FETCH NEXT 10 ROWS ONLY`;
+
+            return this.client.lang.getEmbed(
+                i.locale,
+                "wordSnake.ratioWordSnakeLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.discordId
+                            }> - ${c.ratio
+                                .toFixed(1)
+                                .replace(".0", "")
+                                .replace(".", ",")}\n`),
+                        ""
+                    )
+                }
+            );
+        }
+
+        const users = await this.client.prisma.wordSnakeStats.findMany({
+            skip: (page - 1) * 10,
+            take: 10,
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(type === "correct"
+                    ? { correct: { gt: 0 } }
+                    : { incorrect: { gt: 0 } })
+            },
+            orderBy: {
+                ...(type === "correct"
+                    ? { correct: "desc" }
+                    : { incorrect: "desc" })
+            },
+            select: {
+                correct: true,
+                incorrect: true,
+                User: {
+                    select: {
+                        discordId: true
+                    }
+                }
+            }
+        });
+
+        if (type === "correct") {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "wordSnake.correctWordSnakeLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.correct}\n`),
+                        ""
+                    )
+                }
+            );
+        } else {
+            return this.client.lang.getEmbed(
+                i.locale,
+                "wordSnake.incorrectWordSnakeLeaderboardEmbed",
+                {
+                    topUsers: users.reduce(
+                        (a: string, c, index) =>
+                            (a += `**#${(page - 1) * 10 + index + 1}** <@${
+                                c.User.discordId
+                            }> - ${c.incorrect}\n`),
                         ""
                     )
                 }

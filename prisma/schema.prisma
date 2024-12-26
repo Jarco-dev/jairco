@@ -9,16 +9,18 @@ datasource db {
 }
 
 model Guilds {
-  id             Int              @id @default(autoincrement())
-  discordId      String           @unique
-  Users          Users[]
-  Roles          Roles[]
-  Groups         Groups[]
-  Cringes        Cringes[]
-  CountingStats  CountingStats[]
-  Settings       GuildSettings[]
-  Blacklists     Blacklists[]
-  CalendarEvents CalendarEvents[]
+  id                 Int                  @id @default(autoincrement())
+  discordId          String               @unique
+  Users              Users[]
+  Roles              Roles[]
+  Groups             Groups[]
+  Cringes            Cringes[]
+  CountingStats      CountingStats[]
+  Settings           GuildSettings[]
+  Blacklists         Blacklists[]
+  CalendarEvents     CalendarEvents[]
+  WordSnakeStats     WordSnakeStats[]
+  UsedWordSnakeWords UsedWordSnakeWords[]
 }
 
 model Users {
@@ -34,6 +36,7 @@ model Users {
   BlacklistsReceived    Blacklists[]     @relation(name: "Blacklists_userToUser")
   BlacklistsGiven       Blacklists[]     @relation(name: "Blacklists_byUserToUser")
   CreatedCalendarEvents CalendarEvents[]
+  WordSnakeStats        WordSnakeStats[]
 }
 
 model Roles {
@@ -89,6 +92,7 @@ model CountingStats {
 
 enum BlacklistTypes {
   COUNTING
+  WORD_SNAKE
 }
 
 model Blacklists {
@@ -115,6 +119,12 @@ enum GuildSetting {
   CRINGE_ENABLED
   CALENDAR_ENABLED
   CALENDAR_AUTO_DELETE
+  WORD_SNAKE_ENABLED
+  WORD_SNAKE_CHANNEL
+  HIGHEST_WORD_SNAKE
+  CURRENT_WORD
+  CURRENT_WORD_USER
+  CURRENT_WORD_SNAKE
 }
 
 model GuildSettings {
@@ -138,4 +148,26 @@ model CalendarEvents {
   Guild           Guilds    @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdByUserId Int
   createdByUser   Users     @relation(fields: [createdByUserId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model WordSnakeStats {
+  id               Int      @id @default(autoincrement())
+  guildIdAndUserId String   @unique // This is used to allow for easier connectOrCreate queries
+  correct          Int      @default(0)
+  incorrect        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  guildId          Int
+  Guild            Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId           Int
+  User             Users    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model UsedWordSnakeWords {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  guildId   Int
+  Guild     Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

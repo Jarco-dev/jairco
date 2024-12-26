@@ -23,12 +23,14 @@
         "@discordjs/builders": "1.8.x",
         "@prisma/client": "^5.17.0",
         "@sematext/gc-stats": "^1.5.9",
+        "cheerio": "^1.0.0",
         "discord.js": "^14.15.3",
         "dotenv": "^16.3.1",
         "express": "^4.19.2",
         "ioredis": "^5.4.1",
         "linguini": "^1.3.1",
         "moment": "^2.29.4",
+        "node-fetch": "^2.7.0",
         "prom-client": "^15.1.3"
     },
     "devDependencies": {
@@ -36,6 +38,7 @@
         "@types/inquirer": "^8.2.5",
         "@types/node": "16.9.x",
         "@types/node-cron": "^3.0.11",
+        "@types/node-fetch": "^2.6.12",
         "@types/sematext__gc-stats": "^1.5.3",
         "cron-validator": "^1.3.1",
         "gts": "^5.2.0",

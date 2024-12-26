@@ -11,9 +11,9 @@ import {
     ButtonBuilder
 } from "discord.js";
 import { LanguageManager } from "@/classes";
-import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/CountingLeaderboardPreviousPage";
-import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
-import CountingLeaderboardNextPageButtonComponent from "@/button/fun/CountingLeaderboardNextPage";
+import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/counting/CountingLeaderboardPreviousPage";
+import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/counting/CountingLeaderboardSelectPageStart";
+import CountingLeaderboardNextPageButtonComponent from "@/button/fun/counting/CountingLeaderboardNextPage";
 
 export default class CountingLeaderboardSelectPageModal extends Modal {
     public static readonly builder = new ModalBuilder()

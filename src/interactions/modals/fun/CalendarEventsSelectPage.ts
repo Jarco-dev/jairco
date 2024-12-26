@@ -11,9 +11,9 @@ import {
     ButtonBuilder
 } from "discord.js";
 import { BotPermissionsBitField, LanguageManager } from "@/classes";
-import CalendarEventsPreviousPageButtonComponent from "@/button/fun/CalendarEventsPreviousPage";
-import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/CalendarEventsSelectPageStart";
-import CalendarEventsNextPageButtonComponent from "@/button/fun/CalendarEventsNextPage";
+import CalendarEventsPreviousPageButtonComponent from "@/button/fun/calendar/CalendarEventsPreviousPage";
+import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/calendar/CalendarEventsSelectPageStart";
+import CalendarEventsNextPageButtonComponent from "@/button/fun/calendar/CalendarEventsNextPage";
 
 export default class CalendarEventsSelectPageModal extends Modal {
     public static readonly builder = new ModalBuilder()

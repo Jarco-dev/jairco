@@ -7,9 +7,9 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
-import CalendarEventsPreviousPageButtonComponent from "@/button/fun/CalendarEventsPreviousPage";
-import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/CalendarEventsSelectPageStart";
-import CalendarEventsNextPageButtonComponent from "@/button/fun/CalendarEventsNextPage";
+import CalendarEventsPreviousPageButtonComponent from "@/button/fun/calendar/CalendarEventsPreviousPage";
+import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/calendar/CalendarEventsSelectPageStart";
+import CalendarEventsNextPageButtonComponent from "@/button/fun/calendar/CalendarEventsNextPage";
 import moment from "moment";
 
 export default class CalendarChatInputCommand extends ChatInputCommand {
