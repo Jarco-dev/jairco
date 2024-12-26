@@ -6,25 +6,25 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/CountingBlacklistListSelectPageStart";
-import CountingBlacklistListNextPageButtonComponent from "@/button/fun/CountingBlacklistListNextPage";
 import { BotPermissionsBitField } from "@/classes";
+import CalendarEventsPreviousPageButtonComponent from "@/button/fun/calendar/CalendarEventsPreviousPage";
+import CalendarEventsSelectPageStartButtonComponent from "@/button/fun/calendar/CalendarEventsSelectPageStart";
 
-export default class CountingBlacklistListPreviousPageButtonComponent extends ButtonComponent {
+export default class CalendarEventsNextPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("countingBlacklistListPreviousPage")
+        .setCustomId("calendarEventsNextPage")
         .setStyle(ButtonStyle.Success)
-        .setLabel("<");
+        .setLabel(">");
 
     constructor() {
         super({
-            builder: CountingBlacklistListPreviousPageButtonComponent.builder
+            builder: CalendarEventsNextPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "countingBlacklistList",
+            "calendarEvents",
             i.message.id
         );
         if (!context) {
@@ -52,9 +52,7 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
 
         const permissions = await this.client.utils.getMemberBotPermissions(i);
         if (
-            !permissions.has(
-                BotPermissionsBitField.Flags.ManageCountingBlacklist
-            ) ||
+            !permissions.has(BotPermissionsBitField.Flags.ViewCalendar) ||
             i.user.id !== context.pageMenuOwnerId
         ) {
             this.client.sender.reply(
@@ -65,14 +63,25 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const blacklistCount = await this.client.prisma.blacklists.count({
-            where: { type: "COUNTING", Guild: { discordId: i.guild!.id } }
+        const eventCount = await this.client.prisma.calendarEvents.count({
+            where: {
+                Guild: { discordId: i.guild!.id },
+                ...(context.withOld
+                    ? {}
+                    : {
+                          OR: [
+                              { endDate: null },
+                              {
+                                  endDate: {
+                                      gte: this.client.utils.getCalendarCutOffDate()
+                                  }
+                              }
+                          ]
+                      })
+            }
         });
-        if (blacklistCount === 0) {
-            this.client.redis.delMessageContext(
-                "cringeLeaderboard",
-                i.message.id
-            );
+        if (eventCount === 0) {
+            this.client.redis.delMessageContext("calendarEvents", i.message.id);
             this.client.sender.reply(
                 i,
                 { ephemeral: true, components: [] },
@@ -85,39 +94,37 @@ export default class CountingBlacklistListPreviousPageButtonComponent extends Bu
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(blacklistCount / 10);
-        const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getCountingBlacklistListPage(
+        const maxPage = Math.ceil(eventCount / 5);
+        const newPage = context.page < maxPage ? context.page + 1 : 1;
+        const embed = await this.client.utils.getCalendarEventsPage(
             i,
+            context.withOld,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingBlacklistListPreviousPageButtonComponent.builder,
+            CalendarEventsPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingBlacklistListSelectPageStartButtonComponent.builder.data
+                CalendarEventsSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CountingBlacklistListNextPageButtonComponent.builder
+            CalendarEventsNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
             {
                 embeds: [embed],
-                components: blacklistCount > 10 ? [buttons] : []
+                components: eventCount > 5 ? [buttons] : []
             },
             { method: "UPDATE" }
         );
-        if (blacklistCount > 10) {
+        if (eventCount > 5) {
             this.client.redis.setMessageContext(
-                "countingBlacklistList",
+                "calendarEvents",
                 i.message.id,
                 { ...context, page: newPage }
             );
         } else {
-            this.client.redis.delMessageContext(
-                "countingBlacklistList",
-                i.message.id
-            );
+            this.client.redis.delMessageContext("calendarEvents", i.message.id);
         }
 
         return { result: "SUCCESS" };

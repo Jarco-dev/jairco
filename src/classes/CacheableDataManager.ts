@@ -4,7 +4,9 @@ import {
     GuildCountingSettings,
     BlacklistData,
     Camelize,
-    GuildCringeSettings
+    GuildCringeSettings,
+    GuildCalendarSettings,
+    GuildWordSnakeSettings
 } from "@/types";
 import Prisma from "@prisma/client";
 
@@ -54,7 +56,6 @@ export class CacheableDataManager {
                     settings.currentCount = parseInt(setting.value);
                     break;
                 case "CURRENT_COUNT_USER":
-                    this.client.logger.debug(setting);
                     settings.currentCountUser = setting.value;
                     break;
             }
@@ -71,13 +72,16 @@ export class CacheableDataManager {
         userId: Snowflake
     ): Promise<BlacklistData | undefined> {
         const cache: BlacklistData | undefined =
-            await this.client.redis.getBlacklist("counting", guildId, userId);
+            await this.client.redis.getBlacklist(type, guildId, userId);
         if (cache) return cache;
 
         let dbType: Prisma.BlacklistTypes;
         switch (type) {
             case "counting":
                 dbType = "COUNTING";
+                break;
+            case "wordsnake":
+                dbType = "WORD_SNAKE";
                 break;
 
             default:
@@ -94,7 +98,7 @@ export class CacheableDataManager {
             reason: dbBlacklist.reason ?? undefined
         };
 
-        this.client.redis.setBlacklist("counting", guildId, userId, blacklist);
+        this.client.redis.setBlacklist(type, guildId, userId, blacklist);
 
         return blacklist;
     }
@@ -126,6 +130,96 @@ export class CacheableDataManager {
         }
 
         this.client.redis.setGuildSettings("cringe", guildId, settings);
+
+        return settings;
+    }
+
+    public async getCalendarSettings(
+        guildId: Snowflake
+    ): Promise<GuildCalendarSettings | undefined> {
+        const cache: GuildCalendarSettings | undefined =
+            await this.client.redis.getGuildSettings("calendar", guildId);
+        if (cache) return cache;
+
+        const settingTypes: Prisma.GuildSetting[] = [
+            "CALENDAR_ENABLED",
+            "CALENDAR_AUTO_DELETE"
+        ];
+        const dbSettings = await this.client.prisma.guildSettings.findMany({
+            where: {
+                type: { in: settingTypes },
+                Guild: { discordId: guildId }
+            },
+            select: { type: true, value: true }
+        });
+        if (dbSettings.length === 0) return undefined;
+
+        const settings: GuildCalendarSettings = {};
+        for (const setting of dbSettings) {
+            switch (setting.type) {
+                case "CALENDAR_ENABLED":
+                    settings.calendarEnabled = !!parseInt(setting.value);
+                    break;
+                case "CALENDAR_AUTO_DELETE":
+                    settings.calendarAutoDelete = !!parseInt(setting.value);
+                    break;
+            }
+        }
+
+        this.client.redis.setGuildSettings("calendar", guildId, settings);
+
+        return settings;
+    }
+
+    public async getWordSnakeSettings(
+        guildId: Snowflake
+    ): Promise<GuildWordSnakeSettings | undefined> {
+        const cache: GuildWordSnakeSettings | undefined =
+            await this.client.redis.getGuildSettings("wordSnake", guildId);
+        if (cache) return cache;
+
+        const settingTypes: Prisma.GuildSetting[] = [
+            "WORD_SNAKE_ENABLED",
+            "WORD_SNAKE_CHANNEL",
+            "HIGHEST_WORD_SNAKE",
+            "CURRENT_WORD_SNAKE",
+            "CURRENT_WORD",
+            "CURRENT_WORD_USER"
+        ];
+        const dbSettings = await this.client.prisma.guildSettings.findMany({
+            where: {
+                type: { in: settingTypes },
+                Guild: { discordId: guildId }
+            },
+            select: { type: true, value: true }
+        });
+        if (dbSettings.length === 0) return undefined;
+
+        const settings: GuildWordSnakeSettings = {};
+        for (const setting of dbSettings) {
+            switch (setting.type) {
+                case "WORD_SNAKE_ENABLED":
+                    settings.wordSnakeEnabled = !!parseInt(setting.value);
+                    break;
+                case "WORD_SNAKE_CHANNEL":
+                    settings.wordSnakeChannel = setting.value;
+                    break;
+                case "HIGHEST_WORD_SNAKE":
+                    settings.highestWordSnake = parseInt(setting.value);
+                    break;
+                case "CURRENT_WORD_SNAKE":
+                    settings.currentWordSnake = parseInt(setting.value);
+                    break;
+                case "CURRENT_WORD":
+                    settings.currentWord = setting.value;
+                    break;
+                case "CURRENT_WORD_USER":
+                    settings.currentWordUser = setting.value;
+                    break;
+            }
+        }
+
+        this.client.redis.setGuildSettings("wordSnake", guildId, settings);
 
         return settings;
     }

@@ -7,16 +7,16 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
-import CringeViewUserNextPageButtonComponent from "@/button/fun/CringeViewUserNextPage";
-import CringeListPreviousPageButtonComponent from "@/button/fun/CringeViewUserPreviousPage";
-import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/CringeViewUserSelectPageStart";
-import CringeDeleteConfirmButtonComponent from "@/button/fun/CringeDeleteConfirm";
-import CringeDeleteCancelButtonComponent from "@/button/fun/CringeDeleteCancel";
-import CringeResetConfirmButtonComponent from "@/button/fun/CringeResetConfirm";
-import CringeResetCancelButtonComponent from "@/button/fun/CringeResetCancel";
-import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/CringeLeaderboardPreviousPage";
-import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/CringeLeaderboardSelectPageStart";
-import CringeLeaderboardNextPageButtonComponent from "@/button/fun/CringeLeaderboardNextPage";
+import CringeViewUserNextPageButtonComponent from "@/button/fun/cringe/CringeViewUserNextPage";
+import CringeListPreviousPageButtonComponent from "@/button/fun/cringe/CringeViewUserPreviousPage";
+import CringeViewUserSelectPageStartButtonComponent from "@/button/fun/cringe/CringeViewUserSelectPageStart";
+import CringeDeleteConfirmButtonComponent from "@/button/fun/cringe/CringeDeleteConfirm";
+import CringeDeleteCancelButtonComponent from "@/button/fun/cringe/CringeDeleteCancel";
+import CringeResetConfirmButtonComponent from "@/button/fun/cringe/CringeResetConfirm";
+import CringeResetCancelButtonComponent from "@/button/fun/cringe/CringeResetCancel";
+import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardPreviousPage";
+import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/cringe/CringeLeaderboardSelectPageStart";
+import CringeLeaderboardNextPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardNextPage";
 
 export default class CringeChatInputCommand extends ChatInputCommand {
     constructor() {
@@ -437,7 +437,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             })
         ]);
 
-        this.client.sender.reply(
+        await this.client.sender.reply(
             i,
             { content: user.toString() },
             {
@@ -450,6 +450,22 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 }
             }
         );
+
+        const cringeTipTimeout = await this.client.redis.getCringeAddTipTimeout(
+            i.user.id
+        );
+        if (!cringeTipTimeout) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langType: "EMBED",
+                    langLocation: "cringe.contextMenuTipEmbed",
+                    method: "FOLLOW_UP"
+                }
+            );
+            this.client.redis.setCringeAddTipTimeout(i.user.id, new Date());
+        }
 
         return { result: "SUCCESS" };
     }

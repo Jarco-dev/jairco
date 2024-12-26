@@ -11,9 +11,9 @@ import {
     ButtonBuilder
 } from "discord.js";
 import { LanguageManager } from "@/classes";
-import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/CringeLeaderboardPreviousPage";
-import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/CringeLeaderboardSelectPageStart";
-import CringeLeaderboardNextPageButtonComponent from "@/button/fun/CringeLeaderboardNextPage";
+import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardPreviousPage";
+import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/cringe/CringeLeaderboardSelectPageStart";
+import CringeLeaderboardNextPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardNextPage";
 
 export default class CringeLeaderboardSelectPageModal extends Modal {
     public static readonly builder = new ModalBuilder()

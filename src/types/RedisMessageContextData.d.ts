@@ -39,4 +39,22 @@ export interface RedisMessageContextData {
         type: "correct" | "incorrect" | "highest" | "ratio";
         pageMenuOwnerId: Snowflake;
     };
+    calendarEvents: {
+        page: number;
+        pageMenuOwnerId: Snowflake;
+        withOld: boolean;
+    };
+    wordSnakeChannelSet: {
+        channelId: Snowflake;
+        buttonOwnerId: Snowflake;
+    };
+    wordSnakeBlacklistList: {
+        page: number;
+        pageMenuOwnerId: Snowflake;
+    };
+    wordSnakeLeaderboard: {
+        page: number;
+        type: "correct" | "incorrect" | "ratio";
+        pageMenuOwnerId: Snowflake;
+    };
 }

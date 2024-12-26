@@ -6,8 +6,8 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/CountingLeaderboardPreviousPage";
-import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
+import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/counting/CountingLeaderboardPreviousPage";
+import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/counting/CountingLeaderboardSelectPageStart";
 
 export default class CountingLeaderboardNextPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()

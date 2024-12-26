@@ -14,18 +14,24 @@ export default class MessageReactionAddEventHandler extends EventHandler<"messag
         user: User
     ): HandlerResult | Promise<HandlerResult> {
         try {
-            return this.runCounting(reaction, user);
+            this.runCounting(reaction, user);
         } catch (err: any) {
             this.client.logger.error(
                 "Error while handling message for counting",
                 err
             );
-            return {
-                result: "ERRORED",
-                note: "Error while handling interaction in interactionLoader",
-                error: err
-            };
         }
+
+        try {
+            this.runWordSnake(reaction, user);
+        } catch (err: any) {
+            this.client.logger.error(
+                "Error while handling message for counting",
+                err
+            );
+        }
+
+        return { result: "SUCCESS" };
     }
 
     private async runCounting(
@@ -55,6 +61,40 @@ export default class MessageReactionAddEventHandler extends EventHandler<"messag
         }
         if (settings.countingChannel !== reaction.message.channel.id) {
             return { result: "OTHER", note: "Not in counting channel" };
+        }
+
+        reaction.users.remove(user).catch(() => {});
+
+        return { result: "SUCCESS" };
+    }
+
+    private async runWordSnake(
+        reaction: MessageReaction,
+        user: User
+    ): Promise<HandlerResult> {
+        if (
+            !reaction.message.guild ||
+            !["✅", "❌"].includes(reaction.emoji.toString()) ||
+            reaction.me ||
+            user.id === this.client.user!.id
+        ) {
+            return {
+                result: "OTHER",
+                note: "Not in guild, emoji not relevant, reaction is from or by bot"
+            };
+        }
+
+        const settings = await this.client.cacheableData.getWordSnakeSettings(
+            reaction.message.guild.id
+        );
+        if (!settings?.wordSnakeEnabled) {
+            return { result: "FEATURE_DISABLED" };
+        }
+        if (!settings.wordSnakeChannel) {
+            return { result: "OTHER", note: "Word snake channel not set" };
+        }
+        if (settings.wordSnakeChannel !== reaction.message.channel.id) {
+            return { result: "OTHER", note: "Not in word snake channel" };
         }
 
         reaction.users.remove(user).catch(() => {});

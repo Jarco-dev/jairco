@@ -1,0 +1,23 @@
+-- AlterTable
+ALTER TABLE `GuildSettings` MODIFY `type` ENUM('COUNTING_ENABLED', 'COUNTING_CHANNEL', 'HIGHEST_COUNT', 'CURRENT_COUNT', 'CURRENT_COUNT_USER', 'CRINGE_ENABLED', 'CALENDAR_ENABLED', 'CALENDAR_AUTO_DELETE') NOT NULL;
+
+-- CreateTable
+CREATE TABLE `CalendarEvents` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `date` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NOT NULL,
+    `organisers` VARCHAR(191) NOT NULL,
+    `endDate` DATETIME(3) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `guildId` INTEGER NOT NULL,
+    `createdByUserId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `CalendarEvents` ADD CONSTRAINT `CalendarEvents_guildId_fkey` FOREIGN KEY (`guildId`) REFERENCES `Guilds`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CalendarEvents` ADD CONSTRAINT `CalendarEvents_createdByUserId_fkey` FOREIGN KEY (`createdByUserId`) REFERENCES `Users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

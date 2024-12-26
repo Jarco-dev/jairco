@@ -15,7 +15,8 @@ export class RedisClient {
     private prefixes = {
         messageContext: "messageContext",
         guildSettings: "guildSettings",
-        blacklist: "blacklist"
+        blacklist: "blacklist",
+        cringeAddTipTimeout: "cringeAddTipTimeout"
     };
 
     private messageContextExpiry: {
@@ -28,7 +29,11 @@ export class RedisClient {
         cringeLeaderboard: 60 * 15,
         countingChannelSet: 60 * 5,
         countingBlacklistList: 60 * 15,
-        countingLeaderboard: 60 * 15
+        countingLeaderboard: 60 * 15,
+        calendarEvents: 60 * 15,
+        wordSnakeChannelSet: 60 * 5,
+        wordSnakeBlacklistList: 60 * 15,
+        wordSnakeLeaderboard: 16 * 15
     };
 
     constructor(client: Client) {
@@ -168,5 +173,39 @@ export class RedisClient {
         return this.redis.del(
             `${this.prefixes.blacklist}:${type}:${guildId}:${userId}`
         );
+    }
+
+    public async setCringeAddTipTimeout(
+        userId: Snowflake,
+        date: Date
+    ): Promise<Date | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.cringeAddTipTimeout}:${userId}`
+        );
+        const res = await this.redis.setex(
+            `${this.prefixes.cringeAddTipTimeout}:${userId}`,
+            86400 * 7,
+            date.toISOString()
+        );
+        return res ? date : undefined;
+    }
+
+    public async getCringeAddTipTimeout(
+        userId: Snowflake
+    ): Promise<Date | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.cringeAddTipTimeout}:${userId}`
+        );
+        const res = await this.redis.get(
+            `${this.prefixes.cringeAddTipTimeout}:${userId}`
+        );
+        return res ? new Date(res) : undefined;
+    }
+
+    public async delCringeAddTipTimeout(userId: Snowflake): Promise<number> {
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.cringeAddTipTimeout}:${userId}`
+        );
+        return this.redis.del(`${this.prefixes.cringeAddTipTimeout}:${userId}`);
     }
 }

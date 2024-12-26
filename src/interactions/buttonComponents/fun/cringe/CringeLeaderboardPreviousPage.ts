@@ -6,18 +6,18 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/CringeLeaderboardPreviousPage";
-import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/CringeLeaderboardSelectPageStart";
+import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/cringe/CringeLeaderboardSelectPageStart";
+import CringeLeaderboardNextPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardNextPage";
 
-export default class CringeLeaderboardNextPageButtonComponent extends ButtonComponent {
+export default class CringeLeaderboardPreviousPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("cringeLeaderboardNextPage")
+        .setCustomId("cringeLeaderboardPreviousPage")
         .setStyle(ButtonStyle.Success)
-        .setLabel(">");
+        .setLabel("<");
 
     constructor() {
         super({
-            builder: CringeLeaderboardNextPageButtonComponent.builder
+            builder: CringeLeaderboardPreviousPageButtonComponent.builder
         });
     }
 
@@ -84,7 +84,7 @@ export default class CringeLeaderboardNextPageButtonComponent extends ButtonComp
         }
 
         const maxPage = Math.ceil(userCount / 10);
-        const newPage = context.page < maxPage ? context.page + 1 : 1;
+        const newPage = context.page > 1 ? context.page - 1 : maxPage;
         const embed = await this.client.utils.getCringeLeaderboardPage(
             i,
             context.type,

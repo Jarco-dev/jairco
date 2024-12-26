@@ -6,24 +6,25 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from "discord.js";
-import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
-import CountingLeaderboardNextPageButtonComponent from "@/button/fun/CountingLeaderboardNextPage";
+import { BotPermissionsBitField } from "@/classes";
+import WordSnakeBlacklistListSelectPageStartButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListSelectPageStart";
+import WordSnakeBlacklistListNextPageButtonComponent from "@/button/fun/wordSnake/WordSnakeBlacklistListNextPage";
 
-export default class CountingLeaderboardPreviousPageButtonComponent extends ButtonComponent {
+export default class WordSnakeBlacklistListPreviousPageButtonComponent extends ButtonComponent {
     public static readonly builder = new ButtonBuilder()
-        .setCustomId("countingLeaderboardPreviousPage")
+        .setCustomId("wordSnakeBlacklistListPreviousPage")
         .setStyle(ButtonStyle.Success)
         .setLabel("<");
 
     constructor() {
         super({
-            builder: CountingLeaderboardPreviousPageButtonComponent.builder
+            builder: WordSnakeBlacklistListPreviousPageButtonComponent.builder
         });
     }
 
     public async run(i: ButtonInteraction): Promise<HandlerResult> {
         const context = await this.client.redis.getMessageContext(
-            "countingLeaderboard",
+            "wordSnakeBlacklistList",
             i.message.id
         );
         if (!context) {
@@ -48,7 +49,14 @@ export default class CountingLeaderboardPreviousPageButtonComponent extends Butt
             );
             return { result: "ACTION_EXPIRED" };
         }
-        if (i.user.id !== context.pageMenuOwnerId) {
+
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (
+            !permissions.has(
+                BotPermissionsBitField.Flags.ManageWordSnakeBlacklist
+            ) ||
+            i.user.id !== context.pageMenuOwnerId
+        ) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -57,19 +65,12 @@ export default class CountingLeaderboardPreviousPageButtonComponent extends Butt
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const userCount = await this.client.prisma.countingStats.count({
-            where: {
-                Guild: { discordId: i.guild!.id },
-                ...(context.type === "correct"
-                    ? { correct: { gt: 0 } }
-                    : context.type === "incorrect"
-                      ? { incorrect: { gt: 0 } }
-                      : { highest: { gt: 0 } })
-            }
+        const blacklistCount = await this.client.prisma.blacklists.count({
+            where: { type: "WORD_SNAKE", Guild: { discordId: i.guild!.id } }
         });
-        if (userCount === 0) {
+        if (blacklistCount === 0) {
             this.client.redis.delMessageContext(
-                "countingLeaderboard",
+                "wordSnakeBlacklistList",
                 i.message.id
             );
             this.client.sender.reply(
@@ -84,38 +85,37 @@ export default class CountingLeaderboardPreviousPageButtonComponent extends Butt
             return { result: "OTHER", note: "Menu no longer has any entries" };
         }
 
-        const maxPage = Math.ceil(userCount / 10);
+        const maxPage = Math.ceil(blacklistCount / 10);
         const newPage = context.page > 1 ? context.page - 1 : maxPage;
-        const embed = await this.client.utils.getCountingLeaderboardPage(
+        const embed = await this.client.utils.getWordSnakeBlacklistListPage(
             i,
-            context.type,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            CountingLeaderboardPreviousPageButtonComponent.builder,
+            WordSnakeBlacklistListPreviousPageButtonComponent.builder,
             new ButtonBuilder(
-                CountingLeaderboardSelectPageStartButtonComponent.builder.data
+                WordSnakeBlacklistListSelectPageStartButtonComponent.builder.data
             ).setLabel(`${newPage}/${maxPage}`),
-            CountingLeaderboardNextPageButtonComponent.builder
+            WordSnakeBlacklistListNextPageButtonComponent.builder
         );
 
         this.client.sender.reply(
             i,
             {
                 embeds: [embed],
-                components: userCount > 10 ? [buttons] : []
+                components: blacklistCount > 10 ? [buttons] : []
             },
             { method: "UPDATE" }
         );
-        if (userCount > 10) {
+        if (blacklistCount > 10) {
             this.client.redis.setMessageContext(
-                "countingLeaderboard",
+                "wordSnakeBlacklistList",
                 i.message.id,
                 { ...context, page: newPage }
             );
         } else {
             this.client.redis.delMessageContext(
-                "countingLeaderboard",
+                "wordSnakeBlacklistList",
                 i.message.id
             );
         }
