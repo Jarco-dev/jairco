@@ -27,8 +27,7 @@
             "AddToCalendar": "Add to calendar",
             "RemoveFromCalendar": "Remove from calendar",
             "ViewCalendar": "View calendar",
-            "ManageWordSnake": "Manage word snake",
-            "ManageWordSnakeBlacklist": "Manage word snake blacklist"
+            "ManageWordSnake": "Manage word snake"
         },
         "counting": {
             "channelReset": "The counting channel has been reset",
@@ -355,25 +354,18 @@
             "noChannelSet": "A word snake channel hasn't been configured yet",
             "viewChannel": "The current word snake channel is set to {{channel}}",
             "reasonTooLong": "Please keep the reason 255 characters or less",
-            "alreadyBlacklisted": "{{user}} is already blacklisted from counting",
-            "notBlacklisted": "{{user}} is not blacklisted from counting",
-            "cantBlacklistBot": "This user is a bot, bots cannot be blacklisted",
-            "blacklistAdded": "{{user}} is now blacklisted from counting",
-            "blacklistRemoved": "{{user}} is no longer blacklisted from counting",
-            "noBlacklistsExist": "There are currently no counting blacklists",
-            "invalidBlacklistId": "The given blacklist id does not exist",
             "noUsersOnLeaderboard": "No users are on this leaderboard",
             "validatedWordDeletedEmbed": {
                 "title": "Validated word deleted",
                 "description": [
-                    "{{user}} wanted to troll by deleting a message but got blacklisted instead",
+                    "{{user}} wanted to troll by deleting a message but got caught instead",
                     "The current word is **{{currentWord}}** so the next one should start with **{{nextLetter}}**"
                 ]
             },
             "validatedWordEditedEmbed": {
                 "title": "Validated word edited",
                 "description": [
-                    "{{user}} wanted to troll by editing a word but got blacklisted instead",
+                    "{{user}} wanted to troll by editing a word but got caught instead",
                     "The current word is **{{currentWord}}** so the next one one should start with **{{nextLetter}}**"
                 ]
             },
@@ -393,20 +385,6 @@
                     "Please make sure the bot has the following permissions in {{channel}}",
                     "",
                     "`View channel`, `Send messages`, `Manage messages`, `Add reactions`"
-                ]
-            },
-            "blacklistListEmbed": {
-                "title": "Word snake blacklists",
-                "description": "{{blacklists}}"
-            },
-            "blacklistEmbed": {
-                "title": "View blacklist",
-                "description": [
-                    "**ID:** {{id}}",
-                    "**When:** {{createdAt}}",
-                    "**Given by:** {{givenByUser}}",
-                    "**Received by:** {{receivedByUser}}",
-                    "**Reason:** {{reason}}"
                 ]
             },
             "correctWordSnakeLeaderboardEmbed": {

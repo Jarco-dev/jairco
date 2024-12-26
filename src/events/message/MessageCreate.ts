@@ -279,16 +279,11 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         const words: string[] = msg.content.split(" ");
         const word: string | undefined =
             words.length >= 1 ? words[0].toLowerCase() : undefined;
-        const blacklist = await this.client.cacheableData.getBlacklist(
-            "wordsnake",
-            msg.guild.id,
-            msg.author.id
-        );
-        if (settings.currentWordUser === msg.author.id || blacklist || !word) {
+        if (settings.currentWordUser === msg.author.id || !word) {
             msg.delete().catch(() => {});
             return {
                 result: "OTHER",
-                note: "User already snaked last, is blacklisted or gave a invalid word"
+                note: "User already snaked last or gave a invalid word"
             };
         }
 
@@ -317,37 +312,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 (settings?.currentWordSnake ?? 0) >
                 (settings.highestWordSnake ?? 0);
             await this.client.prisma.$transaction([
-                this.client.prisma.blacklists.create({
-                    data: {
-                        type: "WORD_SNAKE",
-                        reason: "Incorrect word",
-                        guildIdUserIdType:
-                            msg.guild.id + msg.author.id + "WORD_SNAKE",
-                        Guild: { connect: { discordId: msg.guild.id } },
-                        ReceivedByUser: {
-                            connectOrCreate: {
-                                where: { discordId: msg.author.id },
-                                create: {
-                                    discordId: msg.author.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        },
-                        GivenByUser: {
-                            connectOrCreate: {
-                                where: { discordId: this.client.user!.id },
-                                create: {
-                                    discordId: this.client.user!.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }),
                 this.client.prisma.wordSnakeStats.upsert({
                     where: { guildIdAndUserId: msg.guild.id + msg.author.id },
                     update: { incorrect: { increment: 1 } },

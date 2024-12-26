@@ -27,8 +27,7 @@
             "AddToCalendar": "Toevoegen aan kalender",
             "RemoveFromCalendar": "Verwijderen van kalender",
             "ViewCalendar": "Bekijk kalender",
-            "ManageWordSnake": "Beheer woord slangen",
-            "ManageWOrdSnakeBlacklist": "Beheer woord slang blokkades"
+            "ManageWordSnake": "Beheer woord slangen"
         },
         "counting": {
             "channelReset": "Het tellen kanaal is gereset",
@@ -355,25 +354,19 @@
             "noChannelSet": "Er is nog geen woorden slang kanaal ingesteld",
             "viewChannel": "Het huidige woorden slang kanaal is ingesteld op {{channel}}",
             "reasonTooLong": "De reden moet 255 tekens of minder zijn",
-            "alreadyBlacklisted": "{{user}} is al geblokkeerd van woorden slang",
-            "notBlacklisted": "{{user}} is niet geblokkeerd van woorden slang",
-            "cantBlacklistBot": "Deze gebruiker is een bot, bots kunnen niet worden geblokkeerd",
-            "blacklistAdded": "{{user}} is nu geblokkeerd van woorden slang",
-            "blacklistRemoved": "{{user}} is nu niet meer geblokkeerd van woorden slang",
-            "noBlacklistsExist": "Er zijn momenteel geen tellen blokkades",
             "invalidBlacklistId": "Het gegeven blokkade id bestaat niet",
             "noUsersOnLeaderboard": "Er staan geen gebruikers op dit scoreboard",
             "validatedWordDeletedEmbed": {
                 "title": "Gevalideerd word verwijdert",
                 "description": [
-                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "{{user}} wou de boel voor de gek houden maar is betrapt",
                     "Het huidige woord is **{{currentWord}}** dus de volgende moet beginnen met **{{nextLetter}}**"
                 ]
             },
             "validatedWordEditedEmbed": {
                 "title": "Gevalideerd woord bewerkt",
                 "description": [
-                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "{{user}} wou de boel voor de gek houden maar is betrapt",
                     "Het huidige woord is **{{currentWord}}** dus de volgende moet beginnen met **{{nextLetter}}**"
                 ]
             },
@@ -393,20 +386,6 @@
                     "Zorg er voor dat de bot de volgende rechten heeft in {{channel}}",
                     "",
                     "`Bekijk kanaal`, `Beheer kanaal`, `Stuur bericht`, `Beheer berichten`, `Reacties toevoegen`"
-                ]
-            },
-            "blacklistListEmbed": {
-                "title": "Woorden slang blokkades",
-                "description": "{{blacklists}}"
-            },
-            "blacklistEmbed": {
-                "title": "Belijk blokkade",
-                "description": [
-                    "**ID:** {{id}}",
-                    "**Wanneer:** {{createdAt}}",
-                    "**Gegeven door:** {{givenByUser}}",
-                    "**Ontvangen door:** {{receivedByUser}}",
-                    "**Reden:** {{reason}}"
                 ]
             },
             "correctWordSnakeLeaderboardEmbed": {

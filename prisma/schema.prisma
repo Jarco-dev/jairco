@@ -91,7 +91,6 @@ model CountingStats {
 
 enum BlacklistTypes {
   COUNTING
-  WORD_SNAKE
 }
 
 model Blacklists {

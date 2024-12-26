@@ -18,8 +18,7 @@ export class BotPermissionsBitField extends BitField<
         AddToCalendar: 1n << 7n,
         RemoveFromCalendar: 1n << 8n,
         ViewCalendar: 1n << 9n,
-        ManageWordSnake: 1n << 10n,
-        ManageWordSnakeBlacklist: 1n << 11n
+        ManageWordSnake: 1n << 10n
     } as const;
     static All = Object.values(this.Flags).reduce((all, p) => all | p, 0n);
     static DefaultBit = BigInt(0);

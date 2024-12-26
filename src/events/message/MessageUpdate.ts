@@ -176,47 +176,6 @@ export default class MessageUpdateEventHandler extends EventHandler<"messageUpda
             return { result: "OTHER", note: "Word is still present" };
         }
 
-        const blacklist = await this.client.cacheableData.getBlacklist(
-            "wordsnake",
-            newMsg.guild.id,
-            newMsg.author.id
-        );
-        if (blacklist) {
-            return { result: "OTHER", note: "User already blacklisted" };
-        }
-
-        await this.client.prisma.blacklists.create({
-            data: {
-                type: "WORD_SNAKE",
-                guildIdUserIdType:
-                    newMsg.guild.id + newMsg.author.id + "WORD_SNAKE",
-                reason: "Edited a validated word",
-                Guild: { connect: { discordId: newMsg.guild.id } },
-                ReceivedByUser: {
-                    connectOrCreate: {
-                        where: { discordId: newMsg.author.id },
-                        create: {
-                            discordId: newMsg.author.id,
-                            Guilds: {
-                                connect: { discordId: newMsg.guild.id }
-                            }
-                        }
-                    }
-                },
-                GivenByUser: {
-                    connectOrCreate: {
-                        where: { discordId: this.client.user!.id },
-                        create: {
-                            discordId: this.client.user!.id,
-                            Guilds: {
-                                connect: { discordId: newMsg.guild.id }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
         const embed = this.client.lang.getEmbed(
             this.client.lang.default,
             "wordSnake.validatedWordEditedEmbed",

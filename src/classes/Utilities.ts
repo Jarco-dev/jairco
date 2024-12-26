@@ -366,53 +366,6 @@ export class Utilities {
         );
     }
 
-    public async getWordSnakeBlacklistListPage(
-        i: BaseInteraction,
-        page = 1
-    ): Promise<EmbedBuilder> {
-        const blacklists = await this.client.prisma.blacklists.findMany({
-            skip: (page - 1) * 10,
-            take: 10,
-            where: {
-                Guild: { discordId: i.guild!.id },
-                type: "WORD_SNAKE"
-            },
-            orderBy: {
-                createdAt: "desc"
-            },
-            select: {
-                id: true,
-                reason: true,
-                createdAt: true,
-                ReceivedByUser: {
-                    select: {
-                        discordId: true
-                    }
-                }
-            }
-        });
-
-        return this.client.lang.getEmbed(
-            i.locale,
-            "wordSnake.blacklistListEmbed",
-            {
-                blacklists: blacklists
-                    .map(b => {
-                        let string = `(${b.id}) <t:${Math.round(
-                            b.createdAt.getTime() / 1000
-                        )}:R> - <@${b.ReceivedByUser.discordId}>`;
-                        if (b.reason) {
-                            string += `\n${b.reason.substring(0, 50)}${
-                                b.reason.length > 50 ? "..." : ""
-                            }`;
-                        }
-                        return string;
-                    })
-                    .join("\n\n")
-            }
-        );
-    }
-
     public async getCountingLeaderboardPage(
         i: BaseInteraction,
         type: "correct" | "incorrect" | "highest" | "ratio",
