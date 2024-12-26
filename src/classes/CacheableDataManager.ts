@@ -80,9 +80,6 @@ export class CacheableDataManager {
             case "counting":
                 dbType = "COUNTING";
                 break;
-            case "wordsnake":
-                dbType = "WORD_SNAKE";
-                break;
 
             default:
                 throw new Error(`the ${type} blacklist type is not supported`);
