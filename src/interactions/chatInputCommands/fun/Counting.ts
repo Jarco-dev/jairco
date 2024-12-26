@@ -9,14 +9,14 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
-import CountingChannelConfirmButtonComponent from "@/button/fun/CountingChannelConfirm";
-import CountingChannelCancelButtonComponent from "@/button/fun/CountingChannelCancel";
-import CountingBlacklistListNextPageButtonComponent from "@/button/fun/CountingBlacklistListNextPage";
-import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/CountingBlacklistListSelectPageStart";
-import CountingBlacklistListPreviousPageButtonComponent from "@/button/fun/CountingBlacklistListPreviousPage";
-import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/CountingLeaderboardPreviousPage";
-import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/CountingLeaderboardSelectPageStart";
-import CountingLeaderboardNextPageButtonComponent from "@/button/fun/CountingLeaderboardNextPage";
+import CountingChannelConfirmButtonComponent from "@/button/fun/counting/CountingChannelConfirm";
+import CountingChannelCancelButtonComponent from "@/button/fun/counting/CountingChannelCancel";
+import CountingBlacklistListNextPageButtonComponent from "@/button/fun/counting/CountingBlacklistListNextPage";
+import CountingBlacklistListSelectPageStartButtonComponent from "@/button/fun/counting/CountingBlacklistListSelectPageStart";
+import CountingBlacklistListPreviousPageButtonComponent from "@/button/fun/counting/CountingBlacklistListPreviousPage";
+import CountingLeaderboardPreviousPageButtonComponent from "@/button/fun/counting/CountingLeaderboardPreviousPage";
+import CountingLeaderboardSelectPageStartButtonComponent from "@/button/fun/counting/CountingLeaderboardSelectPageStart";
+import CountingLeaderboardNextPageButtonComponent from "@/button/fun/counting/CountingLeaderboardNextPage";
 
 export default class CountingChatInputCommand extends ChatInputCommand {
     constructor() {
@@ -724,6 +724,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             }
         });
         this.client.redis.delGuildSettings("counting", i.guild!.id);
+
+        this.client.sender.reply(i, {}, { langLocation: "wordSnake.channelReset", msgType: "SUCCESS" });
 
         return { result: "SUCCESS" };
     }
