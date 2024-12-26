@@ -1,6 +1,6 @@
 {
     "name": "jairco",
-    "version": "1.6.3",
+    "version": "1.7.0-beta",
     "description": "The jairco discord bot",
     "main": "dist/index.js",
     "engines": {
