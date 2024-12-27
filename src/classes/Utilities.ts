@@ -126,84 +126,44 @@ export class Utilities {
         return permissions;
     }
 
-    // TODO: Remove debug logging and double requests once the issue has been found
-    public async wordExists(word: string, msg: Message): Promise<boolean> {
+    public async wordExists(word: string): Promise<boolean> {
         const checkLink = async (
             link: string
-        ): Promise<[boolean, Response | void]> => {
+        ): Promise<boolean> => {
             const res = await fetch(link).catch(err =>
                 this.client.logger.error(
                     `Error while fetching word from vandale: ${word}`,
                     err
                 )
             );
-            if (!res) return [false, res];
+            if (!res) return false;
 
             if (res.status !== 200) {
                 this.client.logger.warn(
                     `Link: ${link} expected status 200 got status: ${res.status}`
                 );
-                return [false, res];
+                return false;
             }
 
             const s1 = cheerioLoad(await res.text());
-            return [s1("h1.title").text().includes("Betekenis"), res];
+            return s1("h1.title").text().includes("Betekenis");
         };
 
         const baseUrl1 =
-            "https://www.vandale.nl/gratis-woordenboek/nederlands/betekenis";
-        const baseUrl2 =
             "https://www.vandale.nl/gratis-woordenboek/nederlands-engels/vertaling";
+        const baseUrl2 =
+            "https://www.vandale.nl/gratis-woordenboek/nederlands/betekenis";
 
-        const [valid1, res1] = await checkLink(
+        let isValid = await checkLink(
             `${baseUrl1}/${word.toLowerCase()}`
         );
-        const [valid2, res2] = await checkLink(
-            `${baseUrl2}/${word.toLowerCase()}`
-        );
+        if (!isValid) {
+            isValid = await checkLink(
+                `${baseUrl2}/${word.toLowerCase()}`
+            );
+        }
 
-        if (!valid1 && !valid2) return false;
-        else if (valid1 && valid2) return true;
-
-        const embed = new EmbedBuilder()
-            .setColor(
-                this.client.lang.getCommon("colors.invalid") as ColorResolvable
-            )
-            .setTitle("Word validation discrepancy detected")
-            .setDescription(
-                [
-                    "**Word**",
-                    `- ${word}`,
-                    "",
-                    "**nederlands/betekenis**",
-                    `- **Is valid:** ${valid1}`,
-                    `- **Status Code:** ${res1?.status ?? "not available"}`,
-                    "",
-                    "**nederlands-engels/vertaling**",
-                    `- **Is valid:** ${valid2}`,
-                    `- **Status code:** ${res2?.status ?? "not available"}`
-                ].join("\n")
-            )
-            .setTimestamp()
-            .setFooter({
-                text: `${this.client.user!.username} v${
-                    this.client.config.VERSION
-                }`
-            });
-
-        const row = new ActionRowBuilder<ButtonBuilder>().setComponents(
-            new ButtonBuilder()
-                .setStyle(ButtonStyle.Link)
-                .setLabel("Go to message")
-                .setURL(msg.url)
-        );
-
-        this.client.sender.msgChannel("1030402514786459718", {
-            embeds: [embed],
-            components: [row]
-        });
-
-        return true;
+        return isValid;
     }
 
     public async getViewUserCringesPage(
