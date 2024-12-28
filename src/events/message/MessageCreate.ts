@@ -352,6 +352,11 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         }
                     }
                 }),
+                this.client.prisma.usedWordSnakeWords.deleteMany({
+                    where: {
+                        Guild: { discordId: msg.guild.id }
+                    }
+                }),
                 ...(highestStreakBeaten
                     ? [
                           this.client.prisma.guildSettings.upsert({
