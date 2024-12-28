@@ -412,6 +412,9 @@
             "firstWordInvalidEmbed": {
                 "title": "This is a invalid word, please try again",
                 "description": "Be aware, once a streak has started this would have broken it"
+            },
+            "duplicateWordEmbed": {
+                "title": "Duplicate word, try again"
             }
         }
     },

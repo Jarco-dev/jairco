@@ -9,17 +9,18 @@ datasource db {
 }
 
 model Guilds {
-  id             Int              @id @default(autoincrement())
-  discordId      String           @unique
-  Users          Users[]
-  Roles          Roles[]
-  Groups         Groups[]
-  Cringes        Cringes[]
-  CountingStats  CountingStats[]
-  Settings       GuildSettings[]
-  Blacklists     Blacklists[]
-  CalendarEvents CalendarEvents[]
-  WordSnakeStats WordSnakeStats[]
+  id                 Int                  @id @default(autoincrement())
+  discordId          String               @unique
+  Users              Users[]
+  Roles              Roles[]
+  Groups             Groups[]
+  Cringes            Cringes[]
+  CountingStats      CountingStats[]
+  Settings           GuildSettings[]
+  Blacklists         Blacklists[]
+  CalendarEvents     CalendarEvents[]
+  WordSnakeStats     WordSnakeStats[]
+  UsedWordSnakeWords UsedWordSnakeWords[]
 }
 
 model Users {
@@ -159,4 +160,13 @@ model WordSnakeStats {
   Guild            Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId           Int
   User             Users    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model UsedWordSnakeWords {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  guildId   Int
+  Guild     Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

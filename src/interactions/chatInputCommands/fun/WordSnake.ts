@@ -600,6 +600,11 @@ export default class WordSnakeChatInputCommand extends ChatInputCommand {
                 }
             }
         });
+        await this.client.prisma.usedWordSnakeWords.deleteMany({
+            where: {
+                Guild: { discordId: i.guild!.id }
+            }
+        });
         this.client.redis.delGuildSettings("wordSnake", i.guild!.id);
 
         this.client.sender.reply(

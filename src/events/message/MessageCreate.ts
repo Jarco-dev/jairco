@@ -287,7 +287,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             };
         }
 
-        const wordIsValid = await this.client.utils.wordExists(word, msg);
+        const wordIsValid = await this.client.utils.wordExists(word);
         if (settings.currentWord === undefined && !wordIsValid) {
             const embed = this.client.lang.getEmbed(
                 "en-US",
@@ -301,6 +301,24 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 result: "OTHER",
                 note: "First word is a invalid word"
             };
+        }
+
+        const wordCount = await this.client.prisma.usedWordSnakeWords.count({
+            where: {
+                Guild: { discordId: msg.guild.id },
+                content: word.toLowerCase()
+            }
+        });
+        if (wordCount > 0) {
+            const embed = this.client.lang.getEmbed(
+                "en-US",
+                "wordSnake.duplicateWordEmbed"
+            );
+            this.client.sender.msgChannel(settings.wordSnakeChannel, {
+                embeds: [embed]
+            });
+            msg.react("❗").catch(() => {});
+            return { result: "OTHER", note: "Duplicate word" };
         }
 
         if (
@@ -458,6 +476,12 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                             create: { discordId: msg.author.id }
                         }
                     }
+                }
+            }),
+            this.client.prisma.usedWordSnakeWords.create({
+                data: {
+                    Guild: { connect: { discordId: msg.guild.id } },
+                    content: word.toLowerCase()
                 }
             })
         ]);
