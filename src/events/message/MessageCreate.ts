@@ -314,10 +314,14 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 "en-US",
                 "wordSnake.duplicateWordEmbed"
             );
-            this.client.sender.msgChannel(settings.wordSnakeChannel, {
-                embeds: [embed]
-            });
-            msg.react("❗").catch(() => {});
+            msg.delete().catch(() => {});
+            this.client.sender.msgChannel(
+                settings.wordSnakeChannel,
+                {
+                    embeds: [embed]
+                },
+                { delTime: 5000 }
+            );
             return { result: "OTHER", note: "Duplicate word" };
         }
 
