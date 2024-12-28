@@ -1,14 +1,9 @@
 import { BotPermissionsBitField, Client } from "@/classes";
 import {
-    ActionRowBuilder,
     BaseInteraction,
-    ButtonBuilder,
-    ButtonStyle,
-    ColorResolvable,
     EmbedBuilder,
     GuildChannelResolvable,
     GuildMember,
-    Message,
     PermissionResolvable,
     Snowflake,
     User
