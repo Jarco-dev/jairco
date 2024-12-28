@@ -127,9 +127,7 @@ export class Utilities {
     }
 
     public async wordExists(word: string): Promise<boolean> {
-        const checkLink = async (
-            link: string
-        ): Promise<boolean> => {
+        const checkLink = async (link: string): Promise<boolean> => {
             const res = await fetch(link).catch(err =>
                 this.client.logger.error(
                     `Error while fetching word from vandale: ${word}`,
@@ -154,13 +152,9 @@ export class Utilities {
         const baseUrl2 =
             "https://www.vandale.nl/gratis-woordenboek/nederlands/betekenis";
 
-        let isValid = await checkLink(
-            `${baseUrl1}/${word.toLowerCase()}`
-        );
+        let isValid = await checkLink(`${baseUrl1}/${word.toLowerCase()}`);
         if (!isValid) {
-            isValid = await checkLink(
-                `${baseUrl2}/${word.toLowerCase()}`
-            );
+            isValid = await checkLink(`${baseUrl2}/${word.toLowerCase()}`);
         }
 
         return isValid;

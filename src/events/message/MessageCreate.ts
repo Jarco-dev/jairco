@@ -122,29 +122,29 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 }),
                 ...(highestCountBeaten
                     ? [
-                        this.client.prisma.guildSettings.upsert({
-                            where: {
-                                guildIdAndType: msg.guild.id + "HIGHEST_COUNT"
-                            },
-                            update: {
-                                value: (settings.currentCount ?? 0).toString()
-                            },
-                            create: {
-                                type: "HIGHEST_COUNT",
-                                guildIdAndType:
-                                    msg.guild.id + "HIGHEST_COUNT",
-                                value: (
-                                    settings.currentCount ?? 0
-                                ).toString(),
-                                Guild: {
-                                    connectOrCreate: {
-                                        where: { discordId: msg.guild.id },
-                                        create: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        })
-                    ]
+                          this.client.prisma.guildSettings.upsert({
+                              where: {
+                                  guildIdAndType: msg.guild.id + "HIGHEST_COUNT"
+                              },
+                              update: {
+                                  value: (settings.currentCount ?? 0).toString()
+                              },
+                              create: {
+                                  type: "HIGHEST_COUNT",
+                                  guildIdAndType:
+                                      msg.guild.id + "HIGHEST_COUNT",
+                                  value: (
+                                      settings.currentCount ?? 0
+                                  ).toString(),
+                                  Guild: {
+                                      connectOrCreate: {
+                                          where: { discordId: msg.guild.id },
+                                          create: { discordId: msg.guild.id }
+                                      }
+                                  }
+                              }
+                          })
+                      ]
                     : [])
             ]);
             await this.client.redis.setGuildSettings("counting", msg.guild.id, {
@@ -303,6 +303,24 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             };
         }
 
+        const wordCount = await this.client.prisma.usedWordSnakeWords.count({
+            where: {
+                Guild: { discordId: msg.guild.id },
+                content: word.toLowerCase()
+            }
+        });
+        if (wordCount > 0) {
+            const embed = this.client.lang.getEmbed(
+                "en-US",
+                "wordSnake.duplicateWordEmbed"
+            );
+            this.client.sender.msgChannel(settings.wordSnakeChannel, {
+                embeds: [embed]
+            });
+            msg.react("❗").catch(() => {});
+            return { result: "OTHER", note: "Duplicate word" };
+        }
+
         if (
             settings.currentWord !== undefined &&
             (!wordIsValid ||
@@ -336,32 +354,32 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 }),
                 ...(highestStreakBeaten
                     ? [
-                        this.client.prisma.guildSettings.upsert({
-                            where: {
-                                guildIdAndType:
-                                    msg.guild.id + "HIGHEST_WORD_SNAKE"
-                            },
-                            update: {
-                                value: (
-                                    settings.currentWordSnake ?? 0
-                                ).toString()
-                            },
-                            create: {
-                                type: "HIGHEST_WORD_SNAKE",
-                                guildIdAndType:
-                                    msg.guild.id + "HIGHEST_WORD_SNAKE",
-                                value: (
-                                    settings.currentWordSnake ?? 0
-                                ).toString(),
-                                Guild: {
-                                    connectOrCreate: {
-                                        where: { discordId: msg.guild.id },
-                                        create: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        })
-                    ]
+                          this.client.prisma.guildSettings.upsert({
+                              where: {
+                                  guildIdAndType:
+                                      msg.guild.id + "HIGHEST_WORD_SNAKE"
+                              },
+                              update: {
+                                  value: (
+                                      settings.currentWordSnake ?? 0
+                                  ).toString()
+                              },
+                              create: {
+                                  type: "HIGHEST_WORD_SNAKE",
+                                  guildIdAndType:
+                                      msg.guild.id + "HIGHEST_WORD_SNAKE",
+                                  value: (
+                                      settings.currentWordSnake ?? 0
+                                  ).toString(),
+                                  Guild: {
+                                      connectOrCreate: {
+                                          where: { discordId: msg.guild.id },
+                                          create: { discordId: msg.guild.id }
+                                      }
+                                  }
+                              }
+                          })
+                      ]
                     : [])
             ]);
             await this.client.redis.setGuildSettings(
@@ -458,6 +476,12 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                             create: { discordId: msg.author.id }
                         }
                     }
+                }
+            }),
+            this.client.prisma.usedWordSnakeWords.create({
+                data: {
+                    Guild: { connect: { discordId: msg.guild.id } },
+                    content: word.toLowerCase()
                 }
             })
         ]);
