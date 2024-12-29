@@ -20,7 +20,10 @@ const config: Config = {
     ],
 
     // Bot version (acquired from package.json)
-    VERSION: require("../package.json").version
+    VERSION: require("../package.json").version,
+
+    // Word list file location (required for word snake)
+    WORD_LIST_PATH: "/basiswoorden-gekeurd.txt"
 };
 
 export default config;

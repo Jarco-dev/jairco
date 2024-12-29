@@ -4,4 +4,5 @@ export interface Config {
     CLIENT_OPTIONS: ClientOptions;
     NEEDED_BOT_PERMISSIONS: PermissionResolvable;
     VERSION: string;
+    WORD_LIST_PATH: string;
 }
