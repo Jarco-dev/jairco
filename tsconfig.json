@@ -25,7 +25,8 @@
             "@/classes": ["src/classes"],
             "@/structures": ["src/classes/structures"],
             "@/types": ["src/types"]
-        }
+        },
+        "lib": ["DOM"],
     },
     "include": [
         "src/**/*"
