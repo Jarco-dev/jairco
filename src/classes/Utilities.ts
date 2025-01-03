@@ -8,7 +8,7 @@ import {
     Snowflake,
     User
 } from "discord.js";
-import fetch, { Response } from "node-fetch";
+import fetch from "node-fetch";
 import { load as cheerioLoad } from "cheerio";
 
 export class Utilities {
