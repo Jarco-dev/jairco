@@ -6,7 +6,8 @@ import {
     Camelize,
     GuildCringeSettings,
     GuildCalendarSettings,
-    GuildWordSnakeSettings
+    GuildWordSnakeSettings,
+    ChannelSettings
 } from "@/types";
 import Prisma from "@prisma/client";
 
@@ -217,6 +218,30 @@ export class CacheableDataManager {
         }
 
         this.client.redis.setGuildSettings("wordSnake", guildId, settings);
+
+        return settings;
+    }
+
+    public async getChannelSettings(
+        channelId: Snowflake
+    ): Promise<ChannelSettings | undefined> {
+        const cache: ChannelSettings | undefined =
+            await this.client.redis.getChannelSettings(channelId);
+        if (cache) return cache;
+
+        const dbSettings = await this.client.prisma.channels.findUnique({
+            where: { discordId: channelId },
+            select: {
+                stickerFilter: true
+            }
+        });
+        if (!dbSettings) return undefined;
+
+        const settings: ChannelSettings = {
+            stickerFilter: dbSettings.stickerFilter
+        };
+
+        this.client.redis.setChannelSettings(channelId, settings);
 
         return settings;
     }

@@ -27,7 +27,9 @@
             "AddToCalendar": "Add to calendar",
             "RemoveFromCalendar": "Remove from calendar",
             "ViewCalendar": "View calendar",
-            "ManageWordSnake": "Manage word snake"
+            "ManageWordSnake": "Manage word snake",
+            "ManageChannelSettings": "Manage channel settings",
+            "BypassStickerFilter": "Bypass sticker filter"
         },
         "counting": {
             "channelReset": "The counting channel has been reset",
@@ -416,6 +418,10 @@
             "duplicateWordEmbed": {
                 "title": "Duplicate word, try again"
             }
+        },
+        "channel": {
+            "stickerFilterEnabled": "The sticker filter is now enabled for {{channel}}",
+            "stickerFilterDisabled": "The sticker filter is now disabled for {{channel}}"
         }
     },
     "refs": {

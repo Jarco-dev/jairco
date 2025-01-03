@@ -1,6 +1,7 @@
 export { BlacklistData } from "./BlacklistData";
 export { BotPermissionsString } from "./BotPermissionsString";
 export { Camelize } from "./Camelize";
+export { ChannelSettings } from "./ChannelSettings";
 export { CommandLoadLevel } from "./CommandLoadLevel";
 export { CommandStatus } from "./CommandStatus";
 export { Config } from "./Config";

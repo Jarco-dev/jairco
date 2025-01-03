@@ -5,7 +5,8 @@ import {
     RedisMessageContextData,
     RedisGuildSettingsData,
     BlacklistData,
-    Camelize
+    Camelize,
+    ChannelSettings
 } from "@/types";
 import Prisma from "@prisma/client";
 
@@ -16,7 +17,8 @@ export class RedisClient {
         messageContext: "messageContext",
         guildSettings: "guildSettings",
         blacklist: "blacklist",
-        cringeAddTipTimeout: "cringeAddTipTimeout"
+        cringeAddTipTimeout: "cringeAddTipTimeout",
+        channelSettings: "guildChannelSettings"
     };
 
     private messageContextExpiry: {
@@ -207,5 +209,39 @@ export class RedisClient {
             `[RedisClient] Del: ${this.prefixes.cringeAddTipTimeout}:${userId}`
         );
         return this.redis.del(`${this.prefixes.cringeAddTipTimeout}:${userId}`);
+    }
+
+    public async setChannelSettings(
+        channelId: Snowflake,
+        data: ChannelSettings
+    ): Promise<ChannelSettings | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.channelSettings}:${channelId}`
+        );
+        const res = await this.redis.setex(
+            `${this.prefixes.channelSettings}:${channelId}`,
+            60 * 15,
+            JSON.stringify(data)
+        );
+        return res === "OK" ? data : undefined;
+    }
+
+    public async getChannelSettings(
+        channelId: Snowflake
+    ): Promise<ChannelSettings | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.channelSettings}:${channelId}`
+        );
+        const res = await this.redis.get(
+            `${this.prefixes.channelSettings}:${channelId}`
+        );
+        return res ? JSON.parse(res) : undefined;
+    }
+
+    public async delChannelSettings(channelId: Snowflake): Promise<number> {
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.channelSettings}:${channelId}`
+        );
+        return this.redis.del(`${this.prefixes.channelSettings}:${channelId}`);
     }
 }

@@ -27,7 +27,9 @@
             "AddToCalendar": "Toevoegen aan kalender",
             "RemoveFromCalendar": "Verwijderen van kalender",
             "ViewCalendar": "Bekijk kalender",
-            "ManageWordSnake": "Beheer woord slangen"
+            "ManageWordSnake": "Beheer woord slangen",
+            "ManageChannelSettings": "Beheer kanaal instellingen",
+            "BypassStickerFilter": "Omzeil sticker filter"
         },
         "counting": {
             "channelReset": "Het tellen kanaal is gereset",
@@ -417,6 +419,10 @@
             "duplicateWordEmbed": {
                 "title": "Dubbel woord, probeer het nog eens"
             }
+        },
+        "channel": {
+            "stickerFilterEnabled": "Het stikker filter staat nu aan in {{channel}}",
+            "stickerFilterDisabled": "Het stikker filter staat nu uit in {{channel}}"
         }
     },
     "refs": {
