@@ -1,6 +1,7 @@
 import { HandlerResult } from "@/types";
 import { EventHandler } from "@/structures";
 import { Message } from "discord.js";
+import { BotPermissionsBitField } from "@/classes";
 
 export default class MessageCreateEventHandler extends EventHandler<"messageCreate"> {
     constructor() {
@@ -24,6 +25,15 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         } catch (err: any) {
             this.client.logger.error(
                 "Error while handling message for word snake",
+                err
+            );
+        }
+
+        try {
+            this.runChannelFilters(msg);
+        } catch (err: any) {
+            this.client.logger.error(
+                "Error while handling message for sticker filter",
                 err
             );
         }
@@ -502,6 +512,33 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         });
 
         msg.react("✅").catch(() => {});
+
+        return { result: "SUCCESS" };
+    }
+
+    private async runChannelFilters(msg: Message): Promise<HandlerResult> {
+        if (msg.author.bot || !msg.inGuild()) {
+            return {
+                result: "OTHER",
+                note: "Message is from bot or not in guild"
+            };
+        }
+
+        const settings = await this.client.cacheableData.getChannelSettings(
+            msg.channel.id
+        );
+        if (!settings) return { result: "SUCCESS" };
+
+        const permissions = await this.client.utils.getMemberBotPermissions(
+            msg.member!
+        );
+        if (
+            settings.stickerFilter &&
+            msg.stickers.size > 0 &&
+            !permissions.has(BotPermissionsBitField.Flags.BypassStickerFilter)
+        ) {
+            msg.delete().catch(() => {});
+        }
 
         return { result: "SUCCESS" };
     }

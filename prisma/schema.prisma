@@ -21,6 +21,7 @@ model Guilds {
   CalendarEvents     CalendarEvents[]
   WordSnakeStats     WordSnakeStats[]
   UsedWordSnakeWords UsedWordSnakeWords[]
+  Channels           Channels[]
 }
 
 model Users {
@@ -169,4 +170,12 @@ model UsedWordSnakeWords {
   updatedAt DateTime @updatedAt
   guildId   Int
   Guild     Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Channels {
+  id            Int     @id @default(autoincrement())
+  discordId     String  @unique
+  stickerFilter Boolean @default(false)
+  guildId       Int
+  Guild         Guilds  @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
