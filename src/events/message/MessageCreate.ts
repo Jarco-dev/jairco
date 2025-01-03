@@ -121,7 +121,12 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         incorrect: 1,
                         guildIdAndUserId: msg.guild.id + msg.author.id,
                         Guild: { connect: { discordId: msg.guild.id } },
-                        User: { connect: { discordId: msg.author.id } }
+                        User: {
+                            connectOrCreate: {
+                                where: { discordId: msg.author.id },
+                                create: { discordId: msg.author.id }
+                            }
+                        }
                     }
                 }),
                 this.client.prisma.guildSettings.deleteMany({
@@ -351,7 +356,12 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         incorrect: 1,
                         guildIdAndUserId: msg.guild.id + msg.author.id,
                         Guild: { connect: { discordId: msg.guild.id } },
-                        User: { connect: { discordId: msg.author.id } }
+                        User: {
+                            connectOrCreate: {
+                                where: { discordId: msg.author.id },
+                                create: { discordId: msg.author.id }
+                            }
+                        }
                     }
                 }),
                 this.client.prisma.guildSettings.deleteMany({
