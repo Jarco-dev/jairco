@@ -122,6 +122,8 @@ export class Utilities {
     }
 
     public async wordExists(word: string): Promise<boolean> {
+        if (!/^[a-zA-Zà-üÀ-Ü-']+$/.test(word)) return false;
+
         const res = await fetch(`https://woordenlijst.org/MolexServe/lexicon/spellcheck?database=gig_pro_wrdlst&word=${word}`).catch(err =>
             this.client.logger.error(
                 `[Utilities.wordExists] Error while validation word: ${word}`,
