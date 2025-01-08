@@ -122,37 +122,25 @@ export class Utilities {
     }
 
     public async wordExists(word: string): Promise<boolean> {
-        const checkLink = async (link: string): Promise<boolean> => {
-            const res = await fetch(link).catch(err =>
-                this.client.logger.error(
-                    `Error while fetching word from vandale: ${word}`,
-                    err
-                )
+        if (!/^[a-zA-Zà-üÀ-Ü-']+$/.test(word)) return false;
+
+        const res = await fetch(`https://woordenlijst.org/MolexServe/lexicon/spellcheck?database=gig_pro_wrdlst&word=${word}`).catch(err =>
+            this.client.logger.error(
+                `[Utilities.wordExists] Error while validation word: ${word}`,
+                err
+            )
+        );
+        if (!res) return false;
+
+        if (res.status !== 200) {
+            this.client.logger.warn(
+                `[Utilities.wordExists] expected status 200 got status: ${res.status}`
             );
-            if (!res) return false;
-
-            if (res.status !== 200) {
-                this.client.logger.warn(
-                    `Link: ${link} expected status 200 got status: ${res.status}`
-                );
-                return false;
-            }
-
-            const s1 = cheerioLoad(await res.text());
-            return s1("h1.title").text().includes("Betekenis");
-        };
-
-        const baseUrl1 =
-            "https://www.vandale.nl/gratis-woordenboek/nederlands-engels/vertaling";
-        const baseUrl2 =
-            "https://www.vandale.nl/gratis-woordenboek/nederlands/betekenis";
-
-        let isValid = await checkLink(`${baseUrl1}/${word.toLowerCase()}`);
-        if (!isValid) {
-            isValid = await checkLink(`${baseUrl2}/${word.toLowerCase()}`);
+            return false;
         }
 
-        return isValid;
+        const s1 = cheerioLoad(await res.text(), { xml: true });
+        return s1("corrections").text().includes(word);
     }
 
     public async getViewUserCringesPage(
