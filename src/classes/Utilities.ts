@@ -122,7 +122,7 @@ export class Utilities {
     }
 
     public async isValidWordSnakeWord(word: string): Promise<boolean> {
-        if (word.length <= 1 || !/^[a-zA-Zà-üÀ-Ü-']+$/.test(word)) return false;
+        if (word.length <= 1 || !/^[a-zA-Zà-üÀ-Ü-']+[a-zA-Zà-üÀ-Ü]$/.test(word)) return false;
 
         const res = await fetch(`https://woordenlijst.org/MolexServe/lexicon/spellcheck?database=gig_pro_wrdlst&word=${word}`).catch(err =>
             this.client.logger.error(
