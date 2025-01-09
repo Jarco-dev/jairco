@@ -302,7 +302,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             };
         }
 
-        const wordIsValid = await this.client.utils.wordExists(word);
+        const wordIsValid = await this.client.utils.isValidWordSnakeWord(word);
         if (settings.currentWord === undefined && !wordIsValid) {
             const embed = this.client.lang.getEmbed(
                 "en-US",
