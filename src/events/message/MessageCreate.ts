@@ -291,10 +291,10 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             return { result: "OTHER", note: "Not in word snake channel" };
         }
 
-        const words: string[] = msg.content.split(" ");
-        const word: string | undefined =
-            words.length >= 1 ? words[0].toLowerCase() : undefined;
-        if (settings.currentWordUser === msg.author.id || !word) {
+        const words = msg.content.split(" ");
+        const word = words.length >= 1 ? words[0].toLowerCase() : undefined;
+        const accentFreeWord = word?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        if (settings.currentWordUser === msg.author.id || !word || !accentFreeWord) {
             msg.delete().catch(() => {});
             return {
                 result: "OTHER",
@@ -321,7 +321,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         const wordCount = await this.client.prisma.usedWordSnakeWords.count({
             where: {
                 Guild: { discordId: msg.guild.id },
-                content: word.toLowerCase()
+                content: accentFreeWord
             }
         });
         if (wordCount > 0) {
@@ -343,7 +343,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         if (
             settings.currentWord !== undefined &&
             (!wordIsValid ||
-                (settings.currentWord ?? word).slice(-1) !== word.slice(0, 1))
+                (settings.currentWord ?? accentFreeWord).slice(-1) !== word.slice(0, 1))
         ) {
             const highestStreakBeaten =
                 (settings?.currentWordSnake ?? 0) >
@@ -462,11 +462,11 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         await this.client.prisma.$transaction([
             this.client.prisma.guildSettings.upsert({
                 where: { guildIdAndType: msg.guild.id + "CURRENT_WORD" },
-                update: { value: word },
+                update: { value: accentFreeWord },
                 create: {
                     type: "CURRENT_WORD",
                     guildIdAndType: msg.guild.id + "CURRENT_WORD",
-                    value: word,
+                    value: accentFreeWord,
                     Guild: {
                         connectOrCreate: {
                             where: { discordId: msg.guild.id },
@@ -510,14 +510,14 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             this.client.prisma.usedWordSnakeWords.create({
                 data: {
                     Guild: { connect: { discordId: msg.guild.id } },
-                    content: word.toLowerCase()
+                    content: accentFreeWord
                 }
             })
         ]);
         await this.client.redis.setGuildSettings("wordSnake", msg.guild.id, {
             ...settings,
             currentWordSnake: (settings.currentWordSnake ?? 0) + 1,
-            currentWord: word,
+            currentWord: accentFreeWord,
             currentWordUser: msg.author.id
         });
 
