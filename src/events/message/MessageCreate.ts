@@ -498,6 +498,21 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                     }
                 }
             }),
+            this.client.prisma.guildSettings.upsert({
+                where: { guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE" },
+                update: { value: msg.author.id },
+                create: {
+                    type: "CURRENT_WORD_SNAKE",
+                    guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE",
+                    value: msg.author.id,
+                    Guild: {
+                        connectOrCreate: {
+                            where: { discordId: msg.guild.id },
+                            create: { discordId: msg.guild.id }
+                        }
+                    }
+                }
+            }),
             this.client.prisma.wordSnakeStats.upsert({
                 where: { guildIdAndUserId: msg.guild.id + msg.author.id },
                 update: {
