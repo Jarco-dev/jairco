@@ -373,7 +373,7 @@
                 ]
             },
             "incorrectWordEmbed": {
-                "title": "Onjuist woord, woorden slang is gereset"
+                "title": "Onjuist woord, woorden slang gereset na {{words}} woorden"
             },
             "channelConfirmEmbed": {
                 "title": "Een woorden slang kanaal is al ingesteld!",

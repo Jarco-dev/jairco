@@ -372,7 +372,7 @@
                 ]
             },
             "incorrectWordEmbed": {
-                "title": "Incorrect word, word snake has been reset"
+                "title": "Incorrect word, word snake reset after {{words}} words"
             },
             "channelConfirmEmbed": {
                 "title": "A word snake channel already exists!",

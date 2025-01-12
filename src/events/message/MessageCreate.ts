@@ -427,7 +427,8 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
 
             const embed = this.client.lang.getEmbed(
                 this.client.lang.default,
-                "wordSnake.incorrectWordEmbed"
+                "wordSnake.incorrectWordEmbed",
+                { words: (settings?.currentWordSnake ?? 0).toString() }
             );
             if (highestStreakBeaten) {
                 embed.setDescription(
