@@ -293,8 +293,14 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
 
         const words = msg.content.split(" ");
         const word = words.length >= 1 ? words[0].toLowerCase() : undefined;
-        const accentFreeWord = word?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        if (settings.currentWordUser === msg.author.id || !word || !accentFreeWord) {
+        const accentFreeWord = word
+            ?.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+        if (
+            settings.currentWordUser === msg.author.id ||
+            !word ||
+            !accentFreeWord
+        ) {
             msg.delete().catch(() => {});
             return {
                 result: "OTHER",
@@ -343,7 +349,8 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         if (
             settings.currentWord !== undefined &&
             (!wordIsValid ||
-                (settings.currentWord ?? accentFreeWord).slice(-1) !== word.slice(0, 1))
+                (settings.currentWord ?? accentFreeWord).slice(-1) !==
+                    word.slice(0, 1))
         ) {
             const highestStreakBeaten =
                 (settings?.currentWordSnake ?? 0) >
