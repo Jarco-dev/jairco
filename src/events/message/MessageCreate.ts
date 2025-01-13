@@ -500,7 +500,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             }),
             this.client.prisma.guildSettings.upsert({
                 where: { guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE" },
-                update: { value: msg.author.id },
+                update: { value: ((settings.currentWordSnake ?? 0) + 1).toString() },
                 create: {
                     type: "CURRENT_WORD_SNAKE",
                     guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE",
