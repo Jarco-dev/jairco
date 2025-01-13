@@ -504,7 +504,7 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                 create: {
                     type: "CURRENT_WORD_SNAKE",
                     guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE",
-                    value: msg.author.id,
+                    value: ((settings.currentWordSnake ?? 0) + 1).toString(),
                     Guild: {
                         connectOrCreate: {
                             where: { discordId: msg.guild.id },
