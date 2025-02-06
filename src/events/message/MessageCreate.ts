@@ -83,37 +83,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             const highestCountBeaten =
                 (settings?.currentCount ?? 0) > (settings.highestCount ?? 0);
             await this.client.prisma.$transaction([
-                this.client.prisma.blacklists.create({
-                    data: {
-                        type: "COUNTING",
-                        reason: "Incorrect count",
-                        guildIdUserIdType:
-                            msg.guild.id + msg.author.id + "COUNTING",
-                        Guild: { connect: { discordId: msg.guild.id } },
-                        ReceivedByUser: {
-                            connectOrCreate: {
-                                where: { discordId: msg.author.id },
-                                create: {
-                                    discordId: msg.author.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        },
-                        GivenByUser: {
-                            connectOrCreate: {
-                                where: { discordId: this.client.user!.id },
-                                create: {
-                                    discordId: this.client.user!.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }),
                 this.client.prisma.countingStats.upsert({
                     where: { guildIdAndUserId: msg.guild.id + msg.author.id },
                     update: { incorrect: { increment: 1 } },
