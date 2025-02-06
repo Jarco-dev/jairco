@@ -1,7 +1,7 @@
 services:
     bot:
         build:
-            target: DEVELOPMENT
+            target: development
         restart: unless-stopped
         environment:
             REDIS_HOST: redis

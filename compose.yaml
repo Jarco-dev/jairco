@@ -1,7 +1,7 @@
 services:
     bot:
         build:
-            target: PRODUCTION
+            target: production
         environment:
             REDIS_HOST: redis
             REDIS_PORT: 6379
