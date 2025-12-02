@@ -4,7 +4,8 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ChatInputCommandInteraction,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    TimestampStyles
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
 import CringeViewUserNextPageButtonComponent from "@/button/fun/cringe/CringeViewUserNextPage";
@@ -17,6 +18,7 @@ import CringeResetCancelButtonComponent from "@/button/fun/cringe/CringeResetCan
 import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardPreviousPage";
 import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/cringe/CringeLeaderboardSelectPageStart";
 import CringeLeaderboardNextPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardNextPage";
+import { time } from "@discordjs/builders";
 
 export default class CringeChatInputCommand extends ChatInputCommand {
     constructor() {
@@ -386,6 +388,25 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             return { result: "INVALID_ARGUMENTS" };
         }
 
+        const cooldown = await this.client.redis.getCringeCooldown(
+            i.guild!.id,
+            i.user.id
+        );
+        if (cooldown !== undefined) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "cringe.cringeCooldownActive",
+                    msgType: "INVALID",
+                    langVariables: {
+                        timeLeft: time(cooldown, TimestampStyles.RelativeTime)
+                    }
+                }
+            );
+            return { result: "OTHER", note: "user is on cooldown" };
+        }
+
         const [cringeCount] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
@@ -436,6 +457,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 }
             })
         ]);
+        this.client.redis.setCringeCooldown(i.guild!.id, i.user.id);
 
         await this.client.sender.reply(
             i,
