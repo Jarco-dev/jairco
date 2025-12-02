@@ -173,14 +173,14 @@
                 ]
             },
             "resetReceivedEmbed": {
-                "title": "Are you sure you cant to do this?",
+                "title": "Are you sure you want to do this?",
                 "description": [
                     "{{user}} has received cringe **{{cringeCount}}** times",
                     "If confirmed all of them will be permanently deleted!"
                 ]
             },
             "resetGivenEmbed": {
-                "title": "Are you sure you cant to do this?",
+                "title": "Are you sure you want to do this?",
                 "description": [
                     "{{user}} has given cringe **{{cringeCount}}** times",
                     "if confirmed all of them will be permanently deleted!"
