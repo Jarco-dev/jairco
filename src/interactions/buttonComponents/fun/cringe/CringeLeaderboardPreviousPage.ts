@@ -88,6 +88,7 @@ export default class CringeLeaderboardPreviousPageButtonComponent extends Button
         const embed = await this.client.utils.getCringeLeaderboardPage(
             i,
             context.type,
+            context.allTime,
             newPage
         );
         const buttons = new ActionRowBuilder<ButtonBuilder>().setComponents(

@@ -260,37 +260,87 @@ export class Utilities {
     public async getCringeLeaderboardPage(
         i: BaseInteraction,
         type: "given" | "received",
+        allTime: boolean,
         page = 1
     ): Promise<EmbedBuilder> {
-        const cringes = await this.client.prisma.users.findMany({
-            skip: (page - 1) * 10,
-            take: 10,
-            where: {
-                Guilds: { every: { discordId: i.guild!.id } }
-            },
-            orderBy: {
-                ...(type === "received"
-                    ? { CringesReceived: { _count: "desc" } }
-                    : { CringesGiven: { _count: "desc" } })
-            },
-            select: {
-                discordId: true,
-                _count: {
-                    select: {
-                        CringesReceived: true,
-                        CringesGiven: true
-                    }
-                }
-            }
-        });
+        const startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+
+        type CringesResult = {
+            discordId: string;
+            cringes: number;
+        };
+
+        let cringeCounts: CringesResult[];
+        if (type === "given" && allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.givenByUserId
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else if (type === "received" && allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.receivedByUserId
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else if (type === "given" && !allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.givenByUserId
+                    AND Cringes.createdAt >= now() - INTERVAL 1 YEAR
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else if (type === "received" && !allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.receivedByUserId
+                    AND Cringes.createdAt >= now() - INTERVAL 1 YEAR
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else {
+            throw new Error("Invalid cringe leaderboard type");
+        }
 
         if (type === "received") {
             return this.client.lang.getEmbed(
                 i.locale,
-                "cringe.receivedLeaderboard",
+                `cringe.receivedLeaderboard${allTime ? "" : "Year"}`,
                 {
-                    topUsers: cringes
-                        .filter(c => c._count.CringesReceived > 0)
+                    topUsers: cringeCounts
+                        .filter(c => c.cringes > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -299,7 +349,7 @@ export class Utilities {
                                     i.locale,
                                     "cringe.wasCringeTimes",
                                     {
-                                        count: c._count.CringesReceived.toString()
+                                        count: c.cringes.toString()
                                     }
                                 )}\n`),
                             ""
@@ -309,10 +359,10 @@ export class Utilities {
         } else {
             return this.client.lang.getEmbed(
                 i.locale,
-                "cringe.givenLeaderboard",
+                `cringe.givenLeaderboard${allTime ? "" : "Year"}`,
                 {
-                    topUsers: cringes
-                        .filter(c => c._count.CringesGiven > 0)
+                    topUsers: cringeCounts
+                        .filter(c => c.cringes > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -320,7 +370,7 @@ export class Utilities {
                                 }> ${this.client.lang.getString(
                                     i.locale,
                                     "cringe.givenCringeTimes",
-                                    { count: c._count.CringesGiven.toString() }
+                                    { count: c.cringes.toString() }
                                 )}\n`),
                             ""
                         )

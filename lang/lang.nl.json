@@ -141,6 +141,7 @@
             "cringeGivenWasReset": "Cringe gegeven is gereset voor {{user}}",
             "cringeReceivedWasReset": "Cringe ontvangen is gereset voor {{user}}",
             "cringeResetCanceled": "Cringe reset is geannuleerd",
+            "cringeCooldownActive": "Je moet even wachten, je kan weer cringe geven {{timeLeft}}",
             "contextMenuTipEmbed": {
                 "title": "Cringe toevoegen en het bericht bewaren het kan!",
                 "description": [
@@ -192,6 +193,14 @@
             },
             "givenLeaderboard": {
                 "title": "Gebruikers die de meeste cringe hebben gegeven",
+                "description": "{{topUsers}}"
+            },
+            "receivedLeaderboardYear": {
+                "title": "Gebruikers met de meeste cringe de afgelopen 12 maanden",
+                "description": "{{topUsers}}"
+            },
+            "givenLeaderboardYear": {
+                "title": "Gebruikers die de meeste cringe hebben gegeven de afgelopen 12 maanden",
                 "description": "{{topUsers}}"
             },
             "statisticsEmbed": {
