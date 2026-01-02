@@ -4,7 +4,8 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ChatInputCommandInteraction,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    TimestampStyles
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
 import CringeViewUserNextPageButtonComponent from "@/button/fun/cringe/CringeViewUserNextPage";
@@ -17,6 +18,7 @@ import CringeResetCancelButtonComponent from "@/button/fun/cringe/CringeResetCan
 import CringeLeaderboardPreviousPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardPreviousPage";
 import CringeLeaderboardSelectPageStartButtonComponent from "@/button/fun/cringe/CringeLeaderboardSelectPageStart";
 import CringeLeaderboardNextPageButtonComponent from "@/button/fun/cringe/CringeLeaderboardNextPage";
+import { time } from "@discordjs/builders";
 
 export default class CringeChatInputCommand extends ChatInputCommand {
     constructor() {
@@ -240,6 +242,18 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                                     }
                                 ])
                         )
+                        .addBooleanOption(builder =>
+                            builder
+                                .setName("all-time")
+                                .setNameLocalization("nl", "aller-tijden")
+                                .setDescription(
+                                    "Show the all time leaderboard instead of 12 months"
+                                )
+                                .setDescriptionLocalization(
+                                    "nl",
+                                    "Toon het aller tijden scoreboard in plaats van 12 maanden"
+                                )
+                        )
                 )
         });
     }
@@ -386,6 +400,25 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             return { result: "INVALID_ARGUMENTS" };
         }
 
+        const cooldown = await this.client.redis.getCringeCooldown(
+            i.guild!.id,
+            i.user.id
+        );
+        if (cooldown !== undefined) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "cringe.cringeCooldownActive",
+                    msgType: "INVALID",
+                    langVariables: {
+                        timeLeft: time(cooldown, TimestampStyles.RelativeTime)
+                    }
+                }
+            );
+            return { result: "OTHER", note: "user is on cooldown" };
+        }
+
         const [cringeCount] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
@@ -436,6 +469,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 }
             })
         ]);
+        this.client.redis.setCringeCooldown(i.guild!.id, i.user.id);
 
         await this.client.sender.reply(
             i,
@@ -789,12 +823,13 @@ export default class CringeChatInputCommand extends ChatInputCommand {
     public async runLeaderboard(
         i: ChatInputCommandInteraction
     ): Promise<HandlerResult> {
+        const allTime = i.options.getBoolean("all-time", false) ?? false;
         const type = i.options.getString("type", true) as "received" | "given";
         const dbRes: [{ received: bigint; given: bigint }] = await this.client
             .prisma
             .$queryRaw`SELECT COUNT(DISTINCT Cringes.receivedByUserId) as received, COUNT(DISTINCT Cringes.givenByUserId) as given FROM Cringes JOIN Guilds ON Cringes.guildId=Guilds.id WHERE Guilds.discordId=${
             i.guild!.id
-        }`;
+        } AND Cringes.createdAt >= NOW() - INTERVAL 1 YEAR`;
         const userCount =
             type === "received"
                 ? Number(dbRes[0].received)
@@ -808,7 +843,11 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const embed = await this.client.utils.getCringeLeaderboardPage(i, type);
+        const embed = await this.client.utils.getCringeLeaderboardPage(
+            i,
+            type,
+            allTime
+        );
         if (userCount <= 10) {
             this.client.sender.reply(i, { embeds: [embed] });
             return { result: "SUCCESS" };
@@ -843,6 +882,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
         this.client.redis.setMessageContext("cringeLeaderboard", reply.id, {
             pageMenuOwnerId: i.user.id,
             type,
+            allTime,
             page: 1
         });
 

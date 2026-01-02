@@ -6,9 +6,11 @@ import {
     ApplicationCommandType,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
+    TimestampStyles
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
+import { time } from "@discordjs/builders";
 
 export default class AddCringeMessageContextMenuCommand extends MessageContextMenuCommand {
     constructor() {
@@ -56,6 +58,25 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 { langLocation: "cringe.cantAddToSelf", msgType: "INVALID" }
             );
             return { result: "INVALID_ARGUMENTS" };
+        }
+
+        const cooldown = await this.client.redis.getCringeCooldown(
+            i.guild!.id,
+            i.user.id
+        );
+        if (cooldown !== undefined) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "cringe.cringeCooldownActive",
+                    msgType: "INVALID",
+                    langVariables: {
+                        timeLeft: time(cooldown, TimestampStyles.RelativeTime)
+                    }
+                }
+            );
+            return { result: "OTHER", note: "user is on cooldown" };
         }
 
         const existingCringe = await this.client.prisma.cringes.findUnique({
@@ -133,6 +154,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 }
             })
         ]);
+        this.client.redis.setCringeCooldown(i.guild!.id, i.user.id);
 
         const button = new ActionRowBuilder<ButtonBuilder>().setComponents(
             new ButtonBuilder()

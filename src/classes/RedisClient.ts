@@ -18,7 +18,8 @@ export class RedisClient {
         guildSettings: "guildSettings",
         blacklist: "blacklist",
         cringeAddTipTimeout: "cringeAddTipTimeout",
-        channelSettings: "guildChannelSettings"
+        channelSettings: "guildChannelSettings",
+        cringeCooldown: "cringeCooldown"
     };
 
     private messageContextExpiry: {
@@ -243,5 +244,47 @@ export class RedisClient {
             `[RedisClient] Del: ${this.prefixes.channelSettings}:${channelId}`
         );
         return this.redis.del(`${this.prefixes.channelSettings}:${channelId}`);
+    }
+
+    public async setCringeCooldown(
+        guildId: Snowflake,
+        userId: Snowflake,
+        durationMs: number = 1000 * 60 * 10
+    ): Promise<Date | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Set: ${this.prefixes.cringeCooldown}:${guildId}:${userId}`
+        );
+        const now = new Date(Date.now() + durationMs);
+        const res = await this.redis.setex(
+            `${this.prefixes.cringeCooldown}:${guildId}:${userId}`,
+            durationMs / 1000,
+            now.toString()
+        );
+        return res === "OK" ? now : undefined;
+    }
+
+    public async getCringeCooldown(
+        guildId: Snowflake,
+        userId: Snowflake
+    ): Promise<Date | undefined> {
+        this.client.logger.verbose(
+            `[RedisClient] Get: ${this.prefixes.cringeCooldown}:${guildId}:${userId}`
+        );
+        const res = await this.redis.get(
+            `${this.prefixes.cringeCooldown}:${guildId}:${userId}`
+        );
+        return res ? new Date(res) : undefined;
+    }
+
+    public async delCringeCooldown(
+        guildId: Snowflake,
+        userId: Snowflake
+    ): Promise<number> {
+        this.client.logger.verbose(
+            `[RedisClient] Del: ${this.prefixes.cringeCooldown}:${guildId}:${userId}`
+        );
+        return this.redis.del(
+            `${this.prefixes.cringeCooldown}:${guildId}:${userId}`
+        );
     }
 }
