@@ -101,7 +101,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const [cringeCount] = await this.client.prisma.$transaction([
+        const [cringeCount, cringe] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
                     Guild: { discordId: i.guild!.id },
@@ -109,6 +109,9 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 }
             }),
             this.client.prisma.cringes.create({
+                select: {
+                    id: true
+                },
                 data: {
                     channelId: i.targetMessage.channelId,
                     messageId: i.targetMessage.id,
@@ -176,6 +179,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 langVariables: {
                     user: i.targetMessage.author.username,
                     cringeCount: `${cringeCount + 1}`,
+                    cringeId: cringe.id.toString(),
                     messageContent: i.targetMessage.content
                         ? `*${i.targetMessage.content}*`
                         : ""

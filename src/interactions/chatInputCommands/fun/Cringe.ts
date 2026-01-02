@@ -419,7 +419,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
             return { result: "OTHER", note: "user is on cooldown" };
         }
 
-        const [cringeCount] = await this.client.prisma.$transaction([
+        const [cringeCount, cringe] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
                     Guild: { discordId: i.guild!.id },
@@ -427,6 +427,9 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 }
             }),
             this.client.prisma.cringes.create({
+                select: {
+                    id: true
+                },
                 data: {
                     Guild: {
                         connectOrCreate: {
@@ -480,6 +483,7 @@ export default class CringeChatInputCommand extends ChatInputCommand {
                 langVariables: {
                     user: user.username,
                     cringeCount: `${cringeCount + 1}`,
+                    cringeId: cringe.id.toString(),
                     messageContent: ""
                 }
             }

@@ -152,7 +152,10 @@
             },
             "addedEmbed": {
                 "title": "Cringe added to {{user}} they now have {{cringeCount}} cringe(s)",
-                "description": "{{messageContent}}"
+                "description": "{{messageContent}}",
+                "footer": {
+                    "text": "{{versionString}} | ID: {{cringeId}}"
+                }
             },
             "userCringeReceivedEmbed": {
                 "title": "**{{user}} was cringe {{cringeCount}} times**",
