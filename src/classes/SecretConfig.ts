@@ -15,6 +15,10 @@ export class SecretConfig {
     public REDIS_DATABASE = parseInt(process.env.REDIS_DATABASE ?? "NaN");
     public LOG_LEVEL = process.env.LOG_LEVEL as LogLevel;
     public METRICS_PORT = parseInt(process.env.METRICS_PORT ?? "NaN");
+    public VVV_GUILD_ID = process.env.VVV_GUILD_ID as string;
+    public VVV_CHANNEL_ID = process.env.VVV_CHANNEL_ID as string;
+    public VVV_ROLE_ID = process.env.VVV_ROLE_ID as string;
+    public VVV_MESSAGE = process.env.VVV_MESSAGE as string;
 
     constructor() {}
 
@@ -67,6 +71,22 @@ export class SecretConfig {
             errors.push("METRICS_PORT is required but not given");
         } else if (isNaN(this.METRICS_PORT)) {
             errors.push("METRICS_PORT is a invalid value");
+        }
+
+        if (!this.VVV_GUILD_ID) {
+            errors.push("VVV_GUILD_ID is required but not given");
+        }
+
+        if (!this.VVV_CHANNEL_ID) {
+            errors.push("VVV_CHANNEL_ID is required but not given");
+        }
+
+        if (!this.VVV_ROLE_ID) {
+            errors.push("VVV_ROLE_ID is required but not given");
+        }
+
+        if (!this.VVV_MESSAGE) {
+            errors.push("VVV_MESSAGE is required but not given");
         }
 
         if (errors.length > 0) {
