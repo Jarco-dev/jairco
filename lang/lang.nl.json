@@ -29,7 +29,8 @@
             "ViewCalendar": "Bekijk kalender",
             "ManageWordSnake": "Beheer woord slangen",
             "ManageChannelSettings": "Beheer kanaal instellingen",
-            "BypassStickerFilter": "Omzeil sticker filter"
+            "BypassStickerFilter": "Omzeil sticker filter",
+            "Moderation": "Moderatie"
         },
         "counting": {
             "channelReset": "Het tellen kanaal is gereset",
@@ -435,6 +436,9 @@
         "channel": {
             "stickerFilterEnabled": "Het stikker filter staat nu aan in {{channel}}",
             "stickerFilterDisabled": "Het stikker filter staat nu uit in {{channel}}"
+        },
+        "moderation": {
+            "banCount": "Deze server heeft {{count}} actieve bans"
         }
     },
     "refs": {

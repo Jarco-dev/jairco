@@ -1,51 +1,26 @@
 import { HandlerResult } from "@/types";
 import { ChatInputCommand } from "@/structures";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { BotPermissionsBitField } from "@/classes";
 
-import { Collection, Guild, GuildBan } from "discord.js";
-
-async function fetchAllBans(
-    guild: Guild,
-    after?: string,
-    bans: Collection<string, GuildBan> = new Collection()
-): Promise<Collection<string, GuildBan>> {
-    const batch = await guild.bans.fetch({
-        limit: 1000,
-        after
-    });
-
-    // Merge this batch
-    for (const [id, ban] of batch) {
-        bans.set(id, ban);
-    }
-
-    // If we got less than 1000, we're done
-    if (batch.size < 1000) {
-        return bans;
-    }
-
-    // Continue after the last user ID we received
-    const lastId = batch.lastKey();
-
-    if (!lastId) {
-        return bans;
-    }
-
-    return fetchAllBans(guild, lastId, bans);
-}
-
-export default class MassUnbanChatInputCommand extends ChatInputCommand {
+export default class BanCountChatInputCommand extends ChatInputCommand {
     constructor() {
         super({
             builder: new SlashCommandBuilder()
                 .setName("ban-count")
+                .setNameLocalization("nl", "ban-aantal")
                 .setDescription("Get amount of bans in the server")
+                .setDescriptionLocalization(
+                    "nl",
+                    "Zie het totaal aantal bans in de server"
+                )
                 .setDMPermission(false)
         });
     }
 
     public async run(i: ChatInputCommandInteraction): Promise<HandlerResult> {
-        if (i.user.id !== "232163746829697025") {
+        const permissions = await this.client.utils.getMemberBotPermissions(i);
+        if (!permissions.has(BotPermissionsBitField.Flags.Moderation)) {
             this.client.sender.reply(
                 i,
                 { ephemeral: true },
@@ -55,12 +30,16 @@ export default class MassUnbanChatInputCommand extends ChatInputCommand {
         }
 
         await i.deferReply();
-
-        const bans = await fetchAllBans(i.guild!);
+        const bans = await this.client.utils.fetchAllBans(i.guild!);
         this.client.sender.reply(
             i,
-            { content: `This guild has ${bans.size} bans` },
-            { msgType: "SUCCESS", method: "EDIT_REPLY" }
+            {},
+            {
+                langLocation: "moderation.banCount",
+                langVariables: { count: bans.size.toString() },
+                msgType: "SUCCESS",
+                method: "EDIT_REPLY"
+            }
         );
 
         // Success

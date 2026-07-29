@@ -1,7 +1,10 @@
 import { BotPermissionsBitField, Client } from "@/classes";
 import {
     BaseInteraction,
+    Collection,
     EmbedBuilder,
+    Guild,
+    GuildBan,
     GuildChannelResolvable,
     GuildMember,
     PermissionResolvable,
@@ -672,5 +675,33 @@ export class Utilities {
                 )
                 .join("\n\n")
         });
+    }
+
+    // Recursively fetches all the guild's bans
+    public async fetchAllBans(
+        guild: Guild,
+        after?: string,
+        bans: Collection<string, GuildBan> = new Collection()
+    ): Promise<Collection<string, GuildBan>> {
+        const batch = await guild.bans.fetch({
+            limit: 1000,
+            after
+        });
+
+        for (const [id, ban] of batch) {
+            bans.set(id, ban);
+        }
+
+        if (batch.size < 1000) {
+            return bans;
+        }
+
+        const lastId = batch.lastKey();
+
+        if (!lastId) {
+            return bans;
+        }
+
+        return this.fetchAllBans(guild, lastId, bans);
     }
 }
