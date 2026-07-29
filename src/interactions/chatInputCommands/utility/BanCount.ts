@@ -54,11 +54,13 @@ export default class MassUnbanChatInputCommand extends ChatInputCommand {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
+        await i.deferReply();
+
         const bans = await fetchAllBans(i.guild!);
         this.client.sender.reply(
             i,
             { content: `This guild has ${bans.size} bans` },
-            { msgType: "SUCCESS" }
+            { msgType: "SUCCESS", method: "EDIT_REPLY" }
         );
 
         // Success

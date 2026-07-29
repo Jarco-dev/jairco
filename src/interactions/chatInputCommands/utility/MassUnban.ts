@@ -1,6 +1,36 @@
 import { HandlerResult } from "@/types";
 import { ChatInputCommand } from "@/structures";
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import {ChatInputCommandInteraction, Collection, Guild, GuildBan, SlashCommandBuilder} from "discord.js";
+
+async function fetchAllBans(
+    guild: Guild,
+    after?: string,
+    bans: Collection<string, GuildBan> = new Collection()
+): Promise<Collection<string, GuildBan>> {
+    const batch = await guild.bans.fetch({
+        limit: 1000,
+        after
+    });
+
+    // Merge this batch
+    for (const [id, ban] of batch) {
+        bans.set(id, ban);
+    }
+
+    // If we got less than 1000, we're done
+    if (batch.size < 1000) {
+        return bans;
+    }
+
+    // Continue after the last user ID we received
+    const lastId = batch.lastKey();
+
+    if (!lastId) {
+        return bans;
+    }
+
+    return fetchAllBans(guild, lastId, bans);
+}
 
 export default class MassUnbanChatInputCommand extends ChatInputCommand {
     constructor() {
@@ -22,7 +52,9 @@ export default class MassUnbanChatInputCommand extends ChatInputCommand {
             return { result: "USER_MISSING_PERMISSIONS" };
         }
 
-        const bans = await i.guild!.bans.fetch();
+        await i.deferReply();
+
+        const bans = await fetchAllBans(i.guild!);
         this.client.sender.reply(
             i,
             { content: `Unbanning ${bans.size} members` },
