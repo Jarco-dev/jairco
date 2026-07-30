@@ -3,7 +3,6 @@ import { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { errRes } from "@/shared/kernel/lib/ErrResult.ts";
 import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
-import type { UserId } from "@/shared/kernel/values/UserId.ts";
 
 interface GuildProps {
   id: GuildId;
@@ -27,7 +26,7 @@ export class Guild {
     return new Guild(props);
   }
 
-  get id(): UserId {
+  get id(): GuildId {
     return this.props.id;
   }
 
