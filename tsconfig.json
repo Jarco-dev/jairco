@@ -8,6 +8,7 @@
 
     /* Bundler mode */
     "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
 

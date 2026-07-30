@@ -15,10 +15,14 @@
     "format": "biome format",
     "lint": "biome check",
     "type-check": "tsc --noEmit",
+    "prisma": "prisma --config ./src/shared/infrastructure/persistence/prisma/prismaConfig.ts",
     "dev:enter:bot": "docker exec -it jairco-bot-1 bash",
     "dev:enter:mariadb": "docker exec -it jairco-mariadb-1 mariadb --user=prisma --password=password discord-bot"
   },
   "dependencies": {
+    "@paralleldrive/cuid2": "^3.3.0",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
     "inversify": "^8.2.3",
     "reflect-metadata": "^0.2.2",
     "zod": "^4.4.3"
@@ -26,6 +30,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.6",
     "@types/node": "^22.20.1",
+    "prisma": "^7.9.1",
     "typescript": "^7.0.2"
   }
 }
