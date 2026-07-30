@@ -1,5 +1,6 @@
 import { Container } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
+import { UserModule } from "@/modules/users/infrastructure/UserModule.ts";
 import type { IDateProvider } from "@/shared/application/interfaces/IDateProvider.ts";
 import type { IIdGenerator } from "@/shared/application/interfaces/IIdGenerator.ts";
 import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
@@ -18,3 +19,5 @@ container.bind(DiTypes.DatabaseTransactionManager).to(PrismaTransactionManager);
 container.bind<IDateProvider>(DiTypes.DateProvider).to(NodeDateProvider);
 container.bind<IIdGenerator>(DiTypes.IdGenerator).to(Cuid2IdGenerator);
 container.bind<ILogger>(DiTypes.Logger).to(ConsoleLogger);
+
+container.load(UserModule);
