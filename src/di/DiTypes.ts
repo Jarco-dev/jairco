@@ -8,4 +8,7 @@ export const DiTypes = {
 
   // Users
   UserRepository: Symbol.for("UserRepository"),
+
+  // Guilds
+  GuildRepository: Symbol.for("GuildRepository"),
 };

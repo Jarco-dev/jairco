@@ -1,0 +1,6 @@
+model Guild {
+  id        String   @id @unique
+  discordId String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+}

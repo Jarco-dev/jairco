@@ -1,5 +1,6 @@
 import { Container } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
+import { GuildModule } from "@/modules/guilds/infrastructure/GuildModule.ts";
 import { UserModule } from "@/modules/users/infrastructure/UserModule.ts";
 import type { IDateProvider } from "@/shared/application/interfaces/IDateProvider.ts";
 import type { IIdGenerator } from "@/shared/application/interfaces/IIdGenerator.ts";
@@ -20,4 +21,4 @@ container.bind<IDateProvider>(DiTypes.DateProvider).to(NodeDateProvider);
 container.bind<IIdGenerator>(DiTypes.IdGenerator).to(Cuid2IdGenerator);
 container.bind<ILogger>(DiTypes.Logger).to(ConsoleLogger);
 
-container.load(UserModule);
+container.load(UserModule, GuildModule);
