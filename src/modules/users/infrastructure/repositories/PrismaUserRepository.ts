@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
 import type { IUserRepository } from "@/modules/users/application/interfaces/IUserRepository.ts";
 import type { User } from "@/modules/users/domain/entities/User.ts";
+import type { UserId } from "@/modules/users/domain/values/UserId.ts";
 import { UserMapper } from "@/modules/users/infrastructure/mappers/UserMapper.ts";
 import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
 import type { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
@@ -10,7 +11,6 @@ import { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { errRes } from "@/shared/kernel/lib/ErrResult.ts";
 import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
-import type { UserId } from "@/shared/kernel/values/UserId.ts";
 
 @injectable()
 export class PrismaUserRepository implements IUserRepository {

@@ -1,7 +1,7 @@
 import type { User } from "@/modules/users/domain/entities/User.ts";
+import type { UserId } from "@/modules/users/domain/values/UserId.ts";
 import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
-import type { UserId } from "@/shared/kernel/values/UserId.ts";
 
 export abstract class IUserRepository {
   abstract save(user: User): Promise<ResultType<void, AppError>>;
