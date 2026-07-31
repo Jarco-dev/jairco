@@ -19,6 +19,10 @@ export class Guild {
       return errRes(AppError.validation("updatedAt can't be before createdAt"));
     }
 
+    if (props.discordId.length === 0) {
+      return errRes(AppError.validation("Invalid guild discordId"));
+    }
+
     return okRes(new Guild(props));
   }
 
