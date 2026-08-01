@@ -1,8 +1,11 @@
-model User {
+model Role {
   id        String   @id @unique
   discordId String   @unique
+  guildId   String
   createdAt DateTime
   updatedAt DateTime
 
   Groups Group[]
+
+  @@unique([guildId, discordId])
 }

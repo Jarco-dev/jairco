@@ -1,0 +1,13 @@
+model Group {
+  id          String   @id @unique
+  guildId     String
+  name        String
+  permissions BigInt   @default(0)
+  createdAt   DateTime
+  updatedAt   DateTime
+
+  Roles Role[]
+  Users User[]
+
+  @@unique([guildId, name])
+}

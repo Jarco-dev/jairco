@@ -6,6 +6,10 @@ export const DiTypes = {
   IdGenerator: Symbol.for("IdGenerator"),
   DateProvider: Symbol.for("DateProvider"),
 
+  // Groups
+  GroupRepository: Symbol.for("GroupRepository"),
+  RoleRepository: Symbol.for("RoleRepository"),
+
   // Users
   UserRepository: Symbol.for("UserRepository"),
 

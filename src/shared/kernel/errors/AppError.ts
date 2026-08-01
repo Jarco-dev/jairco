@@ -20,12 +20,11 @@ export class AppError {
     return new AppError("ValidationFailed", message, details);
   }
 
-  static notFound(resource: string): AppError {
-    return new AppError("NotFound", `${resource} not found`);
-  }
-
-  static unauthorized(message: string = "Unauthorized"): AppError {
-    return new AppError("Unauthorized", message);
+  static notFound(
+    message: string,
+    details?: Record<string, unknown>,
+  ): AppError {
+    return new AppError("NotFound", message, details);
   }
 
   static conflict(
@@ -33,6 +32,10 @@ export class AppError {
     details?: Record<string, unknown>,
   ): AppError {
     return new AppError("Conflict", message, details);
+  }
+
+  static unauthorized(message: string = "Unauthorized"): AppError {
+    return new AppError("Unauthorized", message);
   }
 
   static internal(message: string = "Something went wrong"): AppError {
