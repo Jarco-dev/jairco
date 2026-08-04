@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { DiTypes } from "@/di/DiTypes.ts";
+import { DiTypes } from "@/di/container.ts";
 import type { IUserRepository } from "@/modules/users/application/interfaces/IUserRepository.ts";
 import type { User } from "@/modules/users/domain/entities/User.ts";
 import type { UserId } from "@/modules/users/domain/values/UserId.ts";
@@ -17,8 +17,8 @@ export class PrismaUserRepository implements IUserRepository {
   private repo: PrismaTypes.Prisma.UserDelegate;
 
   constructor(
-    @inject(DiTypes.PrismaService) private db: PrismaService,
-    @inject(DiTypes.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.PrismaService) private db: PrismaService,
+    @inject(DiTypes.shared.Logger) private logger: ILogger,
   ) {
     this.repo = this.db.getRepository("user");
   }

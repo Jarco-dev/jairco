@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { DiTypes } from "@/di/DiTypes.ts";
+import { DiTypes } from "@/di/container.ts";
 import type { IRoleRepository } from "@/modules/groups/application/interfaces/IRoleRepository.ts";
 import type { Role } from "@/modules/groups/domain/entities/Role.ts";
 import type { RoleId } from "@/modules/groups/domain/values/RoleId.ts";
@@ -17,8 +17,8 @@ export class PrismaRoleRepository implements IRoleRepository {
   private repo: PrismaTypes.Prisma.RoleDelegate;
 
   constructor(
-    @inject(DiTypes.PrismaService) private db: PrismaService,
-    @inject(DiTypes.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.PrismaService) private db: PrismaService,
+    @inject(DiTypes.shared.Logger) private logger: ILogger,
   ) {
     this.repo = this.db.getRepository("role");
   }

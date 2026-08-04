@@ -1,5 +1,5 @@
 import { inject } from "inversify";
-import { DiTypes } from "@/di/DiTypes.ts";
+import { DiTypes } from "@/di/container.ts";
 import type { IDatabaseTransactionManager } from "@/shared/application/interfaces/IDatabaseTransactionManager.ts";
 import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
 import type { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
@@ -11,10 +11,10 @@ import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export class PrismaTransactionManager implements IDatabaseTransactionManager {
   constructor(
-    @inject(DiTypes.PrismaService) private prismaService: PrismaService,
+    @inject(DiTypes.shared.PrismaService) private prismaService: PrismaService,
     @inject(PrismaTransactionContext)
     private prismaTransactionContext: PrismaTransactionContext,
-    @inject(DiTypes.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.Logger) private logger: ILogger,
   ) {}
 
   async run<T>(callback: () => Promise<T>): Promise<ResultType<T, AppError>> {

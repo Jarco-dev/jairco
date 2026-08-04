@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { DiTypes } from "@/di/DiTypes.ts";
+import { DiTypes } from "@/di/container.ts";
 import type { IGuildRepository } from "@/modules/guilds/application/interfaces/IGuildRepository.ts";
 import type { Guild } from "@/modules/guilds/domain/entities/Guild.ts";
 import type { GuildId } from "@/modules/guilds/domain/values/GuildId.ts";
@@ -17,8 +17,8 @@ export class PrismaGuildRepository implements IGuildRepository {
   private repo: PrismaTypes.Prisma.GuildDelegate;
 
   constructor(
-    @inject(DiTypes.PrismaService) private db: PrismaService,
-    @inject(DiTypes.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.PrismaService) private db: PrismaService,
+    @inject(DiTypes.shared.Logger) private logger: ILogger,
   ) {
     this.repo = this.db.getRepository("guild");
   }

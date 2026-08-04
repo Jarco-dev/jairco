@@ -1,24 +1,16 @@
 import { Container } from "inversify";
-import { DiTypes } from "@/di/DiTypes.ts";
-import { GuildModule } from "@/modules/guilds/infrastructure/GuildModule.ts";
-import { UserModule } from "@/modules/users/infrastructure/UserModule.ts";
-import type { IDateProvider } from "@/shared/application/interfaces/IDateProvider.ts";
-import type { IIdGenerator } from "@/shared/application/interfaces/IIdGenerator.ts";
-import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
-import { NodeDateProvider } from "@/shared/infrastructure/date/NodeDateProvider.ts";
-import { Cuid2IdGenerator } from "@/shared/infrastructure/ids/Cuid2IdGenerator.ts";
-import { ConsoleLogger } from "@/shared/infrastructure/logging/ConsoleLogger.ts";
-import { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
-import { PrismaTransactionContext } from "@/shared/infrastructure/persistence/prisma/PrismaTransactionContext.ts";
-import { PrismaTransactionManager } from "@/shared/infrastructure/persistence/prisma/PrismaTransactionManager.ts";
+import { GroupDiTypes, GroupModule } from "@/modules/groups/GroupModule.ts";
+import { GuildDiTypes, GuildModule } from "@/modules/guilds/GuildModule.ts";
+import { UserDiTypes, UserModule } from "@/modules/users/UserModule.ts";
+import { SharedDiTypes, SharedModule } from "@/shared/SharedModule.ts";
+
+export const DiTypes = {
+  shared: SharedDiTypes,
+  users: UserDiTypes,
+  guild: GuildDiTypes,
+  groups: GroupDiTypes,
+} as const;
 
 export const container = new Container({ defaultScope: "Singleton" });
 
-container.bind(PrismaTransactionContext).toSelf();
-container.bind(DiTypes.PrismaService).to(PrismaService);
-container.bind(DiTypes.DatabaseTransactionManager).to(PrismaTransactionManager);
-container.bind<IDateProvider>(DiTypes.DateProvider).to(NodeDateProvider);
-container.bind<IIdGenerator>(DiTypes.IdGenerator).to(Cuid2IdGenerator);
-container.bind<ILogger>(DiTypes.Logger).to(ConsoleLogger);
-
-container.load(UserModule, GuildModule);
+container.load(SharedModule, UserModule, GuildModule, GroupModule);
