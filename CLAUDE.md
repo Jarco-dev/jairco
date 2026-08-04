@@ -6,7 +6,7 @@ Active branch: `v2` — full overhaul: new modular architecture. PR base: `maste
 
 ## Tech stack
 
-- Node `^22.13.0`, TypeScript `^6.0.2` (strict)
+- Node `^22.13.0`, TypeScript `^7.0.2` (strict)
 - Backend: Inversify 8 (DI), Prisma 7 + Postgres, Zod 4
 - Discord: discord.js ^14
 - Tooling: Biome 2.4 (lint + format), CUID2 for IDs
