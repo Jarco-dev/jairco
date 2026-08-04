@@ -10,8 +10,8 @@ import { AppPermissionBitField } from "@/shared/kernel/values/AppPermissionBitFi
 export class GroupMapper {
   static toDomain(
     group: PrismaTypes.Group & {
-      Roles: { id: string }[];
-      Users: { id: string }[];
+      Roles: { id: PrismaTypes.Role["id"] }[];
+      Users: { id: PrismaTypes.User["id"] }[];
     },
   ): Group {
     return Group.unsafe({

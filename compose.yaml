@@ -2,53 +2,42 @@ services:
     bot:
         build:
             target: production
+        restart: unless-stopped
         environment:
-            REDIS_HOST: redis
-            REDIS_PORT: 6379
-            REDIS_USER: default
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
-            REDIS_DATABASE: 0
-            DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mariadb:3306/${MYSQL_DATABASE}
-            LOG_LEVEL: ${LOG_LEVEL}
-            METRICS_PORT: ${METRICS_PORT}
+            NODE_ENV: production
             DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
-            VVV_GUILD_ID: ${VVV_GUILD_ID}
-            VVV_CHANNEL_ID: ${VVV_CHANNEL_ID}
-            VVV_ROLE_ID: ${VVV_ROLE_ID}
-            VVV_MESSAGE: ${VVV_MESSAGE}
-        volumes:
-            - "bot_data:/usr/src/app/storage"
+
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DATABASE: ${POSTGRES_DATABASE}
         depends_on:
-            - mariadb
+            postgres:
+                condition: service_healthy
         networks:
             - backend
 
-    redis:
-        image: redis
+    postgres:
+        image: postgres:17
+        restart: unless-stopped
         environment:
-            REDIS_PASSWORD: password
-            REDIS_DATABASES: 1
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DATABASE}
         volumes:
-            - "redis_data:/data"
-        networks:
-            - backend
-
-    mariadb:
-        image: mariadb
-        environment:
-            MYSQL_RANDOM_ROOT_PASSWORD: yes
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-        volumes:
-            - "mariadb_data:/var/lib/mysql"
+            - "postgres_data:/var/lib/postgresql/data"
+        healthcheck:
+            test:
+                ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DATABASE}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
         networks:
             - backend
 
 volumes:
-    bot_data:
-    redis_data:
-    mariadb_data:
+    postgres_data:
 
 networks:
     backend:

@@ -9,20 +9,20 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "nodemon --legacy-watch --watch \"src/**\" --watch \"lang/**\" --ext \"ts,json\" --exec \"ts-node -r tsconfig-paths/register ./src/index.ts\"",
-    "build": "gts clean && tsc --project tsconfig.json && tsc-alias",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "format": "biome format",
     "lint": "biome check",
     "type-check": "tsc --noEmit",
-    "prisma": "prisma --config ./src/shared/infrastructure/persistence/prisma/prismaConfig.ts",
-    "dev:enter:bot": "docker exec -it jairco-bot-1 bash",
-    "dev:enter:mariadb": "docker exec -it jairco-mariadb-1 mariadb --user=prisma --password=password discord-bot"
+    "prisma": "prisma --config ./src/shared/infrastructure/persistence/prisma/prismaConfig.ts"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "discord.js": "^14.27.0",
+    "dotenv": "^17.4.2",
     "inversify": "^8.2.3",
     "reflect-metadata": "^0.2.2",
     "zod": "^4.4.3"
@@ -31,6 +31,8 @@
     "@biomejs/biome": "^2.5.6",
     "@types/node": "^22.20.1",
     "prisma": "^7.9.1",
+    "tsc-alias": "^1.9.1",
+    "tsx": "^4.23.1",
     "typescript": "^7.0.2"
   }
 }

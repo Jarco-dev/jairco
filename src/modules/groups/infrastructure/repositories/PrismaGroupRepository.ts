@@ -50,7 +50,7 @@ export class PrismaGroupRepository implements IGroupRepository {
           Users: { connect: userIds },
         },
       });
-      okRes(undefined);
+      return okRes(undefined);
     } catch (error) {
       this.logger.error(
         "Failed to save group",
