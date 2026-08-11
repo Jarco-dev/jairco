@@ -4,7 +4,7 @@ import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export interface IRoleRepository {
-  save(role: Role): Promise<ResultType<void, AppError>>;
+  save(role: Role): Promise<ResultType<Role, AppError>>;
   findById(id: RoleId): Promise<ResultType<Role | null, AppError>>;
   deleteById(id: RoleId): Promise<ResultType<void, AppError>>;
 }

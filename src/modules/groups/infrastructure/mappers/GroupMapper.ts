@@ -18,9 +18,9 @@ export class GroupMapper {
       id: GroupId.unsafe(group.id),
       name: GroupName.unsafe(group.name),
       permissions: AppPermissionBitField.unsafe(group.permissions),
-      guildId: GuildId.unsafe(group.guildId),
       createdAt: group.createdAt,
       updatedAt: group.updatedAt,
+      guildId: GuildId.unsafe(group.guildId),
       roleIds: group.Roles.map((role) => RoleId.unsafe(role.id)),
       userIds: group.Users.map((user) => UserId.unsafe(user.id)),
     });

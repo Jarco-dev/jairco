@@ -1,11 +1,12 @@
 model Group {
-  id          String   @id @unique
-  guildId     String
+  id          Int      @id @default(autoincrement())
+  guildId     Int
   name        String
   permissions BigInt   @default(0)
   createdAt   DateTime
   updatedAt   DateTime
 
+  Guild Guild  @relation(fields: [guildId], references: [id])
   Roles Role[]
   Users User[]
 

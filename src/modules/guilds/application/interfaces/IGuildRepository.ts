@@ -4,7 +4,7 @@ import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export interface IGuildRepository {
-  save(guild: Guild): Promise<ResultType<void, AppError>>;
+  save(guild: Guild): Promise<ResultType<Guild, AppError>>;
   findById(id: GuildId): Promise<ResultType<Guild | null, AppError>>;
   findByDiscordId(
     discordId: string,

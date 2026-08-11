@@ -5,7 +5,7 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 interface GuildProps {
-  id: GuildId;
+  id?: GuildId;
   discordId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -30,12 +30,12 @@ export class Guild {
     return new Guild(props);
   }
 
-  get id(): GuildId {
+  get id(): GuildId | undefined {
     return this.props.id;
   }
 
   get discordId(): string {
-    return this.id.value;
+    return this.props.discordId;
   }
 
   get createdAt(): Date {

@@ -4,17 +4,17 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export class UserId {
-  private constructor(public readonly value: string) {}
+  private constructor(public readonly value: number) {}
 
-  static create(value: string): ResultType<UserId, AppError> {
-    if (value.length === 0) {
+  static create(value: number): ResultType<UserId, AppError> {
+    if (Number.isNaN(value) || value < 0) {
       return errRes(AppError.validation("Invalid user id"));
     }
 
     return okRes(new UserId(value));
   }
 
-  static unsafe(value: string): UserId {
+  static unsafe(value: number): UserId {
     return new UserId(value);
   }
 }

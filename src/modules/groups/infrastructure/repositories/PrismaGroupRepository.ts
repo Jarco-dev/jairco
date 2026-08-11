@@ -23,9 +23,9 @@ export class PrismaGroupRepository implements IGroupRepository {
     this.repo = this.db.getRepository("group");
   }
 
-  async save(group: Group): Promise<ResultType<void, AppError>> {
+  async save(group: Group): Promise<ResultType<Group, AppError>> {
     const data = {
-      id: group.id.value,
+      id: group.id?.value,
       guildId: group.guildId.value,
       name: group.name.value,
       permissions: group.permissions.value,
@@ -37,8 +37,8 @@ export class PrismaGroupRepository implements IGroupRepository {
     const userIds = group.userIds.map((userId) => ({ id: userId.value }));
 
     try {
-      await this.repo.upsert({
-        where: { id: group.id.value },
+      const dbGroup = await this.repo.upsert({
+        where: { id: data.id },
         update: {
           ...data,
           Roles: { set: roleIds },
@@ -49,13 +49,17 @@ export class PrismaGroupRepository implements IGroupRepository {
           Roles: { connect: roleIds },
           Users: { connect: userIds },
         },
+        include: {
+          Roles: { select: { id: true } },
+          Users: { select: { id: true } },
+        },
       });
-      return okRes(undefined);
+      return okRes(GroupMapper.toDomain(dbGroup));
     } catch (error) {
       this.logger.error(
         "Failed to save group",
         error instanceof Error ? error : undefined,
-        { id: group.id.value },
+        { data, roleIds, userIds },
       );
       return errRes(AppError.internal("Failed to save group"));
     }

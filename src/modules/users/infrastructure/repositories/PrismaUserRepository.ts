@@ -23,26 +23,26 @@ export class PrismaUserRepository implements IUserRepository {
     this.repo = this.db.getRepository("user");
   }
 
-  async save(user: User): Promise<ResultType<void, AppError>> {
+  async save(user: User): Promise<ResultType<User, AppError>> {
     const data = {
-      id: user.id.value,
+      id: user.id?.value,
       discordId: user.discordId,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
 
     try {
-      await this.repo.upsert({
-        where: { id: user.id.value },
+      const dbUser = await this.repo.upsert({
+        where: { id: data.id },
         update: data,
         create: data,
       });
-      return okRes(undefined);
+      return okRes(UserMapper.toDomain(dbUser));
     } catch (error) {
       this.logger.error(
         "Failed to save user",
         error instanceof Error ? error : undefined,
-        { id: user.id.value },
+        { data },
       );
       return errRes(AppError.internal("Failed to save user"));
     }

@@ -23,26 +23,26 @@ export class PrismaGuildRepository implements IGuildRepository {
     this.repo = this.db.getRepository("guild");
   }
 
-  async save(guild: Guild): Promise<ResultType<void, AppError>> {
+  async save(guild: Guild): Promise<ResultType<Guild, AppError>> {
     const data = {
-      id: guild.id.value,
+      id: guild.id?.value,
       discordId: guild.discordId,
       createdAt: guild.createdAt,
       updatedAt: guild.updatedAt,
     };
 
     try {
-      await this.repo.upsert({
-        where: { id: guild.id.value },
+      const dbGuild = await this.repo.upsert({
+        where: { id: data.id },
         update: data,
         create: data,
       });
-      return okRes(undefined);
+      return okRes(GuildMapper.toDomain(dbGuild));
     } catch (error) {
       this.logger.error(
         "Failed to save guild",
         error instanceof Error ? error : undefined,
-        { id: guild.id.value },
+        { data },
       );
       return errRes(AppError.internal("Failed to save guild"));
     }

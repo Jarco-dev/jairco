@@ -5,7 +5,7 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 interface UserProps {
-  id: UserId;
+  id?: UserId;
   discordId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -26,12 +26,12 @@ export class User {
     return new User(props);
   }
 
-  get id(): UserId {
+  get id(): UserId | undefined {
     return this.props.id;
   }
 
   get discordId(): string {
-    return this.id.value;
+    return this.props.discordId;
   }
 
   get createdAt(): Date {

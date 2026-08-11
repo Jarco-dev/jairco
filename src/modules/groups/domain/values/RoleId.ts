@@ -4,17 +4,17 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export class RoleId {
-  private constructor(public readonly value: string) {}
+  private constructor(public readonly value: number) {}
 
-  static create(value: string): ResultType<RoleId, AppError> {
-    if (value.length === 0) {
+  static create(value: number): ResultType<RoleId, AppError> {
+    if (Number.isNaN(value) || value < 0) {
       return errRes(AppError.validation("Invalid role id"));
     }
 
     return okRes(new RoleId(value));
   }
 
-  static unsafe(value: string): RoleId {
+  static unsafe(value: number): RoleId {
     return new RoleId(value);
   }
 }

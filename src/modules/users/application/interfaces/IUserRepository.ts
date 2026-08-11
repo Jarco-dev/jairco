@@ -4,7 +4,7 @@ import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export interface IUserRepository {
-  save(user: User): Promise<ResultType<void, AppError>>;
+  save(user: User): Promise<ResultType<User, AppError>>;
   findById(id: UserId): Promise<ResultType<User | null, AppError>>;
   findByDiscordId(
     discordId: string,

@@ -1,5 +1,5 @@
 model User {
-  id        String   @id @unique
+  id        Int      @id @default(autoincrement())
   discordId String   @unique
   createdAt DateTime
   updatedAt DateTime

@@ -4,17 +4,17 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 export class GuildId {
-  private constructor(public readonly value: string) {}
+  private constructor(public readonly value: number) {}
 
-  static create(value: string): ResultType<GuildId, AppError> {
-    if (value.length === 0) {
+  static create(value: number): ResultType<GuildId, AppError> {
+    if (Number.isNaN(value) || value < 0) {
       return errRes(AppError.validation("Invalid guild id"));
     }
 
     return okRes(new GuildId(value));
   }
 
-  static unsafe(value: string): GuildId {
+  static unsafe(value: number): GuildId {
     return new GuildId(value);
   }
 }

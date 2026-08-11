@@ -6,7 +6,7 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 interface RoleProps {
-  id: RoleId;
+  id?: RoleId;
   guildId: GuildId;
   discordId: string;
   createdAt: Date;
@@ -32,7 +32,7 @@ export class Role {
     return new Role(props);
   }
 
-  get id(): RoleId {
+  get id(): RoleId | undefined {
     return this.props.id;
   }
 

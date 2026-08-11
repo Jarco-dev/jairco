@@ -10,7 +10,7 @@ import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 import type { AppPermissionBitField } from "@/shared/kernel/values/AppPermissionBitField.ts";
 
 interface GroupProps {
-  id: GroupId;
+  id?: GroupId;
   guildId: GuildId;
   name: GroupName;
   permissions: AppPermissionBitField;
@@ -36,7 +36,7 @@ export class Group {
     return new Group(props);
   }
 
-  get id(): GroupId {
+  get id(): GroupId | undefined {
     return this.props.id;
   }
 

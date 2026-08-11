@@ -1,10 +1,11 @@
 model Role {
-  id        String   @id @unique
+  id        Int      @id @default(autoincrement())
   discordId String   @unique
-  guildId   String
+  guildId   Int
   createdAt DateTime
   updatedAt DateTime
 
+  Guild  Guild   @relation(fields: [guildId], references: [id])
   Groups Group[]
 
   @@unique([guildId, discordId])

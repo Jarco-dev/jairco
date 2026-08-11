@@ -23,9 +23,9 @@ export class PrismaRoleRepository implements IRoleRepository {
     this.repo = this.db.getRepository("role");
   }
 
-  async save(role: Role): Promise<ResultType<void, AppError>> {
+  async save(role: Role): Promise<ResultType<Role, AppError>> {
     const data = {
-      id: role.id.value,
+      id: role.id?.value,
       guildId: role.guildId.value,
       discordId: role.discordId,
       createdAt: role.createdAt,
@@ -33,17 +33,17 @@ export class PrismaRoleRepository implements IRoleRepository {
     };
 
     try {
-      await this.repo.upsert({
-        where: { id: role.id.value },
+      const role = await this.repo.upsert({
+        where: { id: data.id },
         update: data,
         create: data,
       });
-      return okRes(undefined);
+      return okRes(RoleMapper.toDomain(role));
     } catch (error) {
       this.logger.error(
         "Failed to save role",
         error instanceof Error ? error : undefined,
-        { id: role.id.value },
+        { data },
       );
       return errRes(AppError.internal("Failed to save role"));
     }
