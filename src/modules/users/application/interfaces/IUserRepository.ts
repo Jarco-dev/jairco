@@ -3,11 +3,11 @@ import type { UserId } from "@/modules/users/domain/values/UserId.ts";
 import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
-export abstract class IUserRepository {
-  abstract save(user: User): Promise<ResultType<void, AppError>>;
-  abstract findById(id: UserId): Promise<ResultType<User | null, AppError>>;
-  abstract findByDiscordId(
+export interface IUserRepository {
+  save(user: User): Promise<ResultType<void, AppError>>;
+  findById(id: UserId): Promise<ResultType<User | null, AppError>>;
+  findByDiscordId(
     discordId: string,
   ): Promise<ResultType<User | null, AppError>>;
-  abstract deleteById(id: UserId): Promise<ResultType<void, AppError>>;
+  deleteById(id: UserId): Promise<ResultType<void, AppError>>;
 }
