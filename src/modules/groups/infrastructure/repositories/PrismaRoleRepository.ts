@@ -40,11 +40,7 @@ export class PrismaRoleRepository implements IRoleRepository {
       });
       return okRes(RoleMapper.toDomain(role));
     } catch (error) {
-      this.logger.error(
-        "Failed to save role",
-        error instanceof Error ? error : undefined,
-        { data },
-      );
+      this.logger.error("Failed to save role", { error, data });
       return errRes(AppError.internal("Failed to save role"));
     }
   }
@@ -54,11 +50,7 @@ export class PrismaRoleRepository implements IRoleRepository {
       const dbRole = await this.repo.findUnique({ where: { id: id.value } });
       return okRes(dbRole ? RoleMapper.toDomain(dbRole) : null);
     } catch (error) {
-      this.logger.error(
-        "Failed to find role by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to find role by id", { error, id: id.value });
       return errRes(AppError.internal("Failed to find role by id"));
     }
   }
@@ -68,11 +60,7 @@ export class PrismaRoleRepository implements IRoleRepository {
       await this.repo.delete({ where: { id: id.value } });
       return okRes(undefined);
     } catch (error) {
-      this.logger.error(
-        "Failed to delete role by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to delete role by id", { error, id: id.value });
       return errRes(AppError.internal("Failed to delete role by id"));
     }
   }

@@ -1,9 +1,17 @@
+export enum LogLevel {
+  VERBOSE = 0,
+  DEBUG = 1,
+  INFO = 2,
+  WARN = 3,
+  ERROR = 4,
+}
+
 export type ILogger = {
+  logLevel: LogLevel;
+  setLogLevel(level: LogLevel): void;
+  verbose: (message: string, meta?: Record<string, unknown>) => void;
   debug: (message: string, meta?: Record<string, unknown>) => void;
   info: (message: string, meta?: Record<string, unknown>) => void;
-  error: (
-    message: string,
-    error?: Error,
-    meta?: Record<string, unknown>,
-  ) => void;
+  warn: (message: string, meta?: Record<string, unknown>) => void;
+  error: (message: string, meta?: Record<string, unknown>) => void;
 };

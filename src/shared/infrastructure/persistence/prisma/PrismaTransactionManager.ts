@@ -25,10 +25,7 @@ export class PrismaTransactionManager implements IDatabaseTransactionManager {
       return okRes(value);
     } catch (error) {
       if (error instanceof AppError) return errRes(error);
-      this.logger.error(
-        "Transaction failed",
-        error instanceof Error ? error : undefined,
-      );
+      this.logger.error("Transaction failed", { error });
       return errRes(AppError.internal("Transaction failed"));
     }
   }

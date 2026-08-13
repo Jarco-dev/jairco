@@ -56,11 +56,12 @@ export class PrismaGroupRepository implements IGroupRepository {
       });
       return okRes(GroupMapper.toDomain(dbGroup));
     } catch (error) {
-      this.logger.error(
-        "Failed to save group",
-        error instanceof Error ? error : undefined,
-        { data, roleIds, userIds },
-      );
+      this.logger.error("Failed to save group", {
+        error,
+        data,
+        roleIds,
+        userIds,
+      });
       return errRes(AppError.internal("Failed to save group"));
     }
   }
@@ -77,11 +78,7 @@ export class PrismaGroupRepository implements IGroupRepository {
 
       return okRes(dbGroup ? GroupMapper.toDomain(dbGroup) : null);
     } catch (error) {
-      this.logger.error(
-        "Failed to find group by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to find group by id", { error, id: id.value });
       return errRes(AppError.internal("Failed to find group by id"));
     }
   }
@@ -91,11 +88,10 @@ export class PrismaGroupRepository implements IGroupRepository {
       await this.repo.delete({ where: { id: id.value } });
       return okRes(undefined);
     } catch (error) {
-      this.logger.error(
-        "Failed to delete group by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to delete group by id", {
+        error,
+        id: id.value,
+      });
       return errRes(AppError.internal("Failed to delete group by id"));
     }
   }

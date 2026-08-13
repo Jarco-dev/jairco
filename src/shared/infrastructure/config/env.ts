@@ -5,6 +5,9 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
+  LOG_LEVEL: z
+    .enum(["VERBOSE", "DEBUG", "INFO", "WARN", "ERROR"])
+    .default("INFO"),
 
   POSTGRES_HOST: z.string().min(1),
   POSTGRES_PORT: z.coerce.number().int().positive(),

@@ -39,11 +39,7 @@ export class PrismaGuildRepository implements IGuildRepository {
       });
       return okRes(GuildMapper.toDomain(dbGuild));
     } catch (error) {
-      this.logger.error(
-        "Failed to save guild",
-        error instanceof Error ? error : undefined,
-        { data },
-      );
+      this.logger.error("Failed to save guild", { error, data });
       return errRes(AppError.internal("Failed to save guild"));
     }
   }
@@ -53,11 +49,7 @@ export class PrismaGuildRepository implements IGuildRepository {
       const dbGuild = await this.repo.findUnique({ where: { id: id.value } });
       return okRes(dbGuild ? GuildMapper.toDomain(dbGuild) : null);
     } catch (error) {
-      this.logger.error(
-        "Failed to find guild by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to find guild by id", { error, id: id.value });
       return errRes(AppError.internal("Failed to find guild by id"));
     }
   }
@@ -69,11 +61,10 @@ export class PrismaGuildRepository implements IGuildRepository {
       const dbGuild = await this.repo.findUnique({ where: { discordId } });
       return okRes(dbGuild ? GuildMapper.toDomain(dbGuild) : null);
     } catch (error) {
-      this.logger.error(
-        "Failed to find guild by discordId",
-        error instanceof Error ? error : undefined,
-        { discordId },
-      );
+      this.logger.error("Failed to find guild by discordId", {
+        error,
+        discordId,
+      });
       return errRes(AppError.internal("Failed to find guild by discordId"));
     }
   }
@@ -83,11 +74,10 @@ export class PrismaGuildRepository implements IGuildRepository {
       await this.repo.delete({ where: { id: id.value } });
       return okRes(undefined);
     } catch (error) {
-      this.logger.error(
-        "Failed to delete guild by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to delete guild by id", {
+        error,
+        id: id.value,
+      });
       return errRes(AppError.internal("Failed to delete guild by id"));
     }
   }

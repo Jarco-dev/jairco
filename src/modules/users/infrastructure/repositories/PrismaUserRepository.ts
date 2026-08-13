@@ -39,11 +39,7 @@ export class PrismaUserRepository implements IUserRepository {
       });
       return okRes(UserMapper.toDomain(dbUser));
     } catch (error) {
-      this.logger.error(
-        "Failed to save user",
-        error instanceof Error ? error : undefined,
-        { data },
-      );
+      this.logger.error("Failed to save user", { error, data });
       return errRes(AppError.internal("Failed to save user"));
     }
   }
@@ -53,11 +49,7 @@ export class PrismaUserRepository implements IUserRepository {
       const dbUser = await this.repo.findUnique({ where: { id: id.value } });
       return okRes(dbUser ? UserMapper.toDomain(dbUser) : null);
     } catch (error) {
-      this.logger.error(
-        "Failed to find user by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to find user by id", { error, id: id.value });
       return errRes(AppError.internal("Failed to find user by id"));
     }
   }
@@ -69,11 +61,10 @@ export class PrismaUserRepository implements IUserRepository {
       const dbUser = await this.repo.findUnique({ where: { discordId } });
       return okRes(dbUser ? UserMapper.toDomain(dbUser) : null);
     } catch (error) {
-      this.logger.error(
-        "Failed to find user by discordId",
-        error instanceof Error ? error : undefined,
-        { discordId },
-      );
+      this.logger.error("Failed to find user by discordId", {
+        error,
+        discordId,
+      });
       return errRes(AppError.internal("Failed to find user by discordId"));
     }
   }
@@ -83,11 +74,7 @@ export class PrismaUserRepository implements IUserRepository {
       await this.repo.delete({ where: { id: id.value } });
       return okRes(undefined);
     } catch (error) {
-      this.logger.error(
-        "Failed to delete user by id",
-        error instanceof Error ? error : undefined,
-        { id: id.value },
-      );
+      this.logger.error("Failed to delete user by id", { error, id: id.value });
       return errRes(AppError.internal("Failed to delete user by id"));
     }
   }
