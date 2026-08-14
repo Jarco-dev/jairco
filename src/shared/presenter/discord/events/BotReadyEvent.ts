@@ -22,9 +22,7 @@ export class BotReadyEvent extends IEventHandler<"clientReady"> {
   }
 
   async handle(): Promise<ResultType<void, AppError>> {
-    this.logger.info(
-      `[Bootstrap] ${this.client.user.username} logged in`,
-    );
+    this.logger.info(`[Bootstrap] ${this.client.user.username} logged in`);
 
     const payload = this.commandRegistry.getDeployPayload();
     this.client.application.commands.set(payload).then(() => {
