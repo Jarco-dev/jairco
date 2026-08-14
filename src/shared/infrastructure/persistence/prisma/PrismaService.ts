@@ -9,25 +9,25 @@ import type { PrismaTypes } from "@/shared/infrastructure/persistence/prisma/typ
 
 @injectable()
 export class PrismaService {
-  public prisma: PrismaTypes.PrismaClient;
+  public client: PrismaTypes.PrismaClient;
   static skipField = Prisma.skip;
 
   constructor() {
     const adapter = new PrismaPg({ connectionString: DB_STRING });
-    this.prisma = new PrismaClient({ adapter });
+    this.client = new PrismaClient({ adapter });
   }
 
   async connect(): Promise<void> {
-    await this.prisma.$connect();
+    await this.client.$connect();
   }
 
   async disconnect(): Promise<void> {
-    await this.prisma.$disconnect();
+    await this.client.$disconnect();
   }
 
   getRepository<T extends Uncapitalize<PrismaTypes.Prisma.ModelName>>(
     model: T,
   ): PrismaTypes.PrismaClient[T] {
-    return this.prisma[model];
+    return this.client[model];
   }
 }

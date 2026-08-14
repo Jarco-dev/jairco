@@ -19,7 +19,7 @@ export class PrismaTransactionManager implements IDatabaseTransactionManager {
 
   async run<T>(callback: () => Promise<T>): Promise<ResultType<T, AppError>> {
     try {
-      const value = await this.prismaService.prisma.$transaction(async (tx) => {
+      const value = await this.prismaService.client.$transaction(async (tx) => {
         return this.prismaTransactionContext.run(tx, callback);
       });
       return okRes(value);
