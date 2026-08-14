@@ -2,7 +2,7 @@ import { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
-export type BitFieldResolvable<
+export type AppBitFieldResolvable<
   Flags = keyof (typeof AppPermissionBitField)["Flags"],
 > =
   | bigint
@@ -27,7 +27,7 @@ export class AppPermissionBitField {
   private constructor(public value: bigint) {}
 
   static create(
-    value: BitFieldResolvable,
+    value: AppBitFieldResolvable,
   ): ResultType<AppPermissionBitField, AppError> {
     const resolvedBit = AppPermissionBitField.resolve(value);
 
@@ -38,14 +38,16 @@ export class AppPermissionBitField {
     return new AppPermissionBitField(value);
   }
 
-  static resolve(bit: BitFieldResolvable): bigint {
+  static resolve(bit: AppBitFieldResolvable): bigint {
     const { DefaultBit, Flags } = AppPermissionBitField;
 
     if (typeof bit === "bigint") return bit;
     if (bit instanceof AppPermissionBitField) return bit.value;
     if (Array.isArray(bit)) {
       return bit
-        .map((bit_: BitFieldResolvable) => AppPermissionBitField.resolve(bit_))
+        .map((bit_: AppBitFieldResolvable) =>
+          AppPermissionBitField.resolve(bit_),
+        )
         .reduce((prev, bit_) => prev | bit_, DefaultBit);
     }
 
@@ -57,7 +59,7 @@ export class AppPermissionBitField {
     throw AppError.internal("Unresolvable bit");
   }
 
-  public has(bit: BitFieldResolvable, checkAdmin: boolean = true): boolean {
+  public has(bit: AppBitFieldResolvable, checkAdmin: boolean = true): boolean {
     const resolvedBit = AppPermissionBitField.resolve(bit);
     return (
       (checkAdmin && this.has(AppPermissionBitField.Flags.Administrator)) ||
@@ -65,13 +67,13 @@ export class AppPermissionBitField {
     );
   }
 
-  public add(bits: BitFieldResolvable): this {
+  public add(bits: AppBitFieldResolvable): this {
     const resolvedBit = AppPermissionBitField.resolve(bits);
     this.value = this.value | resolvedBit;
     return this;
   }
 
-  public remove(bits: BitFieldResolvable): this {
+  public remove(bits: AppBitFieldResolvable): this {
     const resolvedBit = AppPermissionBitField.resolve(bits);
     this.value = this.value & ~resolvedBit;
     return this;
