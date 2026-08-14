@@ -1,6 +1,8 @@
 import { ContainerModule } from "inversify";
 import type { IGroupRepository } from "@/modules/groups/application/interfaces/IGroupRepository.ts";
 import type { IRoleRepository } from "@/modules/groups/application/interfaces/IRoleRepository.ts";
+import { CheckPermissionsUseCase } from "@/modules/groups/application/usecases/CheckPermissionsUseCase.ts";
+import { GroupDiTypes } from "@/modules/groups/GroupDiTypes.ts";
 import { PrismaGroupRepository } from "@/modules/groups/infrastructure/repositories/PrismaGroupRepository.ts";
 import { PrismaRoleRepository } from "@/modules/groups/infrastructure/repositories/PrismaRoleRepository.ts";
 
@@ -10,4 +12,7 @@ export const GroupModule = new ContainerModule(({ bind }) => {
     PrismaGroupRepository,
   );
   bind<IRoleRepository>(GroupDiTypes.RoleRepository).to(PrismaRoleRepository);
+
+  // Use cases
+  bind(CheckPermissionsUseCase).toSelf();
 });

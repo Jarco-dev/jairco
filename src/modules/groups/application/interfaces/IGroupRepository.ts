@@ -6,5 +6,10 @@ import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 export interface IGroupRepository {
   save(group: Group): Promise<ResultType<Group, AppError>>;
   findById(id: GroupId): Promise<ResultType<Group | null, AppError>>;
+  findAllByDiscordIdInGuildByUserAndRoles(
+    guildDiscordId: string,
+    userDiscordId: string,
+    roleDiscordIds: string[],
+  ): Promise<ResultType<Group[], AppError>>;
   deleteById(id: GroupId): Promise<ResultType<void, AppError>>;
 }

@@ -83,6 +83,40 @@ export class PrismaGroupRepository implements IGroupRepository {
     }
   }
 
+  async findAllByDiscordIdInGuildByUserAndRoles(
+    guildId: string,
+    userDiscordId: string,
+    roleDiscordIds: string[],
+  ): Promise<ResultType<Group[], AppError>> {
+    try {
+      const dbGroups = await this.repo.findMany({
+        where: {
+          Guild: { discordId: guildId },
+          OR: [
+            { Users: { some: { discordId: userDiscordId } } },
+            { Roles: { some: { discordId: { in: roleDiscordIds } } } },
+          ],
+        },
+        include: {
+          Roles: { select: { id: true } },
+          Users: { select: { id: true } },
+        },
+      });
+
+      return okRes(dbGroups.map((group) => GroupMapper.toDomain(group)));
+    } catch (error) {
+      this.logger.error("Failed to find groups by user and roles", {
+        error,
+        guildId,
+        userDiscordId,
+        roleDiscordIds,
+      });
+      return errRes(
+        AppError.internal("Failed to find groups by user and roles"),
+      );
+    }
+  }
+
   async deleteById(id: GroupId): Promise<ResultType<void, AppError>> {
     try {
       await this.repo.delete({ where: { id: id.value } });
