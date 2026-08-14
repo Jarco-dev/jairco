@@ -1,11 +1,11 @@
 import { inject, injectable } from "inversify";
-import { DiTypes } from "@/di/container.ts";
+import { DiTypes } from "@/di/DiTypes.ts";
 import type { IGroupRepository } from "@/modules/groups/application/interfaces/IGroupRepository.ts";
 import type { Group } from "@/modules/groups/domain/entities/Group.ts";
 import type { GroupId } from "@/modules/groups/domain/values/GroupId.ts";
 import { GroupMapper } from "@/modules/groups/infrastructure/mappers/GroupMapper.ts";
 import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
-import type { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
+import { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
 import type { PrismaTypes } from "@/shared/infrastructure/persistence/prisma/types/PrismaTypes.ts";
 import { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { errRes } from "@/shared/kernel/lib/ErrResult.ts";
@@ -17,7 +17,7 @@ export class PrismaGroupRepository implements IGroupRepository {
   private repo: PrismaTypes.Prisma.GroupDelegate;
 
   constructor(
-    @inject(DiTypes.shared.PrismaService) private db: PrismaService,
+    @inject(PrismaService) private db: PrismaService,
     @inject(DiTypes.shared.Logger) private logger: ILogger,
   ) {
     this.repo = this.db.getRepository("group");
