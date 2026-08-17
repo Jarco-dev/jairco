@@ -1,9 +1,10 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import {
   type Logger,
   LogLevel,
 } from "@/shared/application/interfaces/Logger.ts";
-import { env } from "@/shared/infrastructure/config/env.ts";
+import type { env } from "@/shared/infrastructure/config/env.ts";
+import { SharedDiTypes } from "@/shared/SharedDiTypes.ts";
 
 @injectable()
 export class ConsoleLogger implements Logger {
@@ -18,8 +19,8 @@ export class ConsoleLogger implements Logger {
     [LogLevel.ERROR]: { name: "ERROR", color: "\x1b[31m" },
   };
 
-  constructor() {
-    this.setLogLevel(LogLevel[env.LOG_LEVEL]);
+  constructor(@inject(SharedDiTypes.envConfig) private config: typeof env) {
+    this.setLogLevel(LogLevel[this.config.LOG_LEVEL]);
   }
 
   setLogLevel(level: LogLevel): void {

@@ -4,12 +4,13 @@ import type { Client } from "discord.js";
 import { container } from "@/di/container.ts";
 import { DiTypes } from "@/di/DiTypes.ts";
 import type { Logger } from "@/shared/application/interfaces/Logger.ts";
-import { env } from "@/shared/infrastructure/config/env.ts";
+import type { env } from "@/shared/infrastructure/config/env.ts";
 import { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
 import { EventDispatcher } from "@/shared/presenter/discord/bootstrap/EventDispatcher.ts";
 
 async function bootstrap(): Promise<void> {
   const logger = container.get<Logger>(DiTypes.shared.Logger);
+  const config = container.get<typeof env>(DiTypes.shared.envConfig);
 
   process.on("uncaughtException", (error) => {
     logger.error("Uncaught exception in process#uncaughtException", { error });
@@ -34,7 +35,7 @@ async function bootstrap(): Promise<void> {
   eventDispatcher.attachHandlers();
 
   logger.info("[Bootstrap] Connecting to discord...");
-  await client.login(env.DISCORD_BOT_TOKEN);
+  await client.login(config.DISCORD_BOT_TOKEN);
 }
 
 bootstrap().catch((error) => {
