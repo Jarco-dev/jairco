@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// Note that this can't use env via DI because it also runs using console commands
 const {
   POSTGRES_DATABASE,
   POSTGRES_HOST,

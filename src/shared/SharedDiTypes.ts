@@ -3,4 +3,5 @@ export const SharedDiTypes = {
   DatabaseTransactionManager: Symbol.for("DatabaseTransactionManager"),
   IdGenerator: Symbol.for("IdGenerator"),
   DateProvider: Symbol.for("DateProvider"),
+  envConfig: Symbol.for("envConfig"),
 } as const;

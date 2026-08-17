@@ -3,6 +3,7 @@ import type { DatabaseTransactionManager } from "@/shared/application/interfaces
 import type { DateProvider } from "@/shared/application/interfaces/DateProvider.ts";
 import type { IdGenerator } from "@/shared/application/interfaces/IdGenerator.ts";
 import type { Logger } from "@/shared/application/interfaces/Logger.ts";
+import { env } from "@/shared/infrastructure/config/env.ts";
 import { NodeDateProvider } from "@/shared/infrastructure/date/NodeDateProvider.ts";
 import { Cuid2IdGenerator } from "@/shared/infrastructure/ids/Cuid2IdGenerator.ts";
 import { ConsoleLogger } from "@/shared/infrastructure/logging/ConsoleLogger.ts";
@@ -23,4 +24,5 @@ export const SharedModule = new ContainerModule(({ bind }) => {
   bind<DateProvider>(SharedDiTypes.DateProvider).to(NodeDateProvider);
   bind<IdGenerator>(SharedDiTypes.IdGenerator).to(Cuid2IdGenerator);
   bind<Logger>(SharedDiTypes.Logger).to(ConsoleLogger);
+  bind(SharedDiTypes.envConfig).toConstantValue(env);
 });
