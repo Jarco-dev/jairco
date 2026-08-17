@@ -2,11 +2,11 @@ import type { ClientEvents } from "discord.js";
 import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { MaybePromise } from "@/shared/kernel/types/MaybePromise.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
-import { IHandler } from "@/shared/presenter/discord/interfaces/IHandler.ts";
+import { Handler } from "@/shared/presenter/discord/interfaces/Handler.ts";
 
-export abstract class IEventHandler<
+export abstract class EventHandler<
   Event extends keyof ClientEvents,
-> extends IHandler {
+> extends Handler {
   abstract readonly event: Event;
   readonly once: boolean = false;
   abstract handle(
@@ -14,4 +14,4 @@ export abstract class IEventHandler<
   ): MaybePromise<ResultType<void, AppError>>;
 }
 
-export type AnyEventHandler = IEventHandler<keyof ClientEvents>;
+export type AnyEventHandler = EventHandler<keyof ClientEvents>;

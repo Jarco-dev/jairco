@@ -1,7 +1,7 @@
 import type { MessageFlags } from "discord.js";
-import type { IMessageResponse } from "@/shared/presenter/discord/interfaces/IMessageResponse.ts";
+import type { MessageResponse } from "@/shared/presenter/discord/interfaces/MessageResponse.ts";
 
-export type IReplyResponse = Omit<IMessageResponse, "flags"> & {
+export type ReplyResponse = Omit<MessageResponse, "flags"> & {
   flags?: (
     | MessageFlags.IsComponentsV2
     | MessageFlags.SuppressEmbeds

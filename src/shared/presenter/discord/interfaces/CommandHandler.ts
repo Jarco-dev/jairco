@@ -11,9 +11,9 @@ import {
   type AppBitFieldResolvable,
   AppPermissionBitField,
 } from "@/shared/kernel/values/AppPermissionBitField.ts";
-import { IHandler } from "@/shared/presenter/discord/interfaces/IHandler.ts";
+import { Handler } from "@/shared/presenter/discord/interfaces/Handler.ts";
 
-export abstract class ICommandHandler extends IHandler {
+export abstract class CommandHandler extends Handler {
   abstract getBuilder(): SlashCommandSubcommandBuilder;
 
   getGuildOnly(): boolean {

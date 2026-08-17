@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
 import { PingCommand } from "@/shared/presenter/discord/commands/PingCommand.ts";
-import type { ICommandsConfig } from "@/shared/presenter/discord/interfaces/ICommandsConfig.ts";
+import type { CommandsConfig } from "@/shared/presenter/discord/interfaces/CommandsConfig.ts";
 
-export const commandsConfig: ICommandsConfig = [
+export const commandsConfig: CommandsConfig = [
   {
     builder: new SlashCommandBuilder()
       .setName("utils")

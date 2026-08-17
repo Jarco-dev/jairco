@@ -2,8 +2,8 @@ import {
   type AppError,
   AppErrorCodes,
 } from "@/shared/kernel/errors/AppError.ts";
-import { IBaseReplyMessage } from "@/shared/presenter/discord/interfaces/IBaseReplyMessage.ts";
-import type { IReplyResponse } from "@/shared/presenter/discord/interfaces/IReplyResponse.ts";
+import { BaseReplyMessage } from "@/shared/presenter/discord/interfaces/BaseReplyMessage.ts";
+import type { ReplyResponse } from "@/shared/presenter/discord/interfaces/ReplyResponse.ts";
 import { ErrorMessage } from "@/shared/presenter/discord/messages/ErrorMessage.ts";
 
 const titles: Record<AppErrorCodes, string> = {
@@ -14,12 +14,12 @@ const titles: Record<AppErrorCodes, string> = {
   [AppErrorCodes.InternalError]: "Something went wrong",
 };
 
-export class AppErrorMessage extends IBaseReplyMessage {
+export class AppErrorMessage extends BaseReplyMessage {
   constructor(private readonly error: AppError) {
     super();
   }
 
-  build(): IReplyResponse {
+  build(): ReplyResponse {
     const title =
       titles[this.error.code as AppErrorCodes] ??
       titles[AppErrorCodes.InternalError];

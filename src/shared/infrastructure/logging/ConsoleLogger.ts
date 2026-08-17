@@ -1,12 +1,12 @@
 import { injectable } from "inversify";
 import {
-  type ILogger,
+  type Logger,
   LogLevel,
-} from "@/shared/application/interfaces/ILogger.ts";
+} from "@/shared/application/interfaces/Logger.ts";
 import { env } from "@/shared/infrastructure/config/env.ts";
 
 @injectable()
-export class ConsoleLogger implements ILogger {
+export class ConsoleLogger implements Logger {
   logLevel: LogLevel = LogLevel.INFO;
   private readonly levelConfigs: {
     [key in LogLevel]: { name: string; color: string };

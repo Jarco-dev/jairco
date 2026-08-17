@@ -2,9 +2,9 @@ import type {
   SlashCommandBuilder,
   SlashCommandSubcommandGroupBuilder,
 } from "discord.js";
-import type { ICommandHandler } from "@/shared/presenter/discord/interfaces/ICommandHandler.ts";
+import type { CommandHandler } from "@/shared/presenter/discord/interfaces/CommandHandler.ts";
 
-export type SubCommand = new (...args: never[]) => ICommandHandler;
+export type SubCommand = new (...args: never[]) => CommandHandler;
 
 export interface CommandWithSubCommands {
   builder: SlashCommandBuilder;
@@ -27,4 +27,4 @@ export type CommandTreeNode =
   | CommandWithGroups
   | CommandWithGroupsAndSubCommands;
 
-export type ICommandsConfig = CommandTreeNode[];
+export type CommandsConfig = CommandTreeNode[];

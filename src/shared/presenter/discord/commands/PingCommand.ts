@@ -6,11 +6,11 @@ import { injectable } from "inversify";
 import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
-import { ICommandHandler } from "@/shared/presenter/discord/interfaces/ICommandHandler.ts";
+import { CommandHandler } from "@/shared/presenter/discord/interfaces/CommandHandler.ts";
 import { SuccessMessage } from "@/shared/presenter/discord/messages/SuccessMessage.ts";
 
 @injectable()
-export class PingCommand extends ICommandHandler {
+export class PingCommand extends CommandHandler {
   getBuilder(): SlashCommandSubcommandBuilder {
     return new SlashCommandSubcommandBuilder()
       .setName("ping")
