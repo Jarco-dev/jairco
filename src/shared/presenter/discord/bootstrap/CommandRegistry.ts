@@ -5,25 +5,25 @@ import type {
 } from "discord.js";
 import { inject, injectable, multiInject } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
-import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
+import type { Logger } from "@/shared/application/interfaces/Logger.ts";
 import { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { errRes } from "@/shared/kernel/lib/ErrResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 import { commandsConfig } from "@/shared/presenter/discord/bootstrap/commandsConfig.ts";
-import type { ICommandHandler } from "@/shared/presenter/discord/interfaces/ICommandHandler.ts";
-import type { SubCommand } from "@/shared/presenter/discord/interfaces/ICommandsConfig.ts";
+import type { CommandHandler } from "@/shared/presenter/discord/interfaces/CommandHandler.ts";
+import type { SubCommand } from "@/shared/presenter/discord/interfaces/CommandsConfig.ts";
 import { AppErrorMessage } from "@/shared/presenter/discord/messages/AppErrorMessage.ts";
 import { PermissionChecker } from "@/shared/presenter/discord/services/PermissionChecker.ts";
 
 @injectable()
 export class CommandRegistry {
-  private readonly instanceByCons: Map<SubCommand, ICommandHandler>;
-  private readonly byPath: Map<string, ICommandHandler>;
+  private readonly instanceByCons: Map<SubCommand, CommandHandler>;
+  private readonly byPath: Map<string, CommandHandler>;
 
   constructor(
-    @inject(DiTypes.shared.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.Logger) private logger: Logger,
     @inject(PermissionChecker) private permissions: PermissionChecker,
-    @multiInject(DiTypes.discord.Command) commands: ICommandHandler[],
+    @multiInject(DiTypes.discord.Command) commands: CommandHandler[],
   ) {
     this.instanceByCons = new Map(
       commands.map((command) => [command.constructor as SubCommand, command]),
@@ -85,7 +85,7 @@ export class CommandRegistry {
     return command.handleAutoComplete(i);
   }
 
-  private resolve(subCommand: SubCommand): ICommandHandler {
+  private resolve(subCommand: SubCommand): CommandHandler {
     const instance = this.instanceByCons.get(subCommand);
     if (!instance) {
       throw new Error(
@@ -95,8 +95,8 @@ export class CommandRegistry {
     return instance;
   }
 
-  private buildRouteMap(): Map<string, ICommandHandler> {
-    const map = new Map<string, ICommandHandler>();
+  private buildRouteMap(): Map<string, CommandHandler> {
+    const map = new Map<string, CommandHandler>();
 
     const register = (prefix: string[], subCommand: SubCommand): void => {
       const instance = this.resolve(subCommand);

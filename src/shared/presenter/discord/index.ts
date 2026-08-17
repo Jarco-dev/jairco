@@ -3,13 +3,13 @@ import "dotenv/config";
 import type { Client } from "discord.js";
 import { container } from "@/di/container.ts";
 import { DiTypes } from "@/di/DiTypes.ts";
-import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
+import type { Logger } from "@/shared/application/interfaces/Logger.ts";
 import { env } from "@/shared/infrastructure/config/env.ts";
 import { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
 import { EventDispatcher } from "@/shared/presenter/discord/bootstrap/EventDispatcher.ts";
 
 async function bootstrap(): Promise<void> {
-  const logger = container.get<ILogger>(DiTypes.shared.Logger);
+  const logger = container.get<Logger>(DiTypes.shared.Logger);
 
   process.on("uncaughtException", (error) => {
     logger.error("Uncaught exception in process#uncaughtException", { error });

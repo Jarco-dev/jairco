@@ -1,16 +1,16 @@
 import type { Client, ClientEvents } from "discord.js";
 import { inject, injectable, multiInject } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
-import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
+import type { Logger } from "@/shared/application/interfaces/Logger.ts";
 import { AppErrorCodes } from "@/shared/kernel/errors/AppError.ts";
-import type { AnyEventHandler } from "@/shared/presenter/discord/interfaces/IEventHandler.ts";
+import type { AnyEventHandler } from "@/shared/presenter/discord/interfaces/EventHandler.ts";
 
 @injectable()
 export class EventDispatcher {
   private readonly byEvent = new Map<keyof ClientEvents, AnyEventHandler[]>();
 
   constructor(
-    @inject(DiTypes.shared.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.Logger) private logger: Logger,
     @inject(DiTypes.discord.Client) private client: Client,
     @multiInject(DiTypes.discord.Event) events: AnyEventHandler[],
   ) {

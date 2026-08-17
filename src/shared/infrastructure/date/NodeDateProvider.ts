@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import type { IDateProvider } from "@/shared/application/interfaces/IDateProvider.ts";
+import type { DateProvider } from "@/shared/application/interfaces/DateProvider.ts";
 
 @injectable()
-export class NodeDateProvider implements IDateProvider {
+export class NodeDateProvider implements DateProvider {
   now(): Date {
     return new Date();
   }

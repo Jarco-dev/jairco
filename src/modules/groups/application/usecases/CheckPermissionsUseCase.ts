@@ -4,7 +4,7 @@ import type {
   CheckPermissionsInput,
   CheckPermissionsOutput,
 } from "@/modules/groups/application/dtos/CheckPermissionsDto.ts";
-import type { IGroupRepository } from "@/modules/groups/application/interfaces/IGroupRepository.ts";
+import type { GroupRepository } from "@/modules/groups/application/interfaces/GroupRepository.ts";
 import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { errRes } from "@/shared/kernel/lib/ErrResult.ts";
 import { okRes } from "@/shared/kernel/lib/OkResult.ts";
@@ -17,7 +17,7 @@ export class CheckPermissionsUseCase
   implements UseCase<CheckPermissionsInput, CheckPermissionsOutput>
 {
   constructor(
-    @inject(DiTypes.groups.GroupRepository) private groupRepo: IGroupRepository,
+    @inject(DiTypes.groups.GroupRepository) private groupRepo: GroupRepository,
   ) {}
 
   async execute(

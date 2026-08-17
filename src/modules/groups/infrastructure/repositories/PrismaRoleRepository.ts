@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
-import type { IRoleRepository } from "@/modules/groups/application/interfaces/IRoleRepository.ts";
+import type { RoleRepository } from "@/modules/groups/application/interfaces/RoleRepository.ts";
 import type { Role } from "@/modules/groups/domain/entities/Role.ts";
 import type { RoleId } from "@/modules/groups/domain/values/RoleId.ts";
 import { RoleMapper } from "@/modules/groups/infrastructure/mappers/RoleMapper.ts";
-import type { ILogger } from "@/shared/application/interfaces/ILogger.ts";
+import type { Logger } from "@/shared/application/interfaces/Logger.ts";
 import { PrismaService } from "@/shared/infrastructure/persistence/prisma/PrismaService.ts";
 import type { PrismaTypes } from "@/shared/infrastructure/persistence/prisma/types/PrismaTypes.ts";
 import { AppError } from "@/shared/kernel/errors/AppError.ts";
@@ -13,12 +13,12 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 
 @injectable()
-export class PrismaRoleRepository implements IRoleRepository {
+export class PrismaRoleRepository implements RoleRepository {
   private repo: PrismaTypes.Prisma.RoleDelegate;
 
   constructor(
     @inject(PrismaService) private db: PrismaService,
-    @inject(DiTypes.shared.Logger) private logger: ILogger,
+    @inject(DiTypes.shared.Logger) private logger: Logger,
   ) {
     this.repo = this.db.getRepository("role");
   }

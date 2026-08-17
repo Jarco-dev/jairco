@@ -39,7 +39,7 @@ src/
 │   ├── <Feature>Module.ts  # this module's Inversify ContainerModule (bindings)
 │   ├── domain/             # entities, value objects, rules (no repository interfaces)
 │   ├── application/
-│   │   ├── interfaces/     # repository + service INTERFACES (e.g. IGroupRepository)
+│   │   ├── interfaces/     # repository + service INTERFACES (e.g. GroupRepository)
 │   │   ├── usecases/       # use cases
 │   │   └── dtos/           # DTOs
 │   ├── infrastructure/
@@ -54,7 +54,7 @@ src/
 └── shared/                 # cross-cutting building blocks
     ├── SharedDiTypes.ts    # shared tokens (Logger, DateProvider, IdGenerator, DatabaseTransactionManager)
     ├── SharedModule.ts     # binds shared services (ConsoleLogger, NodeDateProvider, Cuid2IdGenerator, Prisma…)
-    ├── application/        # interfaces: ILogger, IDateProvider, IIdGenerator, IDatabaseTransactionManager, …
+    ├── application/        # interfaces: Logger, DateProvider, IdGenerator, DatabaseTransactionManager, …
     ├── infrastructure/     # persistence/ (Prisma service, transaction manager), logging/, date/, ids/
     ├── kernel/             # types/ (ResultType, MaybePromise, UseCase), lib/ (okRes/errRes), errors/, values/
     └── presenter/discord/
@@ -65,7 +65,7 @@ src/
         │   ├── CommandRegistry.ts       # collects all commands, registers w/ Discord API
         │   ├── EventDispatcher.ts        # single per-event listener, fans out to module event classes
         │   └── commandsConfig.ts         # command registration config
-        ├── interfaces/         # ICommandHandler, IEventHandler, IContextMenuHandler, IHandler, message interfaces
+        ├── interfaces/         # CommandHandler, EventHandler, ContextMenuHandler, Handler, message interfaces
         ├── services/           # generic presenter services (PermissionChecker)
         ├── commands/           # no-domain-logic commands (ping, pong, fetch-user…)
         ├── events/             # framework-level events (ClientReadyEvent, InteractionRouterEvent)
@@ -80,7 +80,7 @@ Direction: `domain` knows nothing of `application` or `infrastructure`; `applica
 - Tokens are **split per module**: each module owns a `<Feature>DiTypes.ts` (`Symbol.for(...)` values in an `as const` object) at its root. `src/di/DiTypes.ts` is just a thin aggregator that re-exports them (`{ shared, users, guild, groups, discord }`) — it defines no tokens and holds no bindings.
 - **Shared** services are bound in `src/shared/SharedModule.ts` (a `ContainerModule`), against `SharedDiTypes` tokens.
 - **Feature** services are bound in `src/modules/<feature>/<Feature>Module.ts` (a `ContainerModule`, at the module root — not in `infrastructure/`). Each module is loaded in `src/di/container.ts` via `container.load(SharedModule, UserModule, GuildModule, GroupModule, DiscordModule)`. The container is `new Container({ defaultScope: "Singleton" })`.
-- Bind pattern: a service **fronted by an interface** gets a token in `<Feature>DiTypes.ts` / `SharedDiTypes.ts` and is bound via `.to()` (`bind<IGroupRepository>(GroupDiTypes.GroupRepository).to(PrismaGroupRepository)`, `bind<ILogger>(SharedDiTypes.Logger).to(ConsoleLogger)`). A concrete service with **no matching interface** needs no token — bind it to itself with `.toSelf()` and inject the class directly (e.g. `PrismaService`, `PrismaTransactionContext`, `PermissionChecker`, `CommandRegistry`, use cases).
+- Bind pattern: a service **fronted by an interface** gets a token in `<Feature>DiTypes.ts` / `SharedDiTypes.ts` and is bound via `.to()` (`bind<GroupRepository>(GroupDiTypes.GroupRepository).to(PrismaGroupRepository)`, `bind<Logger>(SharedDiTypes.Logger).to(ConsoleLogger)`). A concrete service with **no matching interface** needs no token — bind it to itself with `.toSelf()` and inject the class directly (e.g. `PrismaService`, `PrismaTransactionContext`, `PermissionChecker`, `CommandRegistry`, use cases).
 - Constructor injection with decorators. `experimentalDecorators` + `emitDecoratorMetadata` are on; Biome's `unsafeParameterDecoratorsEnabled` is on.
 
 When adding a feature:
@@ -96,14 +96,14 @@ When adding a feature:
 > **Current state:** only the shared presenter (`src/shared/presenter/discord/`) is built out today. Per-module presenters are scaffolding (an empty `groups/presenter/discord/`); add them following the shape below.
 
 - Per-module presenter code lives at `src/modules/<feature>/presenter/discord/`:
-  - `commands/` — slash command definitions + handlers, implementing `ICommandHandler`
+  - `commands/` — slash command definitions + handlers, implementing `CommandHandler`
   - `events/` — event handler classes scoped to this feature (physically local to the module; dispatch is centralized, see below)
   - `components/` — feature-specific interaction handlers
   - `messages/` — feature reply builders (there are **no** embeds — use `messages/`)
   - `services/` — optional, only if the feature needs its own presenter-layer service
 - Shared, reusable bot infra lives in `src/shared/presenter/discord/`:
   - `bootstrap/` — the composition root. `createDiscordClient.ts` builds the client; `CommandRegistry.ts` / `EventDispatcher.ts` wire up commands and events across all modules; `commandsConfig.ts` holds the registration config. This is the only place allowed to know the full picture (all registries, the client, login sequencing).
-  - `interfaces/` — `ICommandHandler`, `IEventHandler`, `IContextMenuHandler`, `IHandler`, and the message interfaces (`IBaseMessage`, `IMessageResponse`, `IReplyResponse`, …). Modules implement these; interfaces don't know about bootstrap.
+  - `interfaces/` — `CommandHandler`, `EventHandler`, `ContextMenuHandler`, `Handler`, and the message interfaces (`BaseMessage`, `MessageResponse`, `ReplyResponse`, …). Modules implement these; interfaces don't know about bootstrap.
   - `services/` — generic presenter services (`PermissionChecker`).
   - `commands/`, `events/`, `components/`, `messages/` — generic, no-domain-logic equivalents (ping/pong/fetch-user commands, ClientReady/InteractionRouter events, generic components, SuccessMessage/ErrorMessage/AppErrorMessage).
 - **Events**: there's exactly one real `client.on(...)` per Discord event name, driven by `EventDispatcher.ts`. Every feature's event class is bound to the shared `DiscordDiTypes.Event` multi-inject token; the dispatcher loops over the injected instances, filters by the event name each class declares, and calls `.execute()` on the matches. Event code stays physically owned by its module even though dispatch is centralized.
@@ -115,9 +115,9 @@ When adding a feature:
 
 - **Imports: `@/` path alias only.** `@/*` resolves to `./src/*`. No relative imports (`./`, `../`) — anywhere, including same-folder. This is a hard rule.
 - **TS extensions on imports.** `allowImportingTsExtensions` is on; write `import { X } from "@/foo/Bar.ts"` (note the `.ts`).
-- **IDs**: use `IIdGenerator` (CUID2) via DI. Never roll your own.
-- **Dates**: use `IDateProvider` via DI. Never call `new Date()` directly in application/domain code.
-- **Logging**: use `ILogger` via DI.
+- **IDs**: use `IdGenerator` (CUID2) via DI. Never roll your own.
+- **Dates**: use `DateProvider` via DI. Never call `new Date()` directly in application/domain code.
+- **Logging**: use `Logger` via DI.
 - **Validation**: Zod at edges only (request DTOs, env config). Domain types don't re-validate.
 - **Errors**: use `ResultType<T, E>` (`src/shared/kernel/types/ResultType.ts`) with the `okRes`/`errRes` helpers (`src/shared/kernel/lib/OkResult.ts` and `ErrResult.ts`) and `AppError` (`src/shared/kernel/errors/AppError.ts`). Don't throw across application boundaries.
 - **Style**: Biome enforces — double quotes, organized imports, space indent. Don't fight it.

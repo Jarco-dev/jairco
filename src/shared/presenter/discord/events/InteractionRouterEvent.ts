@@ -5,10 +5,10 @@ import { okRes } from "@/shared/kernel/lib/OkResult.ts";
 import type { MaybePromise } from "@/shared/kernel/types/MaybePromise.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 import { CommandRegistry } from "@/shared/presenter/discord/bootstrap/CommandRegistry.ts";
-import { IEventHandler } from "@/shared/presenter/discord/interfaces/IEventHandler.ts";
+import { EventHandler } from "@/shared/presenter/discord/interfaces/EventHandler.ts";
 
 @injectable()
-export class InteractionRouterEvent extends IEventHandler<"interactionCreate"> {
+export class InteractionRouterEvent extends EventHandler<"interactionCreate"> {
   readonly event = "interactionCreate" as const;
 
   constructor(

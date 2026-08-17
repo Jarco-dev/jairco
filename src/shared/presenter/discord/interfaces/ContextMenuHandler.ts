@@ -9,9 +9,9 @@ import type { AppError } from "@/shared/kernel/errors/AppError.ts";
 import type { MaybePromise } from "@/shared/kernel/types/MaybePromise.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 import type { AppBitFieldResolvable } from "@/shared/kernel/values/AppPermissionBitField.ts";
-import { IHandler } from "@/shared/presenter/discord/interfaces/IHandler.ts";
+import { Handler } from "@/shared/presenter/discord/interfaces/Handler.ts";
 
-export abstract class IContextMenuHandler extends IHandler {
+export abstract class ContextMenuHandler extends Handler {
   abstract readonly type: ApplicationCommandType;
   abstract getBuilder(): ContextMenuCommandBuilder;
   abstract getPermissions(): AppBitFieldResolvable;
@@ -20,14 +20,14 @@ export abstract class IContextMenuHandler extends IHandler {
   ): MaybePromise<ResultType<void, AppError>>;
 }
 
-export abstract class IUserContextMenuHandler extends IContextMenuHandler {
+export abstract class UserContextMenuHandler extends ContextMenuHandler {
   readonly type = ApplicationCommandType.User;
   abstract handle(
     i: UserContextMenuCommandInteraction,
   ): MaybePromise<ResultType<void, AppError>>;
 }
 
-export abstract class IMessageContextMenuHandler extends IContextMenuHandler {
+export abstract class MessageContextMenuHandler extends ContextMenuHandler {
   readonly type = ApplicationCommandType.Message;
   abstract handle(
     i: MessageContextMenuCommandInteraction,

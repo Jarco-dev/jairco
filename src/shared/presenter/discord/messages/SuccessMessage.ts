@@ -1,15 +1,15 @@
 import { ContainerBuilder, MessageFlags } from "discord.js";
-import { IBaseMessage } from "@/shared/presenter/discord/interfaces/IBaseMessage.ts";
-import type { IMessageResponse } from "@/shared/presenter/discord/interfaces/IMessageResponse.ts";
+import { BaseMessage } from "@/shared/presenter/discord/interfaces/BaseMessage.ts";
+import type { MessageResponse } from "@/shared/presenter/discord/interfaces/MessageResponse.ts";
 
-export class SuccessMessage extends IBaseMessage {
+export class SuccessMessage extends BaseMessage {
   private static readonly ACCENT_COLOR = 0x00ff00;
 
   constructor(private readonly content: string) {
     super();
   }
 
-  build(): IMessageResponse {
+  build(): MessageResponse {
     const container = new ContainerBuilder()
       .setAccentColor(SuccessMessage.ACCENT_COLOR)
       .addTextDisplayComponents((textDisplay) =>
