@@ -1,0 +1,9 @@
+model Guild {
+  id        Int      @id @default(autoincrement())
+  discordId String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+
+  Roles  Role[]
+  Groups Group[]
+}

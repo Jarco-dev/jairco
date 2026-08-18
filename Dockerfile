@@ -1,43 +1,44 @@
-FROM node:20.15.1-alpine AS base
+FROM node:22.13.0-alpine AS base
 
 WORKDIR /usr/src/app
 
 FROM base AS deps
 
 COPY package*.json ./
-COPY ./prisma ./prisma
 
-RUN apk add --no-cache python3 make g++
 RUN npm ci
-RUN npx prisma generate
 
-FROM deps AS development
+FROM base AS development
 
-RUN rm -rf ./prisma
-RUN apk add --no-cache bash
+COPY --from=deps --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node package*.json tsconfig.json ./
 
 USER node
 
-CMD npx prisma migrate deploy && npm run dev
+# src/ is bind-mounted, so the client is generated at start rather than baked in
+CMD ["sh", "-c", "npm run prisma --- generate && npm run prisma --- migrate deploy && exec npm run dev"]
 
 FROM deps AS build
 
+COPY tsconfig.json ./
 COPY ./src ./src
-COPY tsconfig.json ./tsconfig.json
 
+RUN npm run prisma --- generate
 RUN npm run build
 
 FROM base AS production
 
-RUN mkdir storage
-RUN chown -R node:node /usr/src/app
+ENV NODE_ENV=production
+
+COPY --chown=node:node package*.json ./
+COPY --from=deps --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --from=build --chown=node:node /usr/src/app/dist ./dist
+COPY --from=build --chown=node:node /usr/src/app/src/shared/infrastructure/persistence/prisma/schema.prisma ./src/shared/infrastructure/persistence/prisma/schema.prisma
+COPY --from=build --chown=node:node /usr/src/app/src/shared/infrastructure/persistence/prisma/migrations ./src/shared/infrastructure/persistence/prisma/migrations
+COPY --from=build --chown=node:node /usr/src/app/src/shared/infrastructure/persistence/prisma/prismaConfig.ts ./src/shared/infrastructure/persistence/prisma/prismaConfig.ts
 
 USER node
 
-COPY package.json .
-COPY ./prisma ./prisma
-COPY ./lang ./lang
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
-
-CMD npx prisma migrate deploy && npm run start
+# exec form + `exec` so node replaces the shell and actually receives SIGTERM,
+# which src/index.ts uses to shut down the client and Prisma cleanly
+CMD ["sh", "-c", "npm run prisma --- migrate deploy && exec node ./dist/index.js"]

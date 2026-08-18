@@ -1,5 +1,0 @@
-dist/
-prisma/
-node_modules/
-.env
-.env.example
