@@ -6,7 +6,7 @@ export enum LogLevel {
   ERROR = 4,
 }
 
-export type Logger = {
+export interface Logger {
   logLevel: LogLevel;
   setLogLevel(level: LogLevel): void;
   verbose: (message: string, meta?: Record<string, unknown>) => void;
@@ -14,4 +14,4 @@ export type Logger = {
   info: (message: string, meta?: Record<string, unknown>) => void;
   warn: (message: string, meta?: Record<string, unknown>) => void;
   error: (message: string, meta?: Record<string, unknown>) => void;
-};
+}
