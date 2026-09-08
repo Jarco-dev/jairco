@@ -119,6 +119,14 @@
                     "**Gebruikers correct geteld:** {{usersCorrect}}",
                     "**Gebruikers Incorrect geteld:** {{usersIncorrect}}"
                 ]
+            },
+            "userStatisticsEmbed": {
+                "title": "{{username}}'s tellen statistieken",
+                "description": [
+                    "**Hoogste score:** {{highest}}",
+                    "**Correct geteld:** {{correct}}",
+                    "**Incorrect geteld:** {{incorrect}}"
+                ]
             }
         },
         "invite": {

@@ -119,6 +119,14 @@
                     "**Users counted correctly:** {{usersCorrect}}",
                     "**Users counted incorrectly:** {{usersIncorrect}}"
                 ]
+            },
+            "userStatisticsEmbed": {
+                "title": "{{username}}'s counting statistics",
+                "description": [
+                    "**Highscore:** {{highest}}",
+                    "**Correctly counted:** {{correct}}",
+                    "**Incorrectly counted:** {{incorrect}}"
+                ]
             }
         },
         "invite": {
