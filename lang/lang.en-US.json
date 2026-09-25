@@ -446,6 +446,24 @@
         },
         "moderation": {
             "banCount": "This server has {{count}} active bans"
+        },
+        "about": {
+            "embed": {
+                "title": "Jairco",
+                "description": [
+                    "Jairco is a bot custom made for the Netherlands discord server",
+                    "",
+                    "**Information**",
+                    "* Developer: @jarco / [Jarco-dev](https://github.com/jarco-dev)",
+                    "* Source code: [Click me](https://github.com/jarco-dev/jairco)",
+                    "* Uptime: {{uptime}}",
+                    "",
+                    "**Legal**",
+                    "* Support server: [Click me](https://discord.gg/Tzmf4x2UFt)",
+                    "* Terms Of Service: [Click me](https://jairco.jarco.dev/terms-of-service)",
+                    "* Privacy Policy: [Click me](https://jairco.jarco.dev/privacy-policy)"
+                ]
+            }
         }
     },
     "refs": {
