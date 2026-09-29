@@ -10,6 +10,7 @@ import {
     ChannelSettings
 } from "@/types";
 import Prisma from "@prisma/client";
+import { GuildWelcomeSettings } from "../types/GuildWelcomeSettings";
 
 export class CacheableDataManager {
     private client: Client;
@@ -242,6 +243,47 @@ export class CacheableDataManager {
         };
 
         this.client.redis.setChannelSettings(channelId, settings);
+
+        return settings;
+    }
+
+    public async getWelcomeSettings(
+        guildId: Snowflake
+    ): Promise<GuildWelcomeSettings | undefined> {
+        const cache: GuildWelcomeSettings | undefined =
+            await this.client.redis.getGuildSettings("welcome", guildId);
+        if (cache) return cache;
+
+        const settingTypes: Prisma.GuildSetting[] = [
+            "WELCOME_ENABLED",
+            "WELCOME_CHANNEL",
+            "WELCOME_MESSAGE"
+        ];
+        const dbSettings = await this.client.prisma.guildSettings.findMany({
+            where: {
+                type: { in: settingTypes },
+                Guild: { discordId: guildId }
+            },
+            select: { type: true, value: true }
+        });
+        if (dbSettings.length === 0) return undefined;
+
+        const settings: GuildWelcomeSettings = {};
+        for (const setting of dbSettings) {
+            switch (setting.type) {
+                case "WELCOME_ENABLED":
+                    settings.welcomeEnabled = !!parseInt(setting.value);
+                    break;
+                case "WELCOME_CHANNEL":
+                    settings.welcomeChannel = setting.value;
+                    break;
+                case "WELCOME_MESSAGE":
+                    settings.welcomeMessage = setting.value;
+                    break;
+            }
+        }
+
+        this.client.redis.setGuildSettings("welcome", guildId, settings);
 
         return settings;
     }
