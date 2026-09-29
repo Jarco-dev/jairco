@@ -11,6 +11,7 @@ import { BotPermissionsBitField } from "@/classes";
 export default class WelcomeChatInputCommand extends ChatInputCommand {
     constructor() {
         super({
+            enabled: false,
             builder: new SlashCommandBuilder()
                 .setName("welcome")
                 .setNameLocalization("nl", "welkom")

@@ -8,8 +8,7 @@ const config: Config = {
             GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.GuildMessageReactions,
-            GatewayIntentBits.MessageContent,
-            GatewayIntentBits.GuildMembers
+            GatewayIntentBits.MessageContent
         ]
     },
 
