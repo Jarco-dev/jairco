@@ -30,7 +30,8 @@
             "ManageWordSnake": "Beheer woord slangen",
             "ManageChannelSettings": "Beheer kanaal instellingen",
             "BypassStickerFilter": "Omzeil sticker filter",
-            "Moderation": "Moderatie"
+            "Moderation": "Moderatie",
+            "ManageWelcome": "beheer welkom"
         },
         "counting": {
             "channelReset": "Het tellen kanaal is gereset",
@@ -465,7 +466,33 @@
                     "* Privacybeleid: [Klik hier](https://jairco.jarco.dev/privacy-policy)"
                 ]
             }
+        },
+        "welcome": {
+            "channelSet": "Het welkoms kanaal is ingesteld op {{channel}}",
+            "messageSetEmbed": {
+                "title": "Het welkoms bericht is ingesteld",
+                "description": "{{message}}",
+                "footer": {
+                    "text": "Tip, gebruik {{user}} om de user te pingen in het bericht"
+                }
+            },
+            "botMissingPermsEmbed": {
+                "title": "De bot mist wat rechten!",
+                "description": [
+                    "Zorg er voor dat de bot de volgende rechten heeft in {{channel}}",
+                    "",
+                    "`Bekijk kanaal`, `Stuur bericht`"
+                ]
+            },
+            "viewSettingsEmbed": {
+                "title": "Welkom instellingen",
+                "description": [
+                    "**Kanaal:** {{channel}}",
+                    "**Bericht:** {{message}}"
+                ]
+            }
         }
+
     },
     "refs": {
     }

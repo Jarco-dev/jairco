@@ -30,7 +30,8 @@
             "ManageWordSnake": "Manage word snake",
             "ManageChannelSettings": "Manage channel settings",
             "BypassStickerFilter": "Bypass sticker filter",
-            "Moderation": "Moderation"
+            "Moderation": "Moderation",
+            "ManageWelcome": "Manage welcome"
         },
         "counting": {
             "channelReset": "The counting channel has been reset",
@@ -462,6 +463,31 @@
                     "* Support server: [Click me](https://discord.gg/Tzmf4x2UFt)",
                     "* Terms Of Service: [Click me](https://jairco.jarco.dev/terms-of-service)",
                     "* Privacy Policy: [Click me](https://jairco.jarco.dev/privacy-policy)"
+                ]
+            }
+        },
+        "welcome": {
+            "channelSet": "The welcome channel has been set to {{channel}}",
+            "messageSetEmbed": {
+                "title": "The welcome message has been set",
+                "description": "{{message}}",
+                "footer": {
+                    "text": "Tip, use {{user}} to mention the user in the message"
+                }
+            },
+            "botMissingPermsEmbed": {
+                "title": "The bot is missing some permissions!",
+                "description": [
+                    "Please make sure the bot has the following permissions in {{channel}}",
+                    "",
+                    "`View channel`, `Send messages`"
+                ]
+            },
+            "viewSettingsEmbed": {
+                "title": "Welcome settings",
+                "description": [
+                    "**Channel:** {{channel}}",
+                    "**Message:** {{message}}"
                 ]
             }
         }
