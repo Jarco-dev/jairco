@@ -1,6 +1,7 @@
 import { HandlerResult } from "@/types";
 import { EventHandler } from "@/structures";
 import { Message } from "discord.js";
+import { BotPermissionsBitField } from "@/classes";
 
 export default class MessageCreateEventHandler extends EventHandler<"messageCreate"> {
     constructor() {
@@ -24,6 +25,15 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         } catch (err: any) {
             this.client.logger.error(
                 "Error while handling message for word snake",
+                err
+            );
+        }
+
+        try {
+            this.runChannelFilters(msg);
+        } catch (err: any) {
+            this.client.logger.error(
+                "Error while handling message for sticker filter",
                 err
             );
         }
@@ -73,37 +83,6 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             const highestCountBeaten =
                 (settings?.currentCount ?? 0) > (settings.highestCount ?? 0);
             await this.client.prisma.$transaction([
-                this.client.prisma.blacklists.create({
-                    data: {
-                        type: "COUNTING",
-                        reason: "Incorrect count",
-                        guildIdUserIdType:
-                            msg.guild.id + msg.author.id + "COUNTING",
-                        Guild: { connect: { discordId: msg.guild.id } },
-                        ReceivedByUser: {
-                            connectOrCreate: {
-                                where: { discordId: msg.author.id },
-                                create: {
-                                    discordId: msg.author.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        },
-                        GivenByUser: {
-                            connectOrCreate: {
-                                where: { discordId: this.client.user!.id },
-                                create: {
-                                    discordId: this.client.user!.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }),
                 this.client.prisma.countingStats.upsert({
                     where: { guildIdAndUserId: msg.guild.id + msg.author.id },
                     update: { incorrect: { increment: 1 } },
@@ -111,7 +90,12 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         incorrect: 1,
                         guildIdAndUserId: msg.guild.id + msg.author.id,
                         Guild: { connect: { discordId: msg.guild.id } },
-                        User: { connect: { discordId: msg.author.id } }
+                        User: {
+                            connectOrCreate: {
+                                where: { discordId: msg.author.id },
+                                create: { discordId: msg.author.id }
+                            }
+                        }
                     }
                 }),
                 this.client.prisma.guildSettings.deleteMany({
@@ -276,26 +260,24 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             return { result: "OTHER", note: "Not in word snake channel" };
         }
 
-        const words: string[] = msg.content.split(" ");
-        const word: string | undefined =
-            words.length >= 1 ? words[0].toLowerCase() : undefined;
-        const blacklist = await this.client.cacheableData.getBlacklist(
-            "wordsnake",
-            msg.guild.id,
-            msg.author.id
-        );
-        if (settings.currentWordUser === msg.author.id || blacklist || !word) {
+        const words = msg.content.split(" ");
+        const word = words.length >= 1 ? words[0].toLowerCase() : undefined;
+        const accentFreeWord = word
+            ?.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+        if (
+            settings.currentWordUser === msg.author.id ||
+            !word ||
+            !accentFreeWord
+        ) {
             msg.delete().catch(() => {});
             return {
                 result: "OTHER",
-                note: "User already snaked last, is blacklisted or gave a invalid word"
+                note: "User already snaked last or gave a invalid word"
             };
         }
 
-        const wordIsValid = await this.client.utils.wordExists(word);
-        this.client.logger.debug(
-            `Current: ${settings.currentWord}, new: ${word}, isValid: ${wordIsValid}`
-        ); // TODO: REMOVE
+        const wordIsValid = await this.client.utils.isValidWordSnakeWord(word);
         if (settings.currentWord === undefined && !wordIsValid) {
             const embed = this.client.lang.getEmbed(
                 "en-US",
@@ -311,60 +293,38 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
             };
         }
 
-        this.client.logger.debug(
-            `${(settings.currentWord ?? word).slice(-1)} !== ${word.slice(
-                0,
-                1
-            )}`
-        ); // TODO: REMOVE
         const wordCount = await this.client.prisma.usedWordSnakeWords.count({
             where: {
                 Guild: { discordId: msg.guild.id },
-                content: word
+                content: accentFreeWord
             }
         });
+        if (wordCount > 0) {
+            const embed = this.client.lang.getEmbed(
+                "en-US",
+                "wordSnake.duplicateWordEmbed"
+            );
+            msg.delete().catch(() => {});
+            this.client.sender.msgChannel(
+                settings.wordSnakeChannel,
+                {
+                    embeds: [embed]
+                },
+                { delTime: 5000 }
+            );
+            return { result: "OTHER", note: "Duplicate word" };
+        }
+
         if (
             settings.currentWord !== undefined &&
             (!wordIsValid ||
-                wordCount > 0 ||
-                (settings.currentWord ?? word).slice(-1) !== word.slice(0, 1))
+                (settings.currentWord ?? accentFreeWord).slice(-1) !==
+                    word.slice(0, 1))
         ) {
             const highestStreakBeaten =
                 (settings?.currentWordSnake ?? 0) >
                 (settings.highestWordSnake ?? 0);
             await this.client.prisma.$transaction([
-                this.client.prisma.blacklists.create({
-                    data: {
-                        type: "WORD_SNAKE",
-                        reason:
-                            wordCount > 0 ? "Duplicate word" : "Incorrect word",
-                        guildIdUserIdType:
-                            msg.guild.id + msg.author.id + "WORD_SNAKE",
-                        Guild: { connect: { discordId: msg.guild.id } },
-                        ReceivedByUser: {
-                            connectOrCreate: {
-                                where: { discordId: msg.author.id },
-                                create: {
-                                    discordId: msg.author.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        },
-                        GivenByUser: {
-                            connectOrCreate: {
-                                where: { discordId: this.client.user!.id },
-                                create: {
-                                    discordId: this.client.user!.id,
-                                    Guilds: {
-                                        connect: { discordId: msg.guild.id }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }),
                 this.client.prisma.wordSnakeStats.upsert({
                     where: { guildIdAndUserId: msg.guild.id + msg.author.id },
                     update: { incorrect: { increment: 1 } },
@@ -372,7 +332,12 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         incorrect: 1,
                         guildIdAndUserId: msg.guild.id + msg.author.id,
                         Guild: { connect: { discordId: msg.guild.id } },
-                        User: { connect: { discordId: msg.author.id } }
+                        User: {
+                            connectOrCreate: {
+                                where: { discordId: msg.author.id },
+                                create: { discordId: msg.author.id }
+                            }
+                        }
                     }
                 }),
                 this.client.prisma.guildSettings.deleteMany({
@@ -438,9 +403,8 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
 
             const embed = this.client.lang.getEmbed(
                 this.client.lang.default,
-                wordCount > 0
-                    ? "wordSnake.duplicateWordEmbed"
-                    : "wordSnake.incorrectWordEmbed"
+                "wordSnake.incorrectWordEmbed",
+                { words: (settings?.currentWordSnake ?? 0).toString() }
             );
             if (highestStreakBeaten) {
                 embed.setDescription(
@@ -475,11 +439,11 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
         await this.client.prisma.$transaction([
             this.client.prisma.guildSettings.upsert({
                 where: { guildIdAndType: msg.guild.id + "CURRENT_WORD" },
-                update: { value: word },
+                update: { value: accentFreeWord },
                 create: {
                     type: "CURRENT_WORD",
                     guildIdAndType: msg.guild.id + "CURRENT_WORD",
-                    value: word,
+                    value: accentFreeWord,
                     Guild: {
                         connectOrCreate: {
                             where: { discordId: msg.guild.id },
@@ -503,10 +467,21 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                     }
                 }
             }),
-            this.client.prisma.usedWordSnakeWords.create({
-                data: {
-                    Guild: { connect: { discordId: msg.guild.id } },
-                    content: word
+            this.client.prisma.guildSettings.upsert({
+                where: { guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE" },
+                update: {
+                    value: ((settings.currentWordSnake ?? 0) + 1).toString()
+                },
+                create: {
+                    type: "CURRENT_WORD_SNAKE",
+                    guildIdAndType: msg.guild.id + "CURRENT_WORD_SNAKE",
+                    value: ((settings.currentWordSnake ?? 0) + 1).toString(),
+                    Guild: {
+                        connectOrCreate: {
+                            where: { discordId: msg.guild.id },
+                            create: { discordId: msg.guild.id }
+                        }
+                    }
                 }
             }),
             this.client.prisma.wordSnakeStats.upsert({
@@ -525,16 +500,49 @@ export default class MessageCreateEventHandler extends EventHandler<"messageCrea
                         }
                     }
                 }
+            }),
+            this.client.prisma.usedWordSnakeWords.create({
+                data: {
+                    Guild: { connect: { discordId: msg.guild.id } },
+                    content: accentFreeWord
+                }
             })
         ]);
         await this.client.redis.setGuildSettings("wordSnake", msg.guild.id, {
             ...settings,
             currentWordSnake: (settings.currentWordSnake ?? 0) + 1,
-            currentWord: word,
+            currentWord: accentFreeWord,
             currentWordUser: msg.author.id
         });
 
         msg.react("✅").catch(() => {});
+
+        return { result: "SUCCESS" };
+    }
+
+    private async runChannelFilters(msg: Message): Promise<HandlerResult> {
+        if (msg.author.bot || !msg.inGuild()) {
+            return {
+                result: "OTHER",
+                note: "Message is from bot or not in guild"
+            };
+        }
+
+        const settings = await this.client.cacheableData.getChannelSettings(
+            msg.channel.id
+        );
+        if (!settings) return { result: "SUCCESS" };
+
+        const permissions = await this.client.utils.getMemberBotPermissions(
+            msg.member!
+        );
+        if (
+            settings.stickerFilter &&
+            msg.stickers.size > 0 &&
+            !permissions.has(BotPermissionsBitField.Flags.BypassStickerFilter)
+        ) {
+            msg.delete().catch(() => {});
+        }
 
         return { result: "SUCCESS" };
     }

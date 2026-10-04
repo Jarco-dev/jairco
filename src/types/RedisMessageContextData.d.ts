@@ -24,6 +24,7 @@ export interface RedisMessageContextData {
     cringeLeaderboard: {
         page: number;
         type: "given" | "received";
+        allTime: boolean;
         pageMenuOwnerId: Snowflake;
     };
     countingChannelSet: {

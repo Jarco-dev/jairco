@@ -1,7 +1,7 @@
 services:
     bot:
         build:
-            target: PRODUCTION
+            target: production
         environment:
             REDIS_HOST: redis
             REDIS_PORT: 6379
@@ -12,6 +12,10 @@ services:
             LOG_LEVEL: ${LOG_LEVEL}
             METRICS_PORT: ${METRICS_PORT}
             DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+            VVV_GUILD_ID: ${VVV_GUILD_ID}
+            VVV_CHANNEL_ID: ${VVV_CHANNEL_ID}
+            VVV_ROLE_ID: ${VVV_ROLE_ID}
+            VVV_MESSAGE: ${VVV_MESSAGE}
         volumes:
             - "bot_data:/usr/src/app/storage"
         depends_on:

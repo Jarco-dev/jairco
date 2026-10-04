@@ -144,45 +144,6 @@ export default class MessageDeleteEventHandler extends EventHandler<"messageDele
             };
         }
 
-        const blacklist = await this.client.cacheableData.getBlacklist(
-            "wordsnake",
-            msg.guild.id,
-            msg.author.id
-        );
-        if (!blacklist) {
-            await this.client.prisma.blacklists.create({
-                data: {
-                    type: "WORD_SNAKE",
-                    guildIdUserIdType:
-                        msg.guild.id + msg.author.id + "WORD_SNAKE",
-                    reason: "Deleted a validated word",
-                    Guild: { connect: { discordId: msg.guild.id } },
-                    ReceivedByUser: {
-                        connectOrCreate: {
-                            where: { discordId: msg.author.id },
-                            create: {
-                                discordId: msg.author.id,
-                                Guilds: {
-                                    connect: { discordId: msg.guild.id }
-                                }
-                            }
-                        }
-                    },
-                    GivenByUser: {
-                        connectOrCreate: {
-                            where: { discordId: this.client.user!.id },
-                            create: {
-                                discordId: this.client.user!.id,
-                                Guilds: {
-                                    connect: { discordId: msg.guild.id }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
         const embed = this.client.lang.getEmbed(
             this.client.lang.default,
             "wordSnake.validatedWordDeletedEmbed",

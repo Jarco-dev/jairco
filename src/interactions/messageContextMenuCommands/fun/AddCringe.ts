@@ -6,9 +6,11 @@ import {
     ApplicationCommandType,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
+    TimestampStyles
 } from "discord.js";
 import { BotPermissionsBitField } from "@/classes";
+import { time } from "@discordjs/builders";
 
 export default class AddCringeMessageContextMenuCommand extends MessageContextMenuCommand {
     constructor() {
@@ -58,6 +60,25 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
             return { result: "INVALID_ARGUMENTS" };
         }
 
+        const cooldown = await this.client.redis.getCringeCooldown(
+            i.guild!.id,
+            i.user.id
+        );
+        if (cooldown !== undefined) {
+            this.client.sender.reply(
+                i,
+                { ephemeral: true },
+                {
+                    langLocation: "cringe.cringeCooldownActive",
+                    msgType: "INVALID",
+                    langVariables: {
+                        timeLeft: time(cooldown, TimestampStyles.RelativeTime)
+                    }
+                }
+            );
+            return { result: "OTHER", note: "user is on cooldown" };
+        }
+
         const existingCringe = await this.client.prisma.cringes.findUnique({
             where: {
                 Guild: { discordId: i.guild!.id },
@@ -80,7 +101,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
             return { result: "INVALID_ARGUMENTS" };
         }
 
-        const [cringeCount] = await this.client.prisma.$transaction([
+        const [cringeCount, cringe] = await this.client.prisma.$transaction([
             this.client.prisma.cringes.count({
                 where: {
                     Guild: { discordId: i.guild!.id },
@@ -88,6 +109,9 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 }
             }),
             this.client.prisma.cringes.create({
+                select: {
+                    id: true
+                },
                 data: {
                     channelId: i.targetMessage.channelId,
                     messageId: i.targetMessage.id,
@@ -133,6 +157,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 }
             })
         ]);
+        this.client.redis.setCringeCooldown(i.guild!.id, i.user.id);
 
         const button = new ActionRowBuilder<ButtonBuilder>().setComponents(
             new ButtonBuilder()
@@ -154,6 +179,7 @@ export default class AddCringeMessageContextMenuCommand extends MessageContextMe
                 langVariables: {
                     user: i.targetMessage.author.username,
                     cringeCount: `${cringeCount + 1}`,
+                    cringeId: cringe.id.toString(),
                     messageContent: i.targetMessage.content
                         ? `*${i.targetMessage.content}*`
                         : ""

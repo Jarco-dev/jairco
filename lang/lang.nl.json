@@ -28,7 +28,10 @@
             "RemoveFromCalendar": "Verwijderen van kalender",
             "ViewCalendar": "Bekijk kalender",
             "ManageWordSnake": "Beheer woord slangen",
-            "ManageWOrdSnakeBlacklist": "Beheer woord slang blokkades"
+            "ManageChannelSettings": "Beheer kanaal instellingen",
+            "BypassStickerFilter": "Omzeil sticker filter",
+            "Moderation": "Moderatie",
+            "ManageWelcome": "beheer welkom"
         },
         "counting": {
             "channelReset": "Het tellen kanaal is gereset",
@@ -117,6 +120,14 @@
                     "**Gebruikers correct geteld:** {{usersCorrect}}",
                     "**Gebruikers Incorrect geteld:** {{usersIncorrect}}"
                 ]
+            },
+            "userStatisticsEmbed": {
+                "title": "{{username}}'s tellen statistieken",
+                "description": [
+                    "**Hoogste score:** {{highest}}",
+                    "**Correct geteld:** {{correct}}",
+                    "**Incorrect geteld:** {{incorrect}}"
+                ]
             }
         },
         "invite": {
@@ -140,6 +151,7 @@
             "cringeGivenWasReset": "Cringe gegeven is gereset voor {{user}}",
             "cringeReceivedWasReset": "Cringe ontvangen is gereset voor {{user}}",
             "cringeResetCanceled": "Cringe reset is geannuleerd",
+            "cringeCooldownActive": "Je moet even wachten, je kan weer cringe geven {{timeLeft}}",
             "contextMenuTipEmbed": {
                 "title": "Cringe toevoegen en het bericht bewaren het kan!",
                 "description": [
@@ -150,7 +162,10 @@
             },
             "addedEmbed": {
                 "title": "Cringe toegevoegd aan {{user}} ze hebben nu {{cringeCount}} cringe(s)",
-                "description": "{{messageContent}}"
+                "description": "{{messageContent}}",
+                "footer": {
+                    "text": "{{versionString}} | {{cringeId}}"
+                }
             },
             "userCringeReceivedEmbed": {
                 "title": "**{{user}} was {{cringeCount}} keer cringe**",
@@ -191,6 +206,14 @@
             },
             "givenLeaderboard": {
                 "title": "Gebruikers die de meeste cringe hebben gegeven",
+                "description": "{{topUsers}}"
+            },
+            "receivedLeaderboardYear": {
+                "title": "Gebruikers met de meeste cringe de afgelopen 12 maanden",
+                "description": "{{topUsers}}"
+            },
+            "givenLeaderboardYear": {
+                "title": "Gebruikers die de meeste cringe hebben gegeven de afgelopen 12 maanden",
                 "description": "{{topUsers}}"
             },
             "statisticsEmbed": {
@@ -315,7 +338,7 @@
             "explainEmbed": {
                 "title": "Ping uitleg",
                 "description": [
-                    "🔁 **RTT**: De tijd tussen jij die een berichtje stuurt en de bot die reageerd",
+                    "🔁 **RTT**: De tijd tussen jij die een berichtje stuurt en de bot die reageerde",
                     "💟 **Heartbeat**: De tijd tussen de bot en de discord  api servers"
                 ]
             }
@@ -355,30 +378,24 @@
             "noChannelSet": "Er is nog geen woorden slang kanaal ingesteld",
             "viewChannel": "Het huidige woorden slang kanaal is ingesteld op {{channel}}",
             "reasonTooLong": "De reden moet 255 tekens of minder zijn",
-            "alreadyBlacklisted": "{{user}} is al geblokkeerd van woorden slang",
-            "notBlacklisted": "{{user}} is niet geblokkeerd van woorden slang",
-            "cantBlacklistBot": "Deze gebruiker is een bot, bots kunnen niet worden geblokkeerd",
-            "blacklistAdded": "{{user}} is nu geblokkeerd van woorden slang",
-            "blacklistRemoved": "{{user}} is nu niet meer geblokkeerd van woorden slang",
-            "noBlacklistsExist": "Er zijn momenteel geen tellen blokkades",
             "invalidBlacklistId": "Het gegeven blokkade id bestaat niet",
             "noUsersOnLeaderboard": "Er staan geen gebruikers op dit scoreboard",
             "validatedWordDeletedEmbed": {
                 "title": "Gevalideerd word verwijdert",
                 "description": [
-                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "{{user}} wou de boel voor de gek houden maar is betrapt",
                     "Het huidige woord is **{{currentWord}}** dus de volgende moet beginnen met **{{nextLetter}}**"
                 ]
             },
             "validatedWordEditedEmbed": {
                 "title": "Gevalideerd woord bewerkt",
                 "description": [
-                    "{{user}} wou de boel voor de gek houden maar is nu geblokkeerd",
+                    "{{user}} wou de boel voor de gek houden maar is betrapt",
                     "Het huidige woord is **{{currentWord}}** dus de volgende moet beginnen met **{{nextLetter}}**"
                 ]
             },
             "incorrectWordEmbed": {
-                "title": "Onjuist woord, woorden slang is gereset"
+                "title": "Onjuist woord, woorden slang gereset na {{words}} woorden"
             },
             "channelConfirmEmbed": {
                 "title": "Een woorden slang kanaal is al ingesteld!",
@@ -393,20 +410,6 @@
                     "Zorg er voor dat de bot de volgende rechten heeft in {{channel}}",
                     "",
                     "`Bekijk kanaal`, `Beheer kanaal`, `Stuur bericht`, `Beheer berichten`, `Reacties toevoegen`"
-                ]
-            },
-            "blacklistListEmbed": {
-                "title": "Woorden slang blokkades",
-                "description": "{{blacklists}}"
-            },
-            "blacklistEmbed": {
-                "title": "Belijk blokkade",
-                "description": [
-                    "**ID:** {{id}}",
-                    "**Wanneer:** {{createdAt}}",
-                    "**Gegeven door:** {{givenByUser}}",
-                    "**Ontvangen door:** {{receivedByUser}}",
-                    "**Reden:** {{reason}}"
                 ]
             },
             "correctWordSnakeLeaderboardEmbed": {
@@ -436,9 +439,60 @@
                 "description": "Let er op, als er een reeks gaande was zou hij nu verbroken zijn"
             },
             "duplicateWordEmbed": {
-                "title": "Dubbel woord, woorden slang is gereset"
+                "title": "Dubbel woord, probeer het nog eens"
+            }
+        },
+        "channel": {
+            "stickerFilterEnabled": "Het stikker filter staat nu aan in {{channel}}",
+            "stickerFilterDisabled": "Het stikker filter staat nu uit in {{channel}}"
+        },
+        "moderation": {
+            "banCount": "Deze server heeft {{count}} actieve bans"
+        },
+        "about": {
+            "embed": {
+                "title": "Jairco",
+                "description": [
+                    "Jairco is een bot op maat gemaakt voor de Netherlands discord server",
+                    "",
+                    "**Informatie**",
+                    "* Ontwikkelaar: @jarco / [Jarco-dev](https://github.com/jarco-dev)",
+                    "* Code: [Klik hier](https://github.com/jarco-dev/jairco)",
+                    "* Uptime: {{uptime}}",
+                    "",
+                    "**Juridisch**",
+                    "* Hulp server: [Klik hier](https://discord.gg/Tzmf4x2UFt)",
+                    "* Servicevoorwaarden: [Klik hier](https://jairco.jarco.dev/terms-of-service)",
+                    "* Privacybeleid: [Klik hier](https://jairco.jarco.dev/privacy-policy)"
+                ]
+            }
+        },
+        "welcome": {
+            "channelSet": "Het welkoms kanaal is ingesteld op {{channel}}",
+            "messageSetEmbed": {
+                "title": "Het welkoms bericht is ingesteld",
+                "description": "{{message}}",
+                "footer": {
+                    "text": "Tip, gebruik {{user}} om de user te pingen in het bericht"
+                }
+            },
+            "botMissingPermsEmbed": {
+                "title": "De bot mist wat rechten!",
+                "description": [
+                    "Zorg er voor dat de bot de volgende rechten heeft in {{channel}}",
+                    "",
+                    "`Bekijk kanaal`, `Stuur bericht`"
+                ]
+            },
+            "viewSettingsEmbed": {
+                "title": "Welkom instellingen",
+                "description": [
+                    "**Kanaal:** {{channel}}",
+                    "**Bericht:** {{message}}"
+                ]
             }
         }
+
     },
     "refs": {
     }

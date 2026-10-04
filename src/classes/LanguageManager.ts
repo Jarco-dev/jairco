@@ -55,6 +55,9 @@ export class LanguageManager {
     }
 
     private embedTypeMapper = (jsonValue: any): EmbedBuilder => {
+        const versionString = `${this.client.user!.username} v${
+            this.client.config.VERSION
+        }`;
         return new EmbedBuilder({
             author: jsonValue.author,
             title: Utils.join(jsonValue.title, "\n"),
@@ -73,10 +76,10 @@ export class LanguageManager {
             },
             footer: {
                 text:
-                    Utils.join(jsonValue.footer?.text, "\n") ??
-                    `${this.client.user!.username} v${
-                        this.client.config.VERSION
-                    }`,
+                    Utils.join(jsonValue.footer?.text, "\n")?.replace(
+                        "{{versionString}}",
+                        versionString
+                    ) ?? versionString,
                 iconURL: jsonValue.footer?.icon
             },
             timestamp: jsonValue.timestamp ? Date.now() : undefined,

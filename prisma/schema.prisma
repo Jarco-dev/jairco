@@ -21,6 +21,7 @@ model Guilds {
   CalendarEvents     CalendarEvents[]
   WordSnakeStats     WordSnakeStats[]
   UsedWordSnakeWords UsedWordSnakeWords[]
+  Channels           Channels[]
 }
 
 model Users {
@@ -92,7 +93,6 @@ model CountingStats {
 
 enum BlacklistTypes {
   COUNTING
-  WORD_SNAKE
 }
 
 model Blacklists {
@@ -119,12 +119,17 @@ enum GuildSetting {
   CRINGE_ENABLED
   CALENDAR_ENABLED
   CALENDAR_AUTO_DELETE
+
   WORD_SNAKE_ENABLED
   WORD_SNAKE_CHANNEL
   HIGHEST_WORD_SNAKE
   CURRENT_WORD
   CURRENT_WORD_USER
   CURRENT_WORD_SNAKE
+
+  WELCOME_ENABLED
+  WELCOME_MESSAGE
+  WELCOME_CHANNEL
 }
 
 model GuildSettings {
@@ -170,4 +175,12 @@ model UsedWordSnakeWords {
   updatedAt DateTime @updatedAt
   guildId   Int
   Guild     Guilds   @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Channels {
+  id            Int     @id @default(autoincrement())
+  discordId     String  @unique
+  stickerFilter Boolean @default(false)
+  guildId       Int
+  Guild         Guilds  @relation(fields: [guildId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }

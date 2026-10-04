@@ -1,7 +1,10 @@
 import { BotPermissionsBitField, Client } from "@/classes";
 import {
     BaseInteraction,
+    Collection,
     EmbedBuilder,
+    Guild,
+    GuildBan,
     GuildChannelResolvable,
     GuildMember,
     PermissionResolvable,
@@ -121,19 +124,29 @@ export class Utilities {
         return permissions;
     }
 
-    public async wordExists(word: string): Promise<boolean> {
-        const baseUrl =
-            "https://www.vandale.nl/gratis-woordenboek/nederlands/betekenis";
-        const res = await fetch(`${baseUrl}/${word.toLowerCase()}`).catch(err =>
+    public async isValidWordSnakeWord(word: string): Promise<boolean> {
+        if (word.length <= 1 || !/^[a-zA-Zà-üÀ-Ü-']+[a-zA-Zà-üÀ-Ü]$/.test(word))
+            return false;
+
+        const res = await fetch(
+            `https://woordenlijst.org/MolexServe/lexicon/spellcheck?database=gig_pro_wrdlst&word=${word}`
+        ).catch(err =>
             this.client.logger.error(
-                `Error while fetching word from vandale: ${word}`,
+                `[Utilities.wordExists] Error while validation word: ${word}`,
                 err
             )
         );
         if (!res) return false;
 
-        const s = cheerioLoad(await res.text());
-        return s("h1.title").text().includes("Betekenis");
+        if (res.status !== 200) {
+            this.client.logger.warn(
+                `[Utilities.wordExists] expected status 200 got status: ${res.status}`
+            );
+            return false;
+        }
+
+        const s1 = cheerioLoad(await res.text(), { xml: true });
+        return s1("corrections").text().includes(word);
     }
 
     public async getViewUserCringesPage(
@@ -250,37 +263,87 @@ export class Utilities {
     public async getCringeLeaderboardPage(
         i: BaseInteraction,
         type: "given" | "received",
+        allTime: boolean,
         page = 1
     ): Promise<EmbedBuilder> {
-        const cringes = await this.client.prisma.users.findMany({
-            skip: (page - 1) * 10,
-            take: 10,
-            where: {
-                Guilds: { every: { discordId: i.guild!.id } }
-            },
-            orderBy: {
-                ...(type === "received"
-                    ? { CringesReceived: { _count: "desc" } }
-                    : { CringesGiven: { _count: "desc" } })
-            },
-            select: {
-                discordId: true,
-                _count: {
-                    select: {
-                        CringesReceived: true,
-                        CringesGiven: true
-                    }
-                }
-            }
-        });
+        const startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+
+        type CringesResult = {
+            discordId: string;
+            cringes: number;
+        };
+
+        let cringeCounts: CringesResult[];
+        if (type === "given" && allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.givenByUserId
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else if (type === "received" && allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.receivedByUserId
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else if (type === "given" && !allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.givenByUserId
+                    AND Cringes.createdAt >= now() - INTERVAL 1 YEAR
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else if (type === "received" && !allTime) {
+            cringeCounts = await this.client.prisma.$queryRaw<CringesResult[]>`
+                SELECT
+                    Users.discordId,
+                    COUNT(DISTINCT Cringes.id) as cringes
+                From Users
+                LEFT JOIN Cringes
+                    ON Users.id = Cringes.receivedByUserId
+                    AND Cringes.createdAt >= now() - INTERVAL 1 YEAR
+                GROUP BY Users.id
+                ORDER BY cringes DESC
+                LIMIT 10
+                OFFSET ${(page - 1) * 10}
+            `;
+            this.client.logger.debug("in if", cringeCounts.length);
+        } else {
+            throw new Error("Invalid cringe leaderboard type");
+        }
 
         if (type === "received") {
             return this.client.lang.getEmbed(
                 i.locale,
-                "cringe.receivedLeaderboard",
+                `cringe.receivedLeaderboard${allTime ? "" : "Year"}`,
                 {
-                    topUsers: cringes
-                        .filter(c => c._count.CringesReceived > 0)
+                    topUsers: cringeCounts
+                        .filter(c => c.cringes > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -289,7 +352,7 @@ export class Utilities {
                                     i.locale,
                                     "cringe.wasCringeTimes",
                                     {
-                                        count: c._count.CringesReceived.toString()
+                                        count: c.cringes.toString()
                                     }
                                 )}\n`),
                             ""
@@ -299,10 +362,10 @@ export class Utilities {
         } else {
             return this.client.lang.getEmbed(
                 i.locale,
-                "cringe.givenLeaderboard",
+                `cringe.givenLeaderboard${allTime ? "" : "Year"}`,
                 {
-                    topUsers: cringes
-                        .filter(c => c._count.CringesGiven > 0)
+                    topUsers: cringeCounts
+                        .filter(c => c.cringes > 0)
                         .reduce(
                             (a, c, index) =>
                                 (a += `**#${(page - 1) * 10 + index + 1}** <@${
@@ -310,7 +373,7 @@ export class Utilities {
                                 }> ${this.client.lang.getString(
                                     i.locale,
                                     "cringe.givenCringeTimes",
-                                    { count: c._count.CringesGiven.toString() }
+                                    { count: c.cringes.toString() }
                                 )}\n`),
                             ""
                         )
@@ -348,53 +411,6 @@ export class Utilities {
         return this.client.lang.getEmbed(
             i.locale,
             "counting.blacklistListEmbed",
-            {
-                blacklists: blacklists
-                    .map(b => {
-                        let string = `(${b.id}) <t:${Math.round(
-                            b.createdAt.getTime() / 1000
-                        )}:R> - <@${b.ReceivedByUser.discordId}>`;
-                        if (b.reason) {
-                            string += `\n${b.reason.substring(0, 50)}${
-                                b.reason.length > 50 ? "..." : ""
-                            }`;
-                        }
-                        return string;
-                    })
-                    .join("\n\n")
-            }
-        );
-    }
-
-    public async getWordSnakeBlacklistListPage(
-        i: BaseInteraction,
-        page = 1
-    ): Promise<EmbedBuilder> {
-        const blacklists = await this.client.prisma.blacklists.findMany({
-            skip: (page - 1) * 10,
-            take: 10,
-            where: {
-                Guild: { discordId: i.guild!.id },
-                type: "WORD_SNAKE"
-            },
-            orderBy: {
-                createdAt: "desc"
-            },
-            select: {
-                id: true,
-                reason: true,
-                createdAt: true,
-                ReceivedByUser: {
-                    select: {
-                        discordId: true
-                    }
-                }
-            }
-        });
-
-        return this.client.lang.getEmbed(
-            i.locale,
-            "wordSnake.blacklistListEmbed",
             {
                 blacklists: blacklists
                     .map(b => {
@@ -659,5 +675,33 @@ export class Utilities {
                 )
                 .join("\n\n")
         });
+    }
+
+    // Recursively fetches all the guild's bans
+    public async fetchAllBans(
+        guild: Guild,
+        after?: string,
+        bans: Collection<string, GuildBan> = new Collection()
+    ): Promise<Collection<string, GuildBan>> {
+        const batch = await guild.bans.fetch({
+            limit: 1000,
+            after
+        });
+
+        for (const [id, ban] of batch) {
+            bans.set(id, ban);
+        }
+
+        if (batch.size < 1000) {
+            return bans;
+        }
+
+        const lastId = batch.lastKey();
+
+        if (!lastId) {
+            return bans;
+        }
+
+        return this.fetchAllBans(guild, lastId, bans);
     }
 }

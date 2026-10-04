@@ -73,6 +73,26 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 )
                 .addSubcommand(builder =>
                     builder
+                        .setName("view-user")
+                        .setNameLocalization("nl", "zie-gebruiker")
+                        .setDescription("View counting statistics for a user")
+                        .setDescriptionLocalization(
+                            "nl",
+                            "Zie statitieken voor een gebruiker"
+                        )
+                        .addUserOption(builder =>
+                            builder
+                                .setName("user")
+                                .setNameLocalization("nl", "gebruiker")
+                                .setDescription("The user")
+                                .setDescriptionLocalization(
+                                    "nl",
+                                    "De gebruiker"
+                                )
+                        )
+                )
+                .addSubcommand(builder =>
+                    builder
                         .setName("leaderboard")
                         .setNameLocalization("nl", "scoreboard")
                         .setDescription("View a list of the highest scores")
@@ -319,6 +339,8 @@ export default class CountingChatInputCommand extends ChatInputCommand {
                 return this.runStatistics(i);
             case "leaderboard":
                 return this.runLeaderboard(i);
+            case "view-user":
+                return this.runViewUser(i);
 
             case "channel.set":
                 return this.runChannelSet(i);
@@ -526,6 +548,44 @@ export default class CountingChatInputCommand extends ChatInputCommand {
             type,
             page: 1
         });
+
+        return { result: "SUCCESS" };
+    }
+
+    private async runViewUser(
+        i: ChatInputCommandInteraction
+    ): Promise<HandlerResult> {
+        const user = i.options.getUser("user") ?? i.user;
+        const userStats = await this.client.prisma.countingStats.findFirst({
+            where: {
+                User: { discordId: user.id },
+                Guild: { discordId: i.guild!.id }
+            }
+        });
+
+        let correct = "0";
+        let incorrect = "0";
+        let highest = "0";
+        if (userStats) {
+            correct = userStats.correct.toString();
+            incorrect = userStats.incorrect.toString();
+            highest = userStats.highest.toString();
+        }
+
+        this.client.sender.reply(
+            i,
+            {},
+            {
+                langType: "EMBED",
+                langLocation: "counting.userStatisticsEmbed",
+                langVariables: {
+                    username: user.username,
+                    correct,
+                    incorrect,
+                    highest
+                }
+            }
+        );
 
         return { result: "SUCCESS" };
     }

@@ -66,28 +66,32 @@ export class TaskLoader {
         for (const cronExpression in this.tasks) {
             try {
                 const tasks = this.tasks[cronExpression];
-                cron.schedule(cronExpression, async () => {
-                    for (const task of tasks) {
-                        try {
-                            this.client.logger.verbose(
-                                `[TaskHandler] Running ${task.name}`
-                            );
+                cron.schedule(
+                    cronExpression,
+                    async () => {
+                        for (const task of tasks) {
+                            try {
+                                this.client.logger.verbose(
+                                    `[TaskHandler] Running ${task.name}`
+                                );
 
-                            const data = await task.run();
-                            if (data.result === "ERRORED") {
+                                const data = await task.run();
+                                if (data.result === "ERRORED") {
+                                    this.client.logger.error(
+                                        `[TaskHandler] error in result, ${data.note}`,
+                                        data.error
+                                    );
+                                }
+                            } catch (err) {
                                 this.client.logger.error(
-                                    `[TaskHandler] error in result, ${data.note}`,
-                                    data.error
+                                    `Error while running ${task.name}`,
+                                    err
                                 );
                             }
-                        } catch (err) {
-                            this.client.logger.error(
-                                `Error while running ${task.name}`,
-                                err
-                            );
                         }
-                    }
-                });
+                    },
+                    { timezone: "Europe/Amsterdam" }
+                );
             } catch (err) {
                 this.client.logger.error(
                     "Error while starting a task timer",

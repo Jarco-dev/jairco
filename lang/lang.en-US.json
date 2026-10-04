@@ -28,7 +28,10 @@
             "RemoveFromCalendar": "Remove from calendar",
             "ViewCalendar": "View calendar",
             "ManageWordSnake": "Manage word snake",
-            "ManageWordSnakeBlacklist": "Manage word snake blacklist"
+            "ManageChannelSettings": "Manage channel settings",
+            "BypassStickerFilter": "Bypass sticker filter",
+            "Moderation": "Moderation",
+            "ManageWelcome": "Manage welcome"
         },
         "counting": {
             "channelReset": "The counting channel has been reset",
@@ -117,6 +120,14 @@
                     "**Users counted correctly:** {{usersCorrect}}",
                     "**Users counted incorrectly:** {{usersIncorrect}}"
                 ]
+            },
+            "userStatisticsEmbed": {
+                "title": "{{username}}'s counting statistics",
+                "description": [
+                    "**Highscore:** {{highest}}",
+                    "**Correctly counted:** {{correct}}",
+                    "**Incorrectly counted:** {{incorrect}}"
+                ]
             }
         },
         "invite": {
@@ -140,6 +151,7 @@
             "cringeGivenWasReset": "Cringe given has been reset for {{user}}",
             "cringeReceivedWasReset": "Cringe received has been reset for {{user}}",
             "cringeResetCanceled": "Cringe reset has been canceled",
+            "cringeCooldownActive": "You are on cooldown, you can give cringe again {{timeLeft}}",
             "contextMenuTipEmbed": {
                 "title": "Add cringe and save the message it's possible!",
                 "description": [
@@ -150,7 +162,10 @@
             },
             "addedEmbed": {
                 "title": "Cringe added to {{user}} they now have {{cringeCount}} cringe(s)",
-                "description": "{{messageContent}}"
+                "description": "{{messageContent}}",
+                "footer": {
+                    "text": "{{versionString}} | ID: {{cringeId}}"
+                }
             },
             "userCringeReceivedEmbed": {
                 "title": "**{{user}} was cringe {{cringeCount}} times**",
@@ -172,14 +187,14 @@
                 ]
             },
             "resetReceivedEmbed": {
-                "title": "Are you sure you cant to do this?",
+                "title": "Are you sure you want to do this?",
                 "description": [
                     "{{user}} has received cringe **{{cringeCount}}** times",
                     "If confirmed all of them will be permanently deleted!"
                 ]
             },
             "resetGivenEmbed": {
-                "title": "Are you sure you cant to do this?",
+                "title": "Are you sure you want to do this?",
                 "description": [
                     "{{user}} has given cringe **{{cringeCount}}** times",
                     "if confirmed all of them will be permanently deleted!"
@@ -191,6 +206,14 @@
             },
             "givenLeaderboard": {
                 "title": "Users with the most cringe given",
+                "description": "{{topUsers}}"
+            },
+            "receivedLeaderboardYear": {
+                "title": "Users with the most cringe last 12 months",
+                "description": "{{topUsers}}"
+            },
+            "givenLeaderboardYear": {
+                "title": "Users with the most cringe last 12 months",
                 "description": "{{topUsers}}"
             },
             "statisticsEmbed": {
@@ -355,30 +378,23 @@
             "noChannelSet": "A word snake channel hasn't been configured yet",
             "viewChannel": "The current word snake channel is set to {{channel}}",
             "reasonTooLong": "Please keep the reason 255 characters or less",
-            "alreadyBlacklisted": "{{user}} is already blacklisted from counting",
-            "notBlacklisted": "{{user}} is not blacklisted from counting",
-            "cantBlacklistBot": "This user is a bot, bots cannot be blacklisted",
-            "blacklistAdded": "{{user}} is now blacklisted from counting",
-            "blacklistRemoved": "{{user}} is no longer blacklisted from counting",
-            "noBlacklistsExist": "There are currently no counting blacklists",
-            "invalidBlacklistId": "The given blacklist id does not exist",
             "noUsersOnLeaderboard": "No users are on this leaderboard",
             "validatedWordDeletedEmbed": {
                 "title": "Validated word deleted",
                 "description": [
-                    "{{user}} wanted to troll by deleting a message but got blacklisted instead",
+                    "{{user}} wanted to troll by deleting a message but got caught instead",
                     "The current word is **{{currentWord}}** so the next one should start with **{{nextLetter}}**"
                 ]
             },
             "validatedWordEditedEmbed": {
                 "title": "Validated word edited",
                 "description": [
-                    "{{user}} wanted to troll by editing a word but got blacklisted instead",
+                    "{{user}} wanted to troll by editing a word but got caught instead",
                     "The current word is **{{currentWord}}** so the next one one should start with **{{nextLetter}}**"
                 ]
             },
             "incorrectWordEmbed": {
-                "title": "Incorrect word, word snake has been reset"
+                "title": "Incorrect word, word snake reset after {{words}} words"
             },
             "channelConfirmEmbed": {
                 "title": "A word snake channel already exists!",
@@ -393,20 +409,6 @@
                     "Please make sure the bot has the following permissions in {{channel}}",
                     "",
                     "`View channel`, `Send messages`, `Manage messages`, `Add reactions`"
-                ]
-            },
-            "blacklistListEmbed": {
-                "title": "Word snake blacklists",
-                "description": "{{blacklists}}"
-            },
-            "blacklistEmbed": {
-                "title": "View blacklist",
-                "description": [
-                    "**ID:** {{id}}",
-                    "**When:** {{createdAt}}",
-                    "**Given by:** {{givenByUser}}",
-                    "**Received by:** {{receivedByUser}}",
-                    "**Reason:** {{reason}}"
                 ]
             },
             "correctWordSnakeLeaderboardEmbed": {
@@ -436,7 +438,57 @@
                 "description": "Be aware, once a streak has started this would have broken it"
             },
             "duplicateWordEmbed": {
-                "title": "Duplicate word, word snake has been reset"
+                "title": "Duplicate word, try again"
+            }
+        },
+        "channel": {
+            "stickerFilterEnabled": "The sticker filter is now enabled for {{channel}}",
+            "stickerFilterDisabled": "The sticker filter is now disabled for {{channel}}"
+        },
+        "moderation": {
+            "banCount": "This server has {{count}} active bans"
+        },
+        "about": {
+            "embed": {
+                "title": "Jairco",
+                "description": [
+                    "Jairco is a bot custom made for the Netherlands discord server",
+                    "",
+                    "**Information**",
+                    "* Developer: @jarco / [Jarco-dev](https://github.com/jarco-dev)",
+                    "* Source code: [Click me](https://github.com/jarco-dev/jairco)",
+                    "* Uptime: {{uptime}}",
+                    "",
+                    "**Legal**",
+                    "* Support server: [Click me](https://discord.gg/Tzmf4x2UFt)",
+                    "* Terms Of Service: [Click me](https://jairco.jarco.dev/terms-of-service)",
+                    "* Privacy Policy: [Click me](https://jairco.jarco.dev/privacy-policy)"
+                ]
+            }
+        },
+        "welcome": {
+            "channelSet": "The welcome channel has been set to {{channel}}",
+            "messageSetEmbed": {
+                "title": "The welcome message has been set",
+                "description": "{{message}}",
+                "footer": {
+                    "text": "Tip, use {{user}} to mention the user in the message"
+                }
+            },
+            "botMissingPermsEmbed": {
+                "title": "The bot is missing some permissions!",
+                "description": [
+                    "Please make sure the bot has the following permissions in {{channel}}",
+                    "",
+                    "`View channel`, `Send messages`"
+                ]
+            },
+            "viewSettingsEmbed": {
+                "title": "Welcome settings",
+                "description": [
+                    "**Channel:** {{channel}}",
+                    "**Message:** {{message}}"
+                ]
             }
         }
     },
