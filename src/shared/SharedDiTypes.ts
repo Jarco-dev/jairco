@@ -4,4 +4,5 @@ export const SharedDiTypes = {
   IdGenerator: Symbol.for("IdGenerator"),
   DateProvider: Symbol.for("DateProvider"),
   envConfig: Symbol.for("envConfig"),
+  Translator: Symbol.for("Translator"),
 } as const;
