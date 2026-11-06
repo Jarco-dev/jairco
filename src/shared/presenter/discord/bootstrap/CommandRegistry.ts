@@ -6,14 +6,16 @@ import type {
 import { inject, injectable, multiInject } from "inversify";
 import { DiTypes } from "@/di/DiTypes.ts";
 import type { Logger } from "@/shared/application/interfaces/Logger.ts";
+import type { Translator } from "@/shared/application/interfaces/Translator.ts";
 import { AppError } from "@/shared/kernel/errors/AppError.ts";
 import { errRes } from "@/shared/kernel/lib/ErrResult.ts";
 import type { ResultType } from "@/shared/kernel/types/ResultType.ts";
 import { commandsConfig } from "@/shared/presenter/discord/bootstrap/commandsConfig.ts";
 import type { CommandHandler } from "@/shared/presenter/discord/interfaces/CommandHandler.ts";
 import type { SubCommand } from "@/shared/presenter/discord/interfaces/CommandsConfig.ts";
-import { AppErrorMessage } from "@/shared/presenter/discord/messages/AppErrorMessage.ts";
+import { AppErrorMessage } from "@/shared/presenter/discord/messages/shared/AppErrorMessage.ts";
 import { PermissionChecker } from "@/shared/presenter/discord/services/PermissionChecker.ts";
+import { resolveLocale } from "@/shared/presenter/discord/services/resolveLocale.ts";
 
 @injectable()
 export class CommandRegistry {
@@ -22,6 +24,7 @@ export class CommandRegistry {
 
   constructor(
     @inject(DiTypes.shared.Logger) private logger: Logger,
+    @inject(DiTypes.shared.Translator) private translator: Translator,
     @inject(PermissionChecker) private permissions: PermissionChecker,
     @multiInject(DiTypes.discord.Command) commands: CommandHandler[],
   ) {
@@ -60,7 +63,8 @@ export class CommandRegistry {
 
       if (hasPerms.isErr()) {
         if (i.isChatInputCommand()) {
-          i.reply(new AppErrorMessage(hasPerms.error).build());
+          const t = this.translator.forLocale(resolveLocale(i));
+          i.reply(new AppErrorMessage(t, hasPerms.error).build());
         }
         return errRes(hasPerms.error);
       }
@@ -70,7 +74,8 @@ export class CommandRegistry {
           "You don't have the permissions required to do this",
         );
         if (i.isChatInputCommand()) {
-          i.reply(new AppErrorMessage(error).build());
+          const t = this.translator.forLocale(resolveLocale(i));
+          i.reply(new AppErrorMessage(t, error).build());
         }
         return errRes(error);
       }
