@@ -19,9 +19,7 @@ export class BasicContainerMessage implements BaseMessage {
   ) {}
 
   build(): MessageResponse {
-    const container = new ContainerBuilder()
-      .setAccentColor(COLORS.default)
-      .setSpoiler(true);
+    const container = new ContainerBuilder().setAccentColor(COLORS.default);
 
     if (this.keys.title) {
       container.addTextDisplayComponents((c) =>
