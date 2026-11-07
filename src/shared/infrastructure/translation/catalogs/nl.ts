@@ -11,6 +11,9 @@ export const nl: TranslationCatalog = {
       InternalError: "Er ging iets mis, probeer het alstublieft nog een keer",
     },
   },
+  shared: {
+    guildOnlyError: "Dit is niet beschikbaar buiten servers",
+  },
   commands: {
     ping: {
       result: {

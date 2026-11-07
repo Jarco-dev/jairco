@@ -14,6 +14,10 @@ import { commandsConfig } from "@/shared/presenter/discord/bootstrap/commandsCon
 import type { CommandHandler } from "@/shared/presenter/discord/interfaces/CommandHandler.ts";
 import type { SubCommand } from "@/shared/presenter/discord/interfaces/CommandsConfig.ts";
 import { AppErrorMessage } from "@/shared/presenter/discord/messages/shared/AppErrorMessage.ts";
+import {
+  StatusMessage,
+  StatusMessageType,
+} from "@/shared/presenter/discord/messages/shared/StatusMessage.ts";
 import { PermissionChecker } from "@/shared/presenter/discord/services/PermissionChecker.ts";
 import { resolveLocale } from "@/shared/presenter/discord/services/resolveLocale.ts";
 
@@ -79,6 +83,23 @@ export class CommandRegistry {
         }
         return errRes(error);
       }
+    } else if (command.getGuildOnly()) {
+      const error = AppError.unauthorized(
+        "Command unavailable outside of servers",
+      );
+
+      if (i.isChatInputCommand()) {
+        const t = this.translator.forLocale(resolveLocale(i));
+        i.reply(
+          new StatusMessage(
+            t,
+            StatusMessageType.Error,
+            "shared.guildOnlyError",
+          ).build(),
+        );
+      }
+
+      return errRes(error);
     }
 
     this.logger.verbose(

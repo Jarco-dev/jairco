@@ -10,6 +10,9 @@ export const enUS: TranslationCatalog = {
       InternalError: "Something went wrong, please try again",
     },
   },
+  shared: {
+    guildOnlyError: "This is unavailable outside of servers",
+  },
   commands: {
     ping: {
       result: {
