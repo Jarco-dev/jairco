@@ -1,5 +1,6 @@
 import { ContainerModule } from "inversify";
 import { CommandRegistry } from "@/shared/presenter/discord/bootstrap/CommandRegistry.ts";
+import { ContextMenuRegistry } from "@/shared/presenter/discord/bootstrap/ContextMenuRegistry.ts";
 import { createDiscordClient } from "@/shared/presenter/discord/bootstrap/createDiscordClient.ts";
 import { EventDispatcher } from "@/shared/presenter/discord/bootstrap/EventDispatcher.ts";
 import { PingCommand } from "@/shared/presenter/discord/commands/PingCommand.ts";
@@ -13,6 +14,7 @@ export const DiscordModule = new ContainerModule(({ bind }) => {
   bind(DiscordDiTypes.Client).toConstantValue(createDiscordClient());
   bind(PermissionChecker).toSelf();
   bind(CommandRegistry).toSelf().inSingletonScope();
+  bind(ContextMenuRegistry).toSelf().inSingletonScope();
   bind(EventDispatcher).toSelf();
 
   // Events
@@ -21,4 +23,6 @@ export const DiscordModule = new ContainerModule(({ bind }) => {
 
   // Commands
   bind(DiscordDiTypes.Command).to(PingCommand);
+
+  // Context menus
 });
