@@ -74,9 +74,7 @@ export class CommandRegistry {
       }
 
       if (!hasPerms.value) {
-        const error = AppError.unauthorized(
-          "You don't have the permissions required to do this",
-        );
+        const error = AppError.unauthorized("User is missing permissions");
         if (i.isChatInputCommand()) {
           const t = this.translator.forLocale(resolveLocale(i));
           i.reply(new AppErrorMessage(t, error).build());

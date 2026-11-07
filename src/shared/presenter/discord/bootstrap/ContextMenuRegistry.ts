@@ -47,12 +47,14 @@ export class ContextMenuRegistry {
       );
     }
 
-    const userCount = [...this.byKey.keys()].filter((k) => k.startsWith("2"));
-    const messageCount = [...this.byKey.keys()].filter((k) =>
-      k.startsWith("3"),
-    );
+    const userMenuCount = [...this.byKey.values()].filter(
+      (h) => h.type === ApplicationCommandType.User,
+    ).length;
+    const messageMenuCount = [...this.byKey.values()].filter(
+      (h) => h.type === ApplicationCommandType.Message,
+    ).length;
     this.logger.info(
-      `[ContextMenuRegistry] Registered ${userCount.length} user and ${messageCount.length} message context menu(s)`,
+      `[ContextMenuRegistry] Registered ${userMenuCount} user and ${messageMenuCount} message context menu(s)`,
     );
   }
 
@@ -83,7 +85,7 @@ export class ContextMenuRegistry {
 
       if (!hasPerms.value) {
         const t = this.translator.forLocale(resolveLocale(i));
-        const error = AppError.unauthorized();
+        const error = AppError.unauthorized("User is missing permissions");
         i.reply(new AppErrorMessage(t, error).build());
         return errRes(error);
       }
